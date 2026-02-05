@@ -8,37 +8,88 @@
 </head>
 <body>
     <header>
-        <h1>University of Kigali</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/accounts/login/">Login</a>
-            <a href="/accounts/signup/">Sign Up</a>
-        </nav>
-    </header>
+  <div class="top-bar" role="region" aria-label="Top links">
+    <div class="container top-links">
+      <ul>
+        <li><a href="/student-portal/">Student Portal</a></li>
+        <li><a href="/alumni/">Alumni</a></li>
+        <li><a href="/partners/">Our Strategic Partnerships</a></li>
+        <li><a href="/campuses/">Our Campuses</a></li>
+      </ul>
+    </div>
+  </div>
 
+  <div class="main-header container" role="banner">
+    <div class="logo">
+      <a href="/"><img src="{% static 'website/logo.png' %}" alt="University of Kigali"></a>
+    </div>
+
+    <nav class="main-nav" role="navigation" aria-label="Main navigation">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about/">About</a></li>
+        
+       
+        <li class="nav-dropdown">
+          <a href="/admissions/" class="nav-link">Admissions</a>
+          <div class="dropdown-menu">
+            <div class="dropdown-title">Admissions Information</div>
+            <a href="/admissions/">Admissions Overview</a>
+            <a href="/admissions/how-to-apply/">How to Apply</a>
+            <a href="/admissions/requirements/">Admission Requirements</a>
+            <a href="/admissions/fees/">Fees and Payments</a>
+            <a href="/admissions/faq/">Frequently Asked Questions</a>
+          </div>
+        </li>
+        
+        <li><a href="/academics/">Academics</a></li>
+        <li><a href="/students/">Students</a></li>
+        <li><a href="/research/">Research &amp; Innovation</a></li>
+        <li><a href="/news/">News</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-cta">
+      <a class="apply-btn" href="/apply/">Apply now</a>
+    </div>
+  </div>
+</header>
     <main>
-        <section>
-            <h2>About Us</h2>
-            <p>Welcome to the University of Kigali. We offer programs in multiple faculties.</p>
+        <section class="hero">
+            <div class="container">
+                <h1>Welcome to the University of Kigali</h1>
+                <p>Empowering minds, shaping futures.</p>
+                <a href="/admissions/" class="btn">Apply Now</a>
+            </div>
         </section>
 
-        <section>
-            <h2>Faculties</h2>
-            <ul>
-                <li>Faculty of Science</li>
-                <li>Faculty of Engineering</li>
-                <li>Faculty of Arts</li>
-            </ul>
+        <section class="about">
+            <div class="container">
+                <h2>About Us</h2>
+                <p>The University of Kigali is a leading institution of higher education in Rwanda, committed to providing quality education and fostering innovation. Our mission is to empower students with knowledge and skills to excel in their careers and contribute to society.</p>
+            </div>
         </section>
 
-        <section>
-            <h2>News</h2>
-            <p>Latest news and announcements will appear here.</p>
+        <section class="programs">
+            <div class="container">
+                <h2>Our Programs</h2>
+                <ul>
+                    <li><a href="/academics/computer-science/">Computer Science</a></li>
+                    <li><a href="/academics/business/">Business Administration</a></li>
+                    <li><a href="/academics/engineering/">Engineering</a></li>
+                    <li><a href="/academics/health-sciences/">Health Sciences</a></li>
+                    
+                </ul>
+            </div>
         </section>
+
+        
     </main>
 
     <footer>
-        <p>&copy; 2026 University of Kigali</p>
-    </footer>
-</body>
-</html>
+  <div class="container footer-content">
+    <div class="footer-section contact-info">
+      <h3>Contact Us</h3>
+      <p>University of Kigali<br>KG 7 Ave, Kigali, Rwanda<br>Email: info@uok.edu.rw<br>Phone: +250 788 123 456</p>
+    </div>
+
