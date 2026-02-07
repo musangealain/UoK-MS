@@ -11,9 +11,9 @@
   <div class="top-bar" role="region" aria-label="Top links">
     <div class="container top-links">
       <ul>
-        <li><a href="/student-portal/">Student Portal</a></li>
-        <li><a href="/alumni/">Alumni</a></li>
-        <li><a href="/partners/">Our Strategic Partnerships</a></li>
+          <li><a href="{% url 'portal_student' %}">Student Portal</a></li>
+          <li><a href="{% url 'portal_lecturer' %}">Lecturer Portal</a></li>
+          <li><a href="{% url 'portal_admin' %}">Admin Portal</a></li>
         <li><a href="/campuses/">Our Campuses</a></li>
       </ul>
     </div>
@@ -28,8 +28,6 @@
       <ul>
         <li><a href="/">Home</a></li>
         
-        
-       
         <li class="nav-dropdown">
           <a href="/admissions/" class="nav-link">Admissions</a>
           <div class="dropdown-menu mega-menu admissions-menu" role="menu" aria-label="Admissions menu">
