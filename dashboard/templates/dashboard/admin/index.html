@@ -1,32 +1,52 @@
-<h1>Admin Dashboard</h1>
-<p>Welcome {{ user.username }}</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'dashboard/admin.css' %}">
+  </head>
+  <body>
+    <main class="container dashboard-shell">
+      <div class="dashboard-card">
+        <div class="dashboard-header">
+          <h1>Admin Dashboard</h1>
+          <a class="dash-logout" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+        <p>Welcome {{ user.username }}</p>
 
-<h2>User Accounts</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Role</th>
-      <th>Active</th>
-      <th>Staff</th>
-      <th>Joined</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for u in users %}
-      <tr>
-        <td>{{ u.username }}</td>
-        <td>{{ u.email|default:"-" }}</td>
-        <td>{{ u.userprofile.role|default:"-" }}</td>
-        <td>{{ u.is_active }}</td>
-        <td>{{ u.is_staff }}</td>
-        <td>{{ u.date_joined|date:"Y-m-d" }}</td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="6">No users found.</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+        <h2>User Accounts</h2>
+        <div class="table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Active</th>
+                <th>Staff</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in users %}
+                <tr>
+                  <td>{{ u.username }}</td>
+                  <td>{{ u.email|default:"-" }}</td>
+                  <td>{{ u.userprofile.role|default:"-" }}</td>
+                  <td>{{ u.is_active }}</td>
+                  <td>{{ u.is_staff }}</td>
+                  <td>{{ u.date_joined|date:"Y-m-d" }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6">No users found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

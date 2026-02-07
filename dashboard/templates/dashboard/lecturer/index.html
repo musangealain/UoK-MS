@@ -1,3 +1,21 @@
-<h1>Lecturer Dashboard</h1>
-<p>Welcome {{ user.username }}</p>
-<p>This is the lecturer's dashboard.</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Lecturer Dashboard</title>
+    <link rel="stylesheet" href="{% static 'dashboard/lecturer.css' %}">
+  </head>
+  <body>
+    <main class="container dashboard-shell">
+      <div class="dashboard-card">
+        <div class="dashboard-header">
+          <h1>Lecturer Dashboard</h1>
+          <a class="dash-logout" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+        <p>Welcome {{ user.username }}</p>
+        <p>This is the lecturer's dashboard.</p>
+      </div>
+    </main>
+  </body>
+</html>

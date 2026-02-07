@@ -4,31 +4,41 @@
   <head>
     <meta charset="UTF-8">
     <title>Lecturer Login</title>
-    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    <link rel="stylesheet" href="{% static 'website/auth.css' %}">
   </head>
   <body>
-    <main class="container" style="max-width: 520px; padding: 40px 0;">
-      <h2 style="margin-bottom: 16px;">Lecturer Login</h2>
-      {% if form.errors %}
-        <p style="color: #a11; margin-bottom: 12px;">Invalid username or password.</p>
-      {% endif %}
-      <form method="post">
-        {% csrf_token %}
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+    <main class="container auth-shell">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <img src="{% static 'website/logo.png' %}" alt="University of Kigali">
+        </div>
+        <div class="auth-divider"></div>
+        {% if form.errors %}
+          <p class="auth-error">Invalid username or password.</p>
+        {% endif %}
+        <form method="post" class="auth-form">
+          {% csrf_token %}
           <label>
-            Username
+            Reg. Number
             {{ form.username }}
           </label>
           <label>
             Password
             {{ form.password }}
           </label>
-          <button type="submit" class="apply-btn" style="align-self: flex-start;">Login</button>
+          <label class="auth-remember">
+            <input type="checkbox" name="remember">
+            Remember me
+          </label>
+          <button type="submit" class="auth-submit">Log In</button>
+        </form>
+        <p class="auth-helper">
+          Don’t have an account? <a href="{% url 'lecturer_signup' %}">Sign up</a>
+        </p>
+        <div class="auth-footer">
+          <span>2026 © Designed by DSL Systems</span>
         </div>
-      </form>
-      <p style="margin-top: 12px;">
-        Don’t have an account? <a href="{% url 'lecturer_signup' %}">Sign up</a>
-      </p>
+      </div>
     </main>
   </body>
 </html>

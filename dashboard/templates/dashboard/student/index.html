@@ -1,3 +1,21 @@
-<h1>Student Dashboard</h1>
-<p>Welcome {{ user.username }}</p>
-<p>This is your student dashboard.</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{% static 'dashboard/student.css' %}">
+  </head>
+  <body>
+    <main class="container dashboard-shell">
+      <div class="dashboard-card">
+        <div class="dashboard-header">
+          <h1>Student Dashboard</h1>
+          <a class="dash-logout" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+        <p>Welcome {{ user.username }}</p>
+        <p>This is your student dashboard.</p>
+      </div>
+    </main>
+  </body>
+</html>

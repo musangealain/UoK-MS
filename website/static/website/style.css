@@ -650,6 +650,8 @@ p, li, a {
   outline: none;
 }
 
+
+
 @media (max-width: 1100px){
   .footer-top {
     grid-template-columns: repeat(2, 1fr);

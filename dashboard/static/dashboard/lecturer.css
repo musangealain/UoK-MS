@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+
+:root{
+  --maroon:#6a1723;
+  --maroon-dark:#7a1c2b;
+  --blue:#2b5fa7;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size:16px;
+  line-height:1.4;
+  background:#f7f7f7;
+  color:#222;
+  box-sizing:border-box;
+}
+
+.container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 16px;
+  box-sizing:border-box;
+}
+
+.dashboard-shell {
+  padding: 40px 0 60px;
+}
+
+.dashboard-card {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--maroon);
+}
+
+.dash-logout {
+  background: var(--blue);
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dash-logout:hover,
+.dash-logout:focus {
+  opacity: 0.95;
+  outline: none;
+}

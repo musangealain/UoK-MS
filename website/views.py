@@ -30,18 +30,39 @@ def portal_admin(request):
 
 class StudentLoginView(LoginView):
     template_name = 'registration/login_student.html'
+    def form_valid(self, form):
+        user = form.get_user()
+        if getattr(user, "userprofile", None) is None or user.userprofile.role != "student":
+            logout(self.request)
+            form.add_error(None, "This account is not a student account.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
     def get_success_url(self):
         return '/dashboard/student/'
 
 
 class LecturerLoginView(LoginView):
     template_name = 'registration/login_lecturer.html'
+    def form_valid(self, form):
+        user = form.get_user()
+        if getattr(user, "userprofile", None) is None or user.userprofile.role != "lecturer":
+            logout(self.request)
+            form.add_error(None, "This account is not a lecturer account.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
     def get_success_url(self):
         return '/dashboard/lecturer/'
 
 
 class AdminLoginView(LoginView):
     template_name = 'registration/login_admin.html'
+    def form_valid(self, form):
+        user = form.get_user()
+        if getattr(user, "userprofile", None) is None or user.userprofile.role != "admin":
+            logout(self.request)
+            form.add_error(None, "This account is not an admin account.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
     def get_success_url(self):
         return '/dashboard/admin/'
 
