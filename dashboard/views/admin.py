@@ -9,10 +9,14 @@ from django.db import transaction
 from django.db.models import Max
 from django.shortcuts import render, redirect
 from dashboard.models import Application, UserProfile
-@login_required
-def admin_dashboard(request):
-    if request.user.userprofile.role != 'admin':
-        return redirect('home')
+
+
+def _is_admin(user):
+    profile = getattr(user, "userprofile", None)
+    return user.is_staff or user.is_superuser or (profile and profile.role == 'admin')
+
+
+def _get_students_with_records():
     students = list(
         User.objects.select_related('userprofile')
         .filter(userprofile__role='student', userprofile__student_status='enrolled')
@@ -26,23 +30,72 @@ def admin_dashboard(request):
     }
     for u in students:
         u.application_record = application_map.get(u.username)
-    lecturers = (
+    return students
+
+
+def _get_lecturers():
+    return (
         User.objects.select_related('userprofile')
         .filter(userprofile__role='lecturer')
         .order_by('username')
     )
-    applications = (
+
+
+def _get_applications():
+    return (
         Application.objects.exclude(status='approved')
         .order_by('-created_at')[:50]
     )
+@login_required
+def admin_dashboard(request):
+    if not _is_admin(request.user):
+        return redirect('home')
+    students = _get_students_with_records()
+    lecturers = _get_lecturers()
     return render(
         request,
         'dashboard/admin/index.html',
         {
             'students': students,
             'lecturers': lecturers,
-            'applications': applications,
+            'current_page': 'dashboard',
         },
+    )
+
+
+@login_required
+def admin_students(request):
+    if not _is_admin(request.user):
+        return redirect('home')
+    students = _get_students_with_records()
+    return render(
+        request,
+        'dashboard/admin/students.html',
+        {'students': students, 'current_page': 'students'},
+    )
+
+
+@login_required
+def admin_lecturers(request):
+    if not _is_admin(request.user):
+        return redirect('home')
+    lecturers = _get_lecturers()
+    return render(
+        request,
+        'dashboard/admin/lecturers.html',
+        {'lecturers': lecturers, 'current_page': 'lecturers'},
+    )
+
+
+@login_required
+def admin_applications(request):
+    if not _is_admin(request.user):
+        return redirect('home')
+    applications = _get_applications()
+    return render(
+        request,
+        'dashboard/admin/applications.html',
+        {'applications': applications, 'current_page': 'applications'},
     )
 
 
@@ -71,7 +124,7 @@ def _unique_student_number():
 
 @login_required
 def application_decision(request, application_id):
-    if request.user.userprofile.role != 'admin':
+    if not _is_admin(request.user):
         return redirect('home')
     if request.method != 'POST':
         return redirect('admin_dashboard')
@@ -130,7 +183,7 @@ def application_decision(request, application_id):
 
 @login_required
 def application_delete(request, application_id):
-    if request.user.userprofile.role != 'admin':
+    if not _is_admin(request.user):
         return redirect('home')
     if request.method != 'POST':
         return redirect('admin_dashboard')
@@ -140,7 +193,7 @@ def application_delete(request, application_id):
 
 @login_required
 def user_delete(request, user_id):
-    if request.user.userprofile.role != 'admin':
+    if not _is_admin(request.user):
         return redirect('home')
     if request.method != 'POST':
         return redirect('admin_dashboard')

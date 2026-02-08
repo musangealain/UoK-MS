@@ -7,15 +7,162 @@
     <link rel="stylesheet" href="{% static 'dashboard/lecturer.css' %}">
   </head>
   <body>
-    <main class="container dashboard-shell">
-      <div class="dashboard-card">
-        <div class="dashboard-header">
-          <h1>Lecturer Dashboard</h1>
-          <a class="dash-logout" href="/accounts/logout/?next=/">Logout</a>
+    <div class="lecturer-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Lecturer Portal</p>
+          </div>
         </div>
-        <p>Welcome {{ user.username }}</p>
-        <p>This is the lecturer's dashboard.</p>
-      </div>
-    </main>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Lecturer</p>
+            </div>
+          </div>
+          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <p class="nav-title">Teaching</p>
+          <a class="nav-link active" href="#">Dashboard</a>
+          <a class="nav-link" href="#">My Courses</a>
+          <a class="nav-link" href="#">Class Timetable</a>
+          <a class="nav-link" href="#">Course Materials</a>
+
+          <p class="nav-title">Assessments</p>
+          <a class="nav-link" href="#">Student Lists</a>
+          <a class="nav-link" href="#">Upload Assignments</a>
+          <a class="nav-link" href="#">Enter Marks</a>
+          <a class="nav-link" href="#">Exam Scores</a>
+
+          <p class="nav-title">Communication</p>
+          <a class="nav-link" href="#">Message Students</a>
+          <a class="nav-link" href="#">Announcements</a>
+
+          <p class="nav-title">Reports</p>
+          <a class="nav-link" href="#">Performance Analytics</a>
+          <a class="nav-link" href="#">Attendance Reports</a>
+
+          <p class="nav-title">Settings</p>
+          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" href="#">Change Password</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="page-header">
+          <div>
+            <h1>Lecturer Dashboard</h1>
+            <p>Manage your courses, assessments, and student communication.</p>
+          </div>
+          <div class="quick-actions">
+            <a class="primary-btn" href="#">Upload Assignment</a>
+            <a class="ghost-btn" href="#">Enter Marks</a>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <div class="summary-card">
+            <p class="summary-label">Courses Assigned</p>
+            <h3>4</h3>
+            <p class="summary-meta">Current semester</p>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">Total Students</p>
+            <h3>230</h3>
+            <p class="summary-meta">Across all courses</p>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">Pending Marks</p>
+            <h3>12</h3>
+            <p class="summary-meta">Awaiting submission</p>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">Unread Messages</p>
+            <h3>5</h3>
+            <p class="summary-meta">New student queries</p>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="panel panel-wide">
+            <div class="panel-header">
+              <h2>Teaching Timetable</h2>
+              <span class="panel-pill">This Week</span>
+            </div>
+            <div class="timetable">
+              <div class="timetable-row timetable-header">
+                <span>Day</span>
+                <span>Course</span>
+                <span>Time</span>
+                <span>Room</span>
+              </div>
+              <div class="timetable-row">
+                <span>Monday</span>
+                <span>Data Structures</span>
+                <span>9:00 - 11:00</span>
+                <span>B203</span>
+              </div>
+              <div class="timetable-row">
+                <span>Wednesday</span>
+                <span>Algorithms</span>
+                <span>2:00 - 4:00</span>
+                <span>A105</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Student Management</h2>
+            </div>
+            <div class="action-grid">
+              <a class="action-card" href="#">View Student List</a>
+              <a class="action-card" href="#">Download List (PDF)</a>
+              <a class="action-card" href="#">Download List (Excel)</a>
+              <a class="action-card" href="#">Attendance Sheet</a>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Assessment Management</h2>
+            </div>
+            <div class="action-grid">
+              <a class="action-card" href="#">Upload Assignment PDF</a>
+              <a class="action-card" href="#">Set Deadline</a>
+              <a class="action-card" href="#">Grade Submissions</a>
+              <a class="action-card" href="#">Publish Results</a>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Lecturer Announcements</h2>
+              <span class="panel-pill panel-pill-alert">2</span>
+            </div>
+            <div class="announcement">
+              <h4>Class canceled - Friday</h4>
+              <p>Use the LMS for revision materials.</p>
+              <span>Updated 2 hours ago</span>
+            </div>
+            <div class="announcement">
+              <h4>Exam reminder</h4>
+              <p>Final exam schedule will be released next week.</p>
+              <span>Updated yesterday</span>
+            </div>
+            <a class="panel-link" href="#">Post Announcement</a>
+          </div>
+        </section>
+      </main>
+    </div>
   </body>
 </html>

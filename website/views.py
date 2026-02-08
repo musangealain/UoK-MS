@@ -162,7 +162,7 @@ def apply_step2(request):
             except Exception:
                 email_sent = False
             request.session.pop('apply_data', None)
-            return render(
+            response = render(
                 request,
                 'website/apply_done.html',
                 {
@@ -172,6 +172,10 @@ def apply_step2(request):
                     'email_sent': email_sent,
                 },
             )
+            response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+            response['Pragma'] = 'no-cache'
+            response['Expires'] = '0'
+            return response
     else:
         form = ProgramChoiceForm()
     return render(request, 'website/apply_step2.html', {'form': form})

@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Admin - Applications</title>
+    <link rel="stylesheet" href="{% static 'dashboard/admin.css' %}">
+  </head>
+  <body>
+    <div class="admin-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/logo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Admin Control Panel</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
+          <button class="icon-btn" type="button" title="Settings" aria-label="Settings">⚙️</button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Admin</p>
+            </div>
+          </div>
+          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <p class="nav-title">User Management</p>
+          <a class="nav-link {% if current_page == 'dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Dashboard</a>
+          <a class="nav-link {% if current_page == 'students' %}active{% endif %}" href="{% url 'admin_students' %}">Students</a>
+          <a class="nav-link {% if current_page == 'lecturers' %}active{% endif %}" href="{% url 'admin_lecturers' %}">Lecturers</a>
+          <a class="nav-link" href="#">Staff</a>
+          <a class="nav-link" href="#">Admins</a>
+          <a class="nav-link" href="#">Roles & Permissions</a>
+          <a class="nav-link {% if current_page == 'applications' %}active{% endif %}" href="{% url 'admin_applications' %}">Applications</a>
+
+          <p class="nav-title">Academic Structure</p>
+          <a class="nav-link" href="#">Faculties</a>
+          <a class="nav-link" href="#">Departments</a>
+          <a class="nav-link" href="#">Programs</a>
+          <a class="nav-link" href="#">Courses</a>
+
+          <p class="nav-title">Academic Operations</p>
+          <a class="nav-link" href="#">Academic Calendar</a>
+          <a class="nav-link" href="#">Course Registration</a>
+
+          <p class="nav-title">Exams & Results</p>
+          <a class="nav-link" href="#">Results Management</a>
+          <a class="nav-link" href="#">Transcripts</a>
+
+          <p class="nav-title">Finance</p>
+          <a class="nav-link" href="#">Fee Structure</a>
+          <a class="nav-link" href="#">Payments</a>
+
+          <p class="nav-title">Communication</p>
+          <a class="nav-link" href="#">Announcements</a>
+          <a class="nav-link" href="#">Messages</a>
+
+          <p class="nav-title">Reports & Analytics</p>
+          <a class="nav-link" href="#">Academic Reports</a>
+          <a class="nav-link" href="#">Financial Reports</a>
+
+          <p class="nav-title">System Settings</p>
+          <a class="nav-link" href="#">System Configuration</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="page-header">
+          <div>
+            <h1>Applications</h1>
+            <p>Review and manage student applications.</p>
+          </div>
+          <div class="quick-actions">
+            <a class="primary-btn" href="#">Export List</a>
+            <a class="ghost-btn" href="#">Download Report</a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Applications Queue</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Reg No.</th>
+                  <th>Student No.</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Program</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
+                  <th>Issued Password</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in applications %}
+                  <tr>
+                    <td>{{ a.reg_number }}</td>
+                    <td>{{ a.student_number|default:"-" }}</td>
+                    <td>{{ a.full_name }}</td>
+                    <td>{{ a.email }}</td>
+                    <td>{{ a.program }}</td>
+                    <td>{{ a.get_status_display }}</td>
+                    <td>{{ a.created_at|date:"Y-m-d" }}</td>
+                    <td>{{ a.issued_password|default:"-" }}</td>
+                    <td>
+                      {% if a.status == 'approved' %}
+                        <span class="status-badge status-approved">Approved</span>
+                      {% elif a.status == 'rejected' %}
+                        <span class="status-badge status-rejected">Rejected</span>
+                      {% elif a.status == 'under_review' %}
+                        <div class="action-stack">
+                          <form class="action-form" method="post" action="{% url 'application_decision' a.id %}">
+                            {% csrf_token %}
+                            <button class="action-btn action-approve" type="submit" name="decision" value="approve">
+                              Accept
+                            </button>
+                            <button class="action-btn action-deny" type="submit" name="decision" value="reject">
+                              Deny
+                            </button>
+                          </form>
+                          <form class="delete-form" method="post" action="{% url 'application_delete' a.id %}">
+                            {% csrf_token %}
+                            <button class="icon-btn" type="submit" title="Delete application" aria-label="Delete application">
+                              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
+                              </svg>
+                            </button>
+                          </form>
+                        </div>
+                      {% else %}
+                        <div class="action-stack">
+                          <span class="status-badge status-pending">Waiting</span>
+                          <form class="delete-form" method="post" action="{% url 'application_delete' a.id %}">
+                            {% csrf_token %}
+                            <button class="icon-btn" type="submit" title="Delete application" aria-label="Delete application">
+                              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
+                              </svg>
+                            </button>
+                          </form>
+                        </div>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="9">No applications found.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

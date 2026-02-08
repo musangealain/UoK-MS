@@ -23,5 +23,10 @@
         </p>
       </div>
     </main>
+    <script>
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, "/");
+      }
+    </script>
   </body>
 </html>

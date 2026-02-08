@@ -158,9 +158,9 @@ html,body{
 
 .nav-label{
   margin:14px 0 6px;
-  font-size:12px;
+  font-size:14px;
   color:var(--muted);
-  font-weight:600;
+  font-weight:700;
 }
 
 .nav-link{
@@ -180,6 +180,7 @@ html,body{
 .nav-link.active{
   background:rgba(43, 95, 167, 0.12);
   color:var(--blue);
+  font-size: 14px;
   font-weight:700;
 }
 

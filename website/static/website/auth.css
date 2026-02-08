@@ -14,7 +14,7 @@ html,body{
   line-height:1.4;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  background:#fff;
+  background:#f5f6fa;
   color:#222;
   box-sizing:border-box;
 }
@@ -27,6 +27,10 @@ html,body{
 }
 
 .auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 24px 0 60px;
 }
 
@@ -35,7 +39,7 @@ html,body{
   border: 1px solid #7a2230;
   border-radius: 8px;
   padding: 16px 18px 18px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 32px 90px rgba(16, 22, 47, 0.45), 0 6px 0 rgba(0, 0, 0, 0.08);
   max-width: 360px;
   margin: 0 auto;
   color: #fff;

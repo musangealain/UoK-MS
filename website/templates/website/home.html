@@ -218,34 +218,307 @@
 </header>
     <main>
         <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-copy">
+                    <span class="hero-badge">University of Kigali</span>
+                    <h1>Empowering leaders for Africa&rsquo;s future.</h1>
+                    <p>Study in a vibrant learning environment with industry-aligned programs, expert faculty, and career-focused support.</p>
+                    <div class="hero-actions">
+                        <a href="/apply/" class="btn primary">Apply Now</a>
+                        <a href="/admissions/how-to-apply/" class="btn ghost">How to Apply</a>
+                    </div>
+                    <div class="hero-highlights">
+                        <div>
+                            <strong>40+</strong>
+                            <span>Programs</span>
+                        </div>
+                        <div>
+                            <strong>6</strong>
+                            <span>Schools</span>
+                        </div>
+                        <div>
+                            <strong>12k+</strong>
+                            <span>Students</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-card">
+                    <div class="hero-card-top">
+                        <h3>Admissions 2026</h3>
+                        <p>Applications are open for January and June intakes.</p>
+                    </div>
+                    <ul class="hero-steps">
+                        <li>Choose your program</li>
+                        <li>Submit your application</li>
+                        <li>Receive your portal credentials</li>
+                        <li>Track your status online</li>
+                    </ul>
+                    <a href="/apply/" class="btn secondary">Start Application</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-links">
             <div class="container">
-                <h1>Welcome to the University of Kigali</h1>
-                <p>Empowering minds, shaping futures.</p>
-                <a href="/admissions/" class="btn">Apply Now</a>
+                <div class="section-header">
+                    <h2>Quick Access</h2>
+                    <p>Jump straight to the services students and parents use most.</p>
+                </div>
+                <div class="link-grid">
+                    <a href="{% url 'portal_student' %}" class="link-card">Student Portal</a>
+                    <a href="{% url 'portal_lecturer' %}" class="link-card">Lecturer Portal</a>
+                    <a href="{% url 'portal_admin' %}" class="link-card">Admin Portal</a>
+                    <a href="/academic-calendar/" class="link-card">Academic Calendar</a>
+                    <a href="/fees/" class="link-card">Fees & Payments</a>
+                    <a href="/library/" class="link-card">Digital Library</a>
+                </div>
             </div>
         </section>
 
         <section class="about">
-            <div class="container">
-                <h2>About Us</h2>
-                <p>The University of Kigali is a leading institution of higher education in Rwanda, committed to providing quality education and fostering innovation. Our mission is to empower students with knowledge and skills to excel in their careers and contribute to society.</p>
+            <div class="container about-grid">
+                <div>
+                    <h2>About the University</h2>
+                    <p>The University of Kigali is a leading institution of higher education in Rwanda, committed to quality education, research, and innovation. We empower students with practical skills to thrive in their careers and build resilient communities.</p>
+                    <div class="about-stats">
+                        <div>
+                            <strong>95%</strong>
+                            <span>Graduate employability</span>
+                        </div>
+                        <div>
+                            <strong>70+</strong>
+                            <span>Industry partners</span>
+                        </div>
+                        <div>
+                            <strong>5</strong>
+                            <span>Campuses nationwide</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-card">
+                    <h3>Why Choose UoK</h3>
+                    <ul>
+                        <li>Industry-focused curriculum</li>
+                        <li>Modern laboratories and digital library</li>
+                        <li>Supportive faculty and mentorship</li>
+                        <li>Flexible study modes</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
         <section class="programs">
             <div class="container">
-                <h2>Our Programs</h2>
-                <ul>
-                    <li><a href="/academics/computer-science/">Computer Science</a></li>
-                    <li><a href="/academics/business/">Business Administration</a></li>
-                    <li><a href="/academics/engineering/">Engineering</a></li>
-                    <li><a href="/academics/health-sciences/">Health Sciences</a></li>
-                    
-                </ul>
+                <div class="section-header">
+                    <h2>Popular Programs</h2>
+                    <p>Explore programs designed to meet today&rsquo;s workforce demands.</p>
+                </div>
+                <div class="program-grid">
+                    <div class="program-card">
+                        <h3>BSc Computer Science</h3>
+                        <p>Software engineering, AI, data science, and cybersecurity pathways.</p>
+                        <a href="/academics/computing-and-information-technology/">Learn more</a>
+                    </div>
+                    <div class="program-card">
+                        <h3>BBA Business Administration</h3>
+                        <p>Management, entrepreneurship, finance, and marketing skills.</p>
+                        <a href="/academics/business-management-and-economics/">Learn more</a>
+                    </div>
+                    <div class="program-card">
+                        <h3>LLB Law</h3>
+                        <p>Legal foundations, practice readiness, and professional ethics.</p>
+                        <a href="/academics/law/">Learn more</a>
+                    </div>
+                    <div class="program-card">
+                        <h3>MBA</h3>
+                        <p>Executive leadership and strategic business management.</p>
+                        <a href="/academics/graduate-programmes/">Learn more</a>
+                    </div>
+                </div>
             </div>
         </section>
 
-        
+        <section class="campus">
+            <div class="container campus-grid">
+                <div>
+                    <h2>Our Campuses</h2>
+                    <p>Learn in modern facilities across Rwanda with vibrant student life and support services.</p>
+                    <div class="campus-list">
+                        <div>
+                            <h4>Kigali Main Campus</h4>
+                            <p>Business hub with cutting-edge lecture halls.</p>
+                        </div>
+                        <div>
+                            <h4>Remera Campus</h4>
+                            <p>Science and technology facilities.</p>
+                        </div>
+                        <div>
+                            <h4>Musanze Campus</h4>
+                            <p>Community-driven learning and innovation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="campus-card">
+                    <h3>Student Support</h3>
+                    <p>Access counseling, career services, clubs, and health support to help you thrive.</p>
+                    <a href="/students/" class="btn secondary">Explore Student Life</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="news">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Latest Updates</h2>
+                    <p>News, events, and important announcements.</p>
+                </div>
+                <div class="news-grid">
+                    <div class="news-card">
+                        <span>Admissions</span>
+                        <h3>2026 intake now open</h3>
+                        <p>Apply early to secure your place and access scholarship opportunities.</p>
+                        <a href="/admissions/">Read more</a>
+                    </div>
+                    <div class="news-card">
+                        <span>Academics</span>
+                        <h3>New AI and Data Science tracks launched</h3>
+                        <p>Industry-aligned courses to build future-ready skills.</p>
+                        <a href="/academics/computing-and-information-technology/">Read more</a>
+                    </div>
+                    <div class="news-card">
+                        <span>Events</span>
+                        <h3>Career fair this semester</h3>
+                        <p>Meet top employers and explore internship opportunities.</p>
+                        <a href="/events/">Read more</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dates">
+            <div class="container">
+                <div class="section-header center">
+                    <h2>Important Dates</h2>
+                    <p>Keep track of the academic calendar and key milestones.</p>
+                </div>
+                <div class="dates-grid">
+                    <div class="date-card">
+                        <div class="date-badge">
+                            <span>May</span>
+                            <strong>6</strong>
+                        </div>
+                        <div>
+                            <h3>Opening Day</h3>
+                            <p>Tuesday, 06 May 2026</p>
+                        </div>
+                    </div>
+                    <div class="date-card">
+                        <div class="date-badge">
+                            <span>May</span>
+                            <strong>6</strong>
+                        </div>
+                        <div>
+                            <h3>Module Registration</h3>
+                            <p>Tuesday, 06 May 2026</p>
+                        </div>
+                    </div>
+                    <div class="date-card">
+                        <div class="date-badge">
+                            <span>May</span>
+                            <strong>12</strong>
+                        </div>
+                        <div>
+                            <h3>Module 1 Day Session</h3>
+                            <p>Monday, 12 May 2026</p>
+                        </div>
+                    </div>
+                    <div class="date-card">
+                        <div class="date-badge">
+                            <span>May</span>
+                            <strong>12</strong>
+                        </div>
+                        <div>
+                            <h3>Module 1 Evening Session</h3>
+                            <p>Monday, 12 May 2026</p>
+                        </div>
+                    </div>
+                    <div class="date-card">
+                        <div class="date-badge">
+                            <span>May</span>
+                            <strong>10</strong>
+                        </div>
+                        <div>
+                            <h3>Module 1 Weekend Session</h3>
+                            <p>Saturday, 10 May 2026</p>
+                        </div>
+                    </div>
+                    <div class="date-card">
+                        <div class="date-badge">
+                            <span>Dec</span>
+                            <strong>26</strong>
+                        </div>
+                        <div>
+                            <h3>Boxing Day</h3>
+                            <p>Friday, 26 December 2026</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="dates-cta">
+                    <a href="/academic-calendar/" class="btn primary">View Full Academic Calendar</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="glance">
+            <div class="container">
+                <div class="glance-card">
+                    <h2>UoK at a Glance</h2>
+                    <div class="glance-grid">
+                        <div>
+                            <strong>10K+</strong>
+                            <span>Students</span>
+                        </div>
+                        <div>
+                            <strong>10K+</strong>
+                            <span>Alumni</span>
+                        </div>
+                        <div>
+                            <strong>35+</strong>
+                            <span>Nationalities</span>
+                        </div>
+                        <div>
+                            <strong>9</strong>
+                            <span>Graduations</span>
+                        </div>
+                        <div>
+                            <strong>1000+</strong>
+                            <span>International Students</span>
+                        </div>
+                        <div>
+                            <strong>28</strong>
+                            <span>Academic Programmes</span>
+                        </div>
+                        <div>
+                            <strong>34</strong>
+                            <span>Awards Won</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-band">
+            <div class="container cta-inner">
+                <div>
+                    <h2>Ready to start your journey?</h2>
+                    <p>Join a community that turns ambition into achievement.</p>
+                </div>
+                <div class="cta-actions">
+                    <a href="/apply/" class="btn primary">Apply Now</a>
+                    <a href="/contact/" class="btn ghost">Talk to Admissions</a>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="site-footer">
