@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Applicant Dashboard</title>
+    <link rel="stylesheet" href="{% static 'dashboard/applicant.css' %}">
+  </head>
+  <body>
+    <main class="container dashboard-shell">
+      <div class="dashboard-card">
+        <div class="dashboard-header">
+          <h1>Applicant Dashboard</h1>
+          <a class="dash-logout" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+        {% if missing_application %}
+          <p>We could not find your application record. Please contact admissions support.</p>
+        {% else %}
+          <p>Welcome {{ user.username }}. Complete all required documents, then submit your application.</p>
+          <div class="applicant-grid">
+            <div class="app-card">
+              <h3>Application Status</h3>
+              <span class="status-pill status-{{ application.status }}">
+                {{ application.get_status_display }}
+              </span>
+              <p class="status-note">
+                {% if application.status == 'submitted' %}
+                  Awaiting your documents before review can begin.
+                {% elif application.status == 'under_review' %}
+                  Your application is under review by the admin team.
+                {% elif application.status == 'approved' %}
+                  Congratulations! You have been approved.
+                {% elif application.status == 'rejected' %}
+                  Your application was not approved.
+                {% endif %}
+              </p>
+              <div class="app-meta">
+                <span>Program: {{ application.program }}</span>
+                <span>Submitted: {{ application.created_at|date:"Y-m-d" }}</span>
+              </div>
+            </div>
+            <div class="app-card">
+              <h3>Required Documents</h3>
+              <form class="doc-form" method="post">
+                {% csrf_token %}
+                <label class="doc-item">
+                  <input type="checkbox" name="doc_id_uploaded" {% if application.doc_id_uploaded %}checked{% endif %} {% if application.status != 'submitted' %}disabled{% endif %}>
+                  National ID / Passport
+                </label>
+                <label class="doc-item">
+                  <input type="checkbox" name="doc_transcript_uploaded" {% if application.doc_transcript_uploaded %}checked{% endif %} {% if application.status != 'submitted' %}disabled{% endif %}>
+                  Previous Academic Transcript
+                </label>
+                <label class="doc-item">
+                  <input type="checkbox" name="doc_recommendation_uploaded" {% if application.doc_recommendation_uploaded %}checked{% endif %} {% if application.status != 'submitted' %}disabled{% endif %}>
+                  Recommendation Letter
+                </label>
+                <div class="doc-actions">
+                  <button class="ghost-btn" type="submit" name="action" value="save" {% if application.status != 'submitted' %}disabled{% endif %}>
+                    Save Documents
+                  </button>
+                  <button class="primary-btn" type="submit" name="action" value="submit" {% if not all_docs_uploaded or application.status != 'submitted' %}disabled{% endif %}>
+                    Submit for Review
+                  </button>
+                </div>
+                {% if application.status != 'submitted' %}
+                  <p class="doc-hint">Documents are locked while your application is being reviewed.</p>
+                {% elif not all_docs_uploaded %}
+                  <p class="doc-hint">Submit becomes available after all documents are marked uploaded.</p>
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,10 +1,17 @@
+import random
+import string
+
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from dashboard.models import UserProfile
+from dashboard.models import Application, UserProfile
+from .forms import ApplicantInfoForm, ProgramChoiceForm
+
+
 
 # Create your views here.
 def home(request):
@@ -38,6 +45,9 @@ class StudentLoginView(LoginView):
             return self.form_invalid(form)
         return super().form_valid(form)
     def get_success_url(self):
+        username = getattr(self.request.user, "username", "")
+        if username.upper().startswith("REG"):
+            return '/dashboard/applicant/'
         return '/dashboard/student/'
 
 
@@ -78,6 +88,8 @@ def _handle_signup(request, role, template_name, redirect_url):
             user = User.objects.create_user(username=username, email=email, password=password)
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.role = role
+            if role == 'student':
+                profile.student_status = 'applicant'
             profile.save()
             login(request, user)
             return redirect(redirect_url)
@@ -87,6 +99,82 @@ def _handle_signup(request, role, template_name, redirect_url):
 
 def student_signup(request):
     return _handle_signup(request, 'student', 'registration/signup_student.html', '/dashboard/student/')
+
+
+def _generate_reg_number():
+    while True:
+        reg = f"REG{random.randint(1000, 9999)}"
+        if not User.objects.filter(username=reg).exists():
+            return reg
+
+
+def _generate_password(length=8):
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choice(chars) for _ in range(length))
+
+
+def apply_step1(request):
+    if request.method == 'POST':
+        form = ApplicantInfoForm(request.POST)
+        if form.is_valid():
+            request.session['apply_data'] = form.cleaned_data
+            return redirect('apply_step2')
+    else:
+        form = ApplicantInfoForm()
+    return render(request, 'website/apply_step1.html', {'form': form})
+
+
+def apply_step2(request):
+    data = request.session.get('apply_data')
+    if not data:
+        return redirect('apply_step1')
+    if request.method == 'POST':
+        form = ProgramChoiceForm(request.POST)
+        if form.is_valid():
+            reg_number = _generate_reg_number()
+            password = _generate_password()
+            user = User.objects.create_user(
+                username=reg_number,
+                email=data['email'],
+                password=password,
+            )
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.role = 'student'
+            profile.student_status = 'applicant'
+            profile.save()
+            Application.objects.create(
+                applicant=user,
+                reg_number=reg_number,
+                full_name=data['full_name'],
+                email=data['email'],
+                phone=data['phone'],
+                program=form.cleaned_data['program'],
+            )
+            subject = "Your UoK Applicant Portal Credentials"
+            message = (
+                "Thank you for applying to the University of Kigali.\n\n"
+                f"Your applicant portal credentials:\nUsername: {reg_number}\nPassword: {password}\n\n"
+                "Use these to log in via the Student Portal."
+            )
+            try:
+                send_mail(subject, message, None, [data['email']], fail_silently=False)
+                email_sent = True
+            except Exception:
+                email_sent = False
+            request.session.pop('apply_data', None)
+            return render(
+                request,
+                'website/apply_done.html',
+                {
+                    'reg_number': reg_number,
+                    'password': password,
+                    'email': data['email'],
+                    'email_sent': email_sent,
+                },
+            )
+    else:
+        form = ProgramChoiceForm()
+    return render(request, 'website/apply_step2.html', {'form': form})
 
 
 def lecturer_signup(request):

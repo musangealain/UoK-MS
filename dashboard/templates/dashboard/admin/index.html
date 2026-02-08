@@ -15,32 +15,164 @@
         </div>
         <p>Welcome {{ user.username }}</p>
 
-        <h2>User Accounts</h2>
+        <h2>Student Accounts</h2>
+        <div class="table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Issued Password</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Program</th>
+                <th>Status</th>
+                <th>Active</th>
+                <th>Joined</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in students %}
+                <tr>
+                  <td>{{ u.username }}</td>
+                  <td>{{ u.application_record.issued_password|default:"-" }}</td>
+                  <td>{{ u.application_record.full_name|default:"-" }}</td>
+                  <td>{{ u.email|default:"-" }}</td>
+                  <td>{{ u.application_record.program|default:"-" }}</td>
+                  <td>{{ u.userprofile.student_status|default:"-" }}</td>
+                  <td>{{ u.is_active }}</td>
+                  <td>{{ u.date_joined|date:"Y-m-d" }}</td>
+                  <td>
+                    <form class="delete-form" method="post" action="{% url 'user_delete' u.id %}">
+                      {% csrf_token %}
+                      <button class="icon-btn" type="submit" title="Delete account" aria-label="Delete account">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
+                        </svg>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="9">No students found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 style="margin-top:20px;">Lecturer Accounts</h2>
         <div class="table-wrap">
           <table class="dashboard-table">
             <thead>
               <tr>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Role</th>
                 <th>Active</th>
                 <th>Staff</th>
                 <th>Joined</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {% for u in users %}
+              {% for u in lecturers %}
                 <tr>
                   <td>{{ u.username }}</td>
                   <td>{{ u.email|default:"-" }}</td>
-                  <td>{{ u.userprofile.role|default:"-" }}</td>
                   <td>{{ u.is_active }}</td>
                   <td>{{ u.is_staff }}</td>
                   <td>{{ u.date_joined|date:"Y-m-d" }}</td>
+                  <td>
+                    <form class="delete-form" method="post" action="{% url 'user_delete' u.id %}">
+                      {% csrf_token %}
+                      <button class="icon-btn" type="submit" title="Delete account" aria-label="Delete account">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
+                        </svg>
+                      </button>
+                    </form>
+                  </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="6">No users found.</td>
+                  <td colspan="6">No lecturers found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 style="margin-top:20px;">Applications</h2>
+        <div class="table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Reg No.</th>
+                <th>Student No.</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Program</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Issued Password</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in applications %}
+                <tr>
+                  <td>{{ a.reg_number }}</td>
+                  <td>{{ a.student_number|default:"-" }}</td>
+                  <td>{{ a.full_name }}</td>
+                  <td>{{ a.email }}</td>
+                  <td>{{ a.program }}</td>
+                  <td>{{ a.get_status_display }}</td>
+                  <td>{{ a.created_at|date:"Y-m-d" }}</td>
+                  <td>{{ a.issued_password|default:"-" }}</td>
+                  <td>
+                    {% if a.status == 'approved' %}
+                      <span class="status-badge status-approved">Approved</span>
+                    {% elif a.status == 'rejected' %}
+                      <span class="status-badge status-rejected">Rejected</span>
+                    {% elif a.status == 'under_review' %}
+                      <div class="action-stack">
+                        <form class="action-form" method="post" action="{% url 'application_decision' a.id %}">
+                          {% csrf_token %}
+                          <button class="action-btn action-approve" type="submit" name="decision" value="approve">
+                            Accept
+                          </button>
+                          <button class="action-btn action-deny" type="submit" name="decision" value="reject">
+                            Deny
+                          </button>
+                        </form>
+                        <form class="delete-form" method="post" action="{% url 'application_delete' a.id %}">
+                          {% csrf_token %}
+                          <button class="icon-btn" type="submit" title="Delete application" aria-label="Delete application">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                              <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
+                            </svg>
+                          </button>
+                        </form>
+                      </div>
+                    {% else %}
+                      <div class="action-stack">
+                        <span class="status-badge status-pending">Waiting</span>
+                        <form class="delete-form" method="post" action="{% url 'application_delete' a.id %}">
+                          {% csrf_token %}
+                          <button class="icon-btn" type="submit" title="Delete application" aria-label="Delete application">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                              <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
+                            </svg>
+                          </button>
+                        </form>
+                      </div>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="9">No applications found.</td>
                 </tr>
               {% endfor %}
             </tbody>

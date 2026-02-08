@@ -27,6 +27,8 @@ from website.views import (
     student_signup,
     lecturer_signup,
     admin_signup,
+    apply_step1,
+    apply_step2,
 )
 
 
@@ -43,5 +45,7 @@ urlpatterns = [
     path('portal/student/signup/', student_signup, name='student_signup'),
     path('portal/lecturer/signup/', lecturer_signup, name='lecturer_signup'),
     path('portal/admin/signup/', admin_signup, name='admin_signup'),
+    path('apply/', apply_step1, name='apply_step1'),
+    path('apply/program/', apply_step2, name='apply_step2'),
     path('dashboard/', include('dashboard.urls')),
 ]

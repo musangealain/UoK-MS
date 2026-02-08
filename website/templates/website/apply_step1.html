@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Apply - Step 1</title>
+    <link rel="stylesheet" href="{% static 'website/apply.css' %}">
+  </head>
+  <body>
+    <main class="container">
+      <div class="apply-card">
+        <h1>Application - Personal Information</h1>
+        {% if form.errors %}
+          <p class="apply-note">Please fix the errors below.</p>
+        {% endif %}
+        <form method="post" id="apply-step1">
+          {% csrf_token %}
+          <div class="apply-form">
+            <label>
+              Full name
+              {{ form.full_name }}
+            </label>
+            <label>
+              Email address
+              {{ form.email }}
+            </label>
+            <label>
+              Telephone number
+              {{ form.phone }}
+            </label>
+            <button type="submit" class="apply-submit" id="continue-btn" disabled>Continue</button>
+          </div>
+        </form>
+      </div>
+    </main>
+    <script>
+      const form = document.getElementById('apply-step1');
+      const btn = document.getElementById('continue-btn');
+      const inputs = form.querySelectorAll('input');
+      function checkValid() {
+        btn.disabled = !form.checkValidity();
+      }
+      inputs.forEach(i => i.addEventListener('input', checkValid));
+      checkValid();
+    </script>
+  </body>
+</html>

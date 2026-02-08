@@ -18,7 +18,7 @@ html,body{
 }
 
 .container{
-  max-width:1200px;
+  max-width:1500px;
   margin:0 auto;
   padding:0 16px;
   box-sizing:border-box;
@@ -78,6 +78,7 @@ html,body{
   padding: 10px 12px;
   border-bottom: 1px solid #eee;
   text-align: left;
+  white-space: nowrap;
 }
 
 .dashboard-table th {
@@ -88,4 +89,83 @@ html,body{
 
 .table-wrap {
   overflow-x: auto;
+}
+
+.action-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-stack {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.delete-form {
+  display: inline-flex;
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  padding: 0;
+}
+
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: #d94b4b;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.action-approve {
+  background: #2b7a4b;
+  color: #fff;
+}
+
+.action-deny {
+  background: #d94b4b;
+  color: #fff;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-approved {
+  background: rgba(43, 122, 75, 0.15);
+  color: #2b7a4b;
+}
+
+.status-rejected {
+  background: rgba(217, 75, 75, 0.15);
+  color: #d94b4b;
+}
+
+.status-pending {
+  background: rgba(247, 181, 72, 0.2);
+  color: #8c5a00;
 }

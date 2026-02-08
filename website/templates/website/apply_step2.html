@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Apply - Step 2</title>
+    <link rel="stylesheet" href="{% static 'website/apply.css' %}">
+  </head>
+  <body>
+    <main class="container">
+      <div class="apply-card">
+        <h1>Application - Program Selection</h1>
+        {% if form.errors %}
+          <p class="apply-note">Please fix the errors below.</p>
+        {% endif %}
+        <form method="post" class="apply-form">
+          {% csrf_token %}
+          <label>
+            Program
+            {{ form.program }}
+          </label>
+          <button type="submit" class="apply-submit">Submit Application</button>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

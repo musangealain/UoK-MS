@@ -7,15 +7,162 @@
     <link rel="stylesheet" href="{% static 'dashboard/student.css' %}">
   </head>
   <body>
-    <main class="container dashboard-shell">
-      <div class="dashboard-card">
-        <div class="dashboard-header">
-          <h1>Student Dashboard</h1>
-          <a class="dash-logout" href="/accounts/logout/?next=/">Logout</a>
+    <div class="student-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Student Portal</p>
+          </div>
         </div>
-        <p>Welcome {{ user.username }}</p>
-        <p>This is your student dashboard.</p>
-      </div>
-    </main>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">
+            <span>🔔</span>
+          </button>
+          <button class="icon-btn" type="button" title="Settings" aria-label="Settings">
+            <span>⚙️</span>
+          </button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Student</p>
+            </div>
+          </div>
+          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <!-- <p class="nav-title">Main Menu</p> -->
+          <a class="nav-link active" href="#">Dashboard</a>
+          <div class="nav-group">
+            <p class="nav-label">Academics</p>
+            <a class="nav-link" href="#">My Courses</a>
+            <a class="nav-link" href="#">Course Registration</a>
+            <a class="nav-link" href="#">Timetable</a>
+            <a class="nav-link" href="#">Course Materials</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Exams & Grades</p>
+            <a class="nav-link" href="#">Results</a>
+            <a class="nav-link" href="#">Transcript</a>
+            <a class="nav-link" href="#">GPA / CGPA</a>
+            <a class="nav-link" href="#">Exam Schedule</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Finance</p>
+            <a class="nav-link" href="#">Fees Statement</a>
+            <a class="nav-link" href="#">Payment History</a>
+            <a class="nav-link" href="#">Make Payment</a>
+            <a class="nav-link" href="#">Scholarships</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Communication</p>
+            <a class="nav-link" href="#">Announcements</a>
+            <a class="nav-link" href="#">Messages</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Profile</p>
+            <a class="nav-link" href="#">Personal Info</a>
+            <a class="nav-link" href="#">Documents</a>
+            <a class="nav-link" href="#">Change Password</a>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="page-header">
+          <div>
+            <h1>Student Dashboard</h1>
+            <p>Welcome back, {{ user.first_name|default:user.username }}. Here is your academic overview.</p>
+          </div>
+          <div class="quick-actions">
+            <a class="primary-btn" href="#">Register Courses</a>
+            <a class="ghost-btn" href="#">Download Transcript</a>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <div class="summary-card">
+            <p class="summary-label">Enrolled Program</p>
+            <h3>Business Administration</h3>
+            <p class="summary-meta">Year 2 · Semester 1</p>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">Registered Courses</p>
+            <h3>6 Courses</h3>
+            <p class="summary-meta">3 core · 3 elective</p>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">Current GPA</p>
+            <h3>3.62</h3>
+            <p class="summary-meta">CGPA 3.48</p>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">Fee Balance</p>
+            <h3>12,500 RWF</h3>
+            <p class="summary-meta">Status: Pending</p>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="panel panel-wide">
+            <div class="panel-header">
+              <h2>Today&rsquo;s Classes</h2>
+              <span class="panel-pill">Monday</span>
+            </div>
+            <div class="timetable">
+              <div class="timetable-row timetable-header">
+                <span>Time</span>
+                <span>Course</span>
+                <span>Room</span>
+              </div>
+              <div class="timetable-row">
+                <span>08:00</span>
+                <span>Data Structures</span>
+                <span>B201</span>
+              </div>
+              <div class="timetable-row">
+                <span>10:00</span>
+                <span>Database Systems</span>
+                <span>A105</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Announcements</h2>
+              <span class="panel-pill panel-pill-alert">3 New</span>
+            </div>
+            <div class="announcement">
+              <h4>Mid-semester exams timetable released</h4>
+              <p>Check the exam schedule section for details.</p>
+              <span>Updated 2 hours ago</span>
+            </div>
+            <div class="announcement">
+              <h4>Library clearance required</h4>
+              <p>Complete clearance before registration closes.</p>
+              <span>Updated yesterday</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Quick Actions</h2>
+            </div>
+            <div class="action-grid">
+              <a href="#" class="action-card">Register Courses</a>
+              <a href="#" class="action-card">View Results</a>
+              <a href="#" class="action-card">Pay Fees</a>
+              <a href="#" class="action-card">Download Transcript</a>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   </body>
 </html>
