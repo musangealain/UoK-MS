@@ -9,7 +9,15 @@ def student_dashboard(request):
         return redirect('home')
     if request.user.username.upper().startswith('REG') or request.user.userprofile.student_status == 'applicant':
         return redirect('applicant_dashboard')
-    return render(request, 'dashboard/student/index.html')
+    application = (
+        Application.objects.filter(applicant=request.user).first()
+        or Application.objects.filter(reg_number=request.user.username).first()
+    )
+    context = {
+        'current_page': 'overview',
+        'application': application,
+    }
+    return render(request, 'dashboard/student/index.html', context)
 
 
 @login_required

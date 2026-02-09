@@ -1,152 +1,82 @@
+{% extends "dashboard/lecturer/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Lecturer - Course Enrollments</title>
-    <link rel="stylesheet" href="{% static 'dashboard/lecturer_course_enrollments.css' %}">
-  </head>
-  <body>
-    <div class="lecturer-shell">
-      <header class="topbar">
-        <div class="brand">
-          <img class="brand-logo" src="{% static 'website/logo.png' %}" alt="University logo">
-          <div>
-            <p class="brand-title">University Management System</p>
-            <p class="brand-sub">Lecturer Portal</p>
-          </div>
-        </div>
-        <div class="topbar-actions">
-          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
-          <div class="user-pill">
-            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
-            <div>
-              <p class="user-name">{{ user.first_name|default:user.username }}</p>
-              <p class="user-role">Lecturer</p>
-            </div>
-          </div>
-          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
-        </div>
-      </header>
 
-      <aside class="sidebar">
-        <nav class="nav">
-          <p class="nav-title">Dashboard</p>
-          <a class="nav-link" href="{% url 'lecturer_dashboard' %}">Overview</a>
+{% block title %}Lecturer - Course Enrollments{% endblock %}
 
-          <p class="nav-title">Teaching</p>
-          <a class="nav-link" href="{% url 'lecturer_courses' %}">My Courses</a>
-          <a class="nav-link" href="{% url 'lecturer_course_assignments' %}">Course Assignments</a>
-          <a class="nav-link" href="{% url 'lecturer_timetable' %}">Class Timetable</a>
-          <a class="nav-link" href="{% url 'lecturer_materials' %}">Course Materials</a>
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'dashboard/lecturer_course_enrollments.css' %}">
+{% endblock %}
 
-          <p class="nav-title">Students & Attendance</p>
-          <a class="nav-link" href="{% url 'lecturer_student_lists' %}">Student Lists</a>
-          <a class="nav-link active" href="{% url 'lecturer_course_enrollments' %}">Course Enrollments</a>
-          <a class="nav-link" href="{% url 'lecturer_attendance_sessions' %}">Attendance Sessions</a>
-          <a class="nav-link" href="{% url 'lecturer_attendance_records' %}">Attendance Records</a>
-
-          <p class="nav-title">Assessments</p>
-          <a class="nav-link" href="#">Assignments</a>
-          <a class="nav-link" href="#">Assignment Submissions</a>
-          <a class="nav-link" href="#">Exams</a>
-          <a class="nav-link" href="#">Exam Results</a>
-
-          <p class="nav-title">Marks & Grading</p>
-          <a class="nav-link" href="#">Continuous Assessments</a>
-          <a class="nav-link" href="#">Final Grades</a>
-          <a class="nav-link" href="#">Grading Scheme</a>
-
-          <p class="nav-title">Communication</p>
-          <a class="nav-link" href="#">Announcements</a>
-          <a class="nav-link" href="#">Messages</a>
-          <a class="nav-link" href="#">Notifications</a>
-
-          <p class="nav-title">Reports & Analytics</p>
-          <a class="nav-link" href="#">Performance Analytics</a>
-          <a class="nav-link" href="#">Report Logs</a>
-
-          <p class="nav-title">Audit & Settings</p>
-          <a class="nav-link" href="#">Audit Logs</a>
-          <a class="nav-link" href="#">Lecturer Settings</a>
-          <a class="nav-link" href="#">Profile</a>
-          <a class="nav-link" href="#">Change Password</a>
-        </nav>
-      </aside>
-
-      <main class="main">
-        <section class="page-header">
-          <div>
-            <h1>Course Enrollments</h1>
-            <p>Official registrations and enrollment status.</p>
-          </div>
-          <div class="quick-actions">
-            <a class="primary-btn" href="#">Sync Enrollments</a>
-            <a class="ghost-btn" href="#">Export List</a>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-header">
-            <h2>Enrollment Records</h2>
-          </div>
-          <div class="table-wrap">
-            <table class="dashboard-table">
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Student</th>
-                  <th>Reg No</th>
-                  <th>Enrollment Type</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>CSC201</td>
-                  <td>John Doe</td>
-                  <td>UOK/2024/001</td>
-                  <td>Regular</td>
-                  <td><span class="status-pill status-approved">Approved</span></td>
-                  <td>
-                    <div class="action-row">
-                      <a class="btn-action btn-view" href="#">View</a>
-                      <a class="btn-action btn-approve" href="#">Approve</a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>CSC201</td>
-                  <td>Jane Smith</td>
-                  <td>UOK/2024/002</td>
-                  <td>Late</td>
-                  <td><span class="status-pill status-pending">Pending</span></td>
-                  <td>
-                    <div class="action-row">
-                      <a class="btn-action btn-view" href="#">View</a>
-                      <a class="btn-action btn-approve" href="#">Approve</a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>CSC305</td>
-                  <td>Kevin Mugenzi</td>
-                  <td>UOK/2024/011</td>
-                  <td>Regular</td>
-                  <td><span class="status-pill status-approved">Approved</span></td>
-                  <td>
-                    <div class="action-row">
-                      <a class="btn-action btn-view" href="#">View</a>
-                      <a class="btn-action btn-approve" href="#">Approve</a>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>Course Enrollments</h1>
+      <p>Official registrations and enrollment status.</p>
     </div>
-  </body>
-</html>
+    <div class="quick-actions">
+      <a class="primary-btn" href="#">Sync Enrollments</a>
+      <a class="ghost-btn" href="#">Export List</a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Enrollment Records</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Student</th>
+            <th>Reg No</th>
+            <th>Enrollment Type</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CSC201</td>
+            <td>John Doe</td>
+            <td>UOK/2024/001</td>
+            <td>Regular</td>
+            <td><span class="status-pill status-approved">Approved</span></td>
+            <td>
+              <div class="action-row">
+                <a class="btn-action btn-view" href="#">View</a>
+                <a class="btn-action btn-approve" href="#">Approve</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>CSC201</td>
+            <td>Jane Smith</td>
+            <td>UOK/2024/002</td>
+            <td>Late</td>
+            <td><span class="status-pill status-pending">Pending</span></td>
+            <td>
+              <div class="action-row">
+                <a class="btn-action btn-view" href="#">View</a>
+                <a class="btn-action btn-approve" href="#">Approve</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>CSC305</td>
+            <td>Kevin Mugenzi</td>
+            <td>UOK/2024/011</td>
+            <td>Regular</td>
+            <td><span class="status-pill status-approved">Approved</span></td>
+            <td>
+              <div class="action-row">
+                <a class="btn-action btn-view" href="#">View</a>
+                <a class="btn-action btn-approve" href="#">Approve</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

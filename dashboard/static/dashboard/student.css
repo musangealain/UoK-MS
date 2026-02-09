@@ -56,13 +56,13 @@ html,body{
 }
 
 .brand-logo{
-  width:49px;
-  height:49px;
+  width:42px;
+  height:42px;
   object-fit:contain;
-  
-  background:#fff;
-  
+  /*border-radius:10px;
+  border:1px solid var(--border);*/
   padding:4px;
+  background:#fff;
 }
 
 .brand-title{
@@ -128,6 +128,8 @@ html,body{
 }
 
 .logout-btn{
+  border:none;
+  cursor:pointer;
   background:var(--blue);
   color:#fff;
   text-decoration:none;
@@ -141,6 +143,21 @@ html,body{
   background:#fff;
   border-right:1px solid var(--border);
   padding:20px 16px 40px;
+}
+
+.nav-title-link{
+  display:inline-flex;
+  margin:0 0 12px;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--muted);
+}
+
+.nav-title-link:hover{
+  color:var(--blue);
 }
 
 /*.nav-title{
@@ -409,3 +426,6 @@ html,body{
     flex-wrap:wrap;
   }
 }
+
+
+

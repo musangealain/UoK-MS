@@ -11,7 +11,11 @@
       <div class="dashboard-card">
         <div class="dashboard-header">
           <h1>Applicant Dashboard</h1>
-          <a class="dash-logout" href="/accounts/logout/?next=/">Logout</a>
+          <form class="logout-form" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button class="dash-logout" type="submit">Logout</button>
+          </form>
         </div>
         {% if missing_application %}
           <p>We could not find your application record. Please contact admissions support.</p>
@@ -76,3 +80,5 @@
     </main>
   </body>
 </html>
+
+

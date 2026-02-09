@@ -10,7 +10,7 @@ def _require_lecturer(request):
 def lecturer_dashboard(request):
     if not _require_lecturer(request):
         return redirect('home')
-    return render(request, 'dashboard/lecturer/index.html')
+    return render(request, 'dashboard/lecturer/index.html', {'current_page': 'overview'})
 
 
 @login_required

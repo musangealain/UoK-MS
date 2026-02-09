@@ -59,8 +59,8 @@ html,body{
   width:42px;
   height:42px;
   object-fit:contain;
-  border-radius:10px;
-  border:1px solid var(--border);
+  /*border-radius:10px;
+  border:1px solid var(--border);*/
   padding:4px;
   background:#fff;
 }
@@ -130,6 +130,8 @@ html,body{
 }
 
 .logout-btn{
+  border:none;
+  cursor:pointer;
   background:var(--blue);
   color:#fff;
   text-decoration:none;
@@ -322,3 +324,6 @@ html,body{
     flex-wrap:wrap;
   }
 }
+
+
+

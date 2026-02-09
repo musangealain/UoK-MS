@@ -18,10 +18,10 @@
         </div>
         <div class="topbar-actions">
           <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">
-            <span>🔔</span>
+            <span>ðŸ””</span>
           </button>
           <button class="icon-btn" type="button" title="Settings" aria-label="Settings">
-            <span>⚙️</span>
+            <span>âš™ï¸</span>
           </button>
           <div class="user-pill">
             <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
@@ -30,14 +30,18 @@
               <p class="user-role">Student</p>
             </div>
           </div>
-          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+          <form class="logout-form" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
         </div>
       </header>
 
       <aside class="sidebar">
         <nav class="nav">
-          <!-- <p class="nav-title">Main Menu</p> -->
-          <a class="nav-link active" href="#">Dashboard</a>
+          <a class="nav-title-link" href="{% url 'student_dashboard' %}">Dashboard</a>
+          <a class="nav-link {% if current_page == 'overview' or not current_page %}active{% endif %}" href="{% url 'student_dashboard' %}">Overview</a>
           <div class="nav-group">
             <p class="nav-label">Academics</p>
             <a class="nav-link" href="#">My Courses</a>
@@ -88,23 +92,23 @@
         <section class="summary-grid">
           <div class="summary-card">
             <p class="summary-label">Enrolled Program</p>
-            <h3>Business Administration</h3>
-            <p class="summary-meta">Year 2 · Semester 1</p>
+            <h3>{% if application %}{{ application.program }}{% else %}Program pending{% endif %}</h3>
+            <p class="summary-meta">Status: {{ user.userprofile.student_status|default:"-"|title }}</p>
           </div>
           <div class="summary-card">
-            <p class="summary-label">Registered Courses</p>
-            <h3>6 Courses</h3>
-            <p class="summary-meta">3 core · 3 elective</p>
+            <p class="summary-label">Student Number</p>
+            <h3>{% if application and application.student_number %}{{ application.student_number }}{% else %}-{% endif %}</h3>
+            <p class="summary-meta">Registration: {% if application and application.reg_number %}{{ application.reg_number }}{% else %}{{ user.username }}{% endif %}</p>
           </div>
           <div class="summary-card">
-            <p class="summary-label">Current GPA</p>
-            <h3>3.62</h3>
-            <p class="summary-meta">CGPA 3.48</p>
+            <p class="summary-label">Application Status</p>
+            <h3>{% if application %}{{ application.get_status_display }}{% else %}-{% endif %}</h3>
+            <p class="summary-meta">Submitted: {% if application and application.submitted_at %}{{ application.submitted_at|date:"Y-m-d" }}{% else %}-{% endif %}</p>
           </div>
           <div class="summary-card">
-            <p class="summary-label">Fee Balance</p>
-            <h3>12,500 RWF</h3>
-            <p class="summary-meta">Status: Pending</p>
+            <p class="summary-label">Account Status</p>
+            <h3>{% if user.is_active %}Active{% else %}Inactive{% endif %}</h3>
+            <p class="summary-meta">Last login: {{ user.last_login|date:"Y-m-d"|default:"-" }}</p>
           </div>
         </section>
 

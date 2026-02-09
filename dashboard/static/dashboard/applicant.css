@@ -53,6 +53,8 @@ html,body{
 }
 
 .dash-logout{
+  border:none;
+  cursor:pointer;
   background:var(--blue);
   color:#fff;
   text-decoration:none;
@@ -197,3 +199,5 @@ html,body{
     grid-template-columns: 1fr;
   }
 }
+
+

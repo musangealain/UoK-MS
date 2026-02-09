@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Lecturer Portal{% endblock %}</title>
+    {% block styles %}{% endblock %}
+  </head>
+  <body>
+    <div class="lecturer-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Lecturer Portal</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">ðŸ””</button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Lecturer</p>
+            </div>
+          </div>
+          <form class="logout-form" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <p class="nav-title">Dashboard</p>
+          <a class="nav-link {% if current_page == 'overview' or not current_page %}active{% endif %}" href="{% url 'lecturer_dashboard' %}">Overview</a>
+
+          <p class="nav-title">Teaching</p>
+          <a class="nav-link {% if current_page == 'courses' %}active{% endif %}" href="{% url 'lecturer_courses' %}">My Courses</a>
+          <a class="nav-link {% if current_page == 'course_assignments' %}active{% endif %}" href="{% url 'lecturer_course_assignments' %}">Course Assignments</a>
+          <a class="nav-link {% if current_page == 'timetable' %}active{% endif %}" href="{% url 'lecturer_timetable' %}">Class Timetable</a>
+          <a class="nav-link {% if current_page == 'materials' %}active{% endif %}" href="{% url 'lecturer_materials' %}">Course Materials</a>
+
+          <p class="nav-title">Students & Attendance</p>
+          <a class="nav-link {% if current_page == 'student_lists' %}active{% endif %}" href="{% url 'lecturer_student_lists' %}">Student Lists</a>
+          <a class="nav-link {% if current_page == 'course_enrollments' %}active{% endif %}" href="{% url 'lecturer_course_enrollments' %}">Course Enrollments</a>
+          <a class="nav-link {% if current_page == 'attendance_sessions' %}active{% endif %}" href="{% url 'lecturer_attendance_sessions' %}">Attendance Sessions</a>
+          <a class="nav-link {% if current_page == 'attendance_records' %}active{% endif %}" href="{% url 'lecturer_attendance_records' %}">Attendance Records</a>
+
+          <p class="nav-title">Assessments</p>
+          <a class="nav-link" href="#">Assignments</a>
+          <a class="nav-link" href="#">Assignment Submissions</a>
+          <a class="nav-link" href="#">Exams</a>
+          <a class="nav-link" href="#">Exam Results</a>
+
+          <p class="nav-title">Marks & Grading</p>
+          <a class="nav-link" href="#">Continuous Assessments</a>
+          <a class="nav-link" href="#">Final Grades</a>
+          <a class="nav-link" href="#">Grading Scheme</a>
+
+          <p class="nav-title">Communication</p>
+          <a class="nav-link" href="#">Announcements</a>
+          <a class="nav-link" href="#">Messages</a>
+          <a class="nav-link" href="#">Notifications</a>
+
+          <p class="nav-title">Reports & Analytics</p>
+          <a class="nav-link" href="#">Performance Analytics</a>
+          <a class="nav-link" href="#">Report Logs</a>
+
+          <p class="nav-title">Audit & Settings</p>
+          <a class="nav-link" href="#">Audit Logs</a>
+          <a class="nav-link" href="#">Lecturer Settings</a>
+          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" href="#">Change Password</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        {% block main %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>

@@ -10,7 +10,7 @@
     <div class="admin-shell">
       <header class="topbar">
         <div class="brand">
-          <img class="brand-logo" src="{% static 'website/logo.png' %}" alt="University logo">
+          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
           <div>
             <p class="brand-title">University Management System</p>
             <p class="brand-sub">Admin Control Panel</p>
@@ -26,7 +26,11 @@
               <p class="user-role">Admin</p>
             </div>
           </div>
-          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+          <form class="logout-form" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
         </div>
       </header>
 
@@ -157,3 +161,5 @@
     </div>
   </body>
 </html>
+
+
