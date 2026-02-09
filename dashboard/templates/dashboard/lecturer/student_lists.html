@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Lecturer - Student Lists</title>
+    <link rel="stylesheet" href="{% static 'dashboard/lecturer_student_lists.css' %}">
+  </head>
+  <body>
+    <div class="lecturer-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/logo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Lecturer Portal</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Lecturer</p>
+            </div>
+          </div>
+          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <p class="nav-title">Dashboard</p>
+          <a class="nav-link" href="{% url 'lecturer_dashboard' %}">Overview</a>
+
+          <p class="nav-title">Teaching</p>
+          <a class="nav-link" href="{% url 'lecturer_courses' %}">My Courses</a>
+          <a class="nav-link" href="{% url 'lecturer_course_assignments' %}">Course Assignments</a>
+          <a class="nav-link" href="{% url 'lecturer_timetable' %}">Class Timetable</a>
+          <a class="nav-link" href="{% url 'lecturer_materials' %}">Course Materials</a>
+
+          <p class="nav-title">Students & Attendance</p>
+          <a class="nav-link active" href="{% url 'lecturer_student_lists' %}">Student Lists</a>
+          <a class="nav-link" href="{% url 'lecturer_course_enrollments' %}">Course Enrollments</a>
+          <a class="nav-link" href="{% url 'lecturer_attendance_sessions' %}">Attendance Sessions</a>
+          <a class="nav-link" href="{% url 'lecturer_attendance_records' %}">Attendance Records</a>
+
+          <p class="nav-title">Assessments</p>
+          <a class="nav-link" href="#">Assignments</a>
+          <a class="nav-link" href="#">Assignment Submissions</a>
+          <a class="nav-link" href="#">Exams</a>
+          <a class="nav-link" href="#">Exam Results</a>
+
+          <p class="nav-title">Marks & Grading</p>
+          <a class="nav-link" href="#">Continuous Assessments</a>
+          <a class="nav-link" href="#">Final Grades</a>
+          <a class="nav-link" href="#">Grading Scheme</a>
+
+          <p class="nav-title">Communication</p>
+          <a class="nav-link" href="#">Announcements</a>
+          <a class="nav-link" href="#">Messages</a>
+          <a class="nav-link" href="#">Notifications</a>
+
+          <p class="nav-title">Reports & Analytics</p>
+          <a class="nav-link" href="#">Performance Analytics</a>
+          <a class="nav-link" href="#">Report Logs</a>
+
+          <p class="nav-title">Audit & Settings</p>
+          <a class="nav-link" href="#">Audit Logs</a>
+          <a class="nav-link" href="#">Lecturer Settings</a>
+          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" href="#">Change Password</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="page-header">
+          <div>
+            <h1>Student Lists</h1>
+            <p>Official class rosters synced from the registrar.</p>
+          </div>
+          <div class="quick-actions">
+            <a class="primary-btn" href="#">Export PDF</a>
+            <a class="ghost-btn" href="#">Send Warning</a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Enrolled Students</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Reg No</th>
+                  <th>Student Name</th>
+                  <th>Program</th>
+                  <th>Year</th>
+                  <th>Status</th>
+                  <th>GPA</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>UOK/2024/001</td>
+                  <td>John Doe</td>
+                  <td>BSc Computer Science</td>
+                  <td>Y2</td>
+                  <td><span class="status-pill status-active">Active</span></td>
+                  <td>3.45</td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-view" href="#">View</a>
+                      <a class="btn-action btn-warn" href="#">Warning</a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>UOK/2024/002</td>
+                  <td>Jane Smith</td>
+                  <td>BSc Software Engineering</td>
+                  <td>Y2</td>
+                  <td><span class="status-pill status-suspended">Suspended</span></td>
+                  <td>2.10</td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-view" href="#">View</a>
+                      <a class="btn-action btn-warn" href="#">Warning</a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>UOK/2024/011</td>
+                  <td>Kevin Mugenzi</td>
+                  <td>BSc Computer Science</td>
+                  <td>Y3</td>
+                  <td><span class="status-pill status-active">Active</span></td>
+                  <td>3.12</td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-view" href="#">View</a>
+                      <a class="btn-action btn-warn" href="#">Warning</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

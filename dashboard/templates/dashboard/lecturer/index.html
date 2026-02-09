@@ -31,27 +31,44 @@
 
       <aside class="sidebar">
         <nav class="nav">
+          <p class="nav-title">Dashboard</p>
+          <a class="nav-link {% if current_page == 'overview' or not current_page %}active{% endif %}" href="{% url 'lecturer_dashboard' %}">Overview</a>
+
           <p class="nav-title">Teaching</p>
-          <a class="nav-link active" href="#">Dashboard</a>
-          <a class="nav-link" href="#">My Courses</a>
-          <a class="nav-link" href="#">Class Timetable</a>
-          <a class="nav-link" href="#">Course Materials</a>
+          <a class="nav-link {% if current_page == 'courses' %}active{% endif %}" href="{% url 'lecturer_courses' %}">My Courses</a>
+          <a class="nav-link {% if current_page == 'course_assignments' %}active{% endif %}" href="{% url 'lecturer_course_assignments' %}">Course Assignments</a>
+          <a class="nav-link {% if current_page == 'timetable' %}active{% endif %}" href="{% url 'lecturer_timetable' %}">Class Timetable</a>
+          <a class="nav-link {% if current_page == 'materials' %}active{% endif %}" href="{% url 'lecturer_materials' %}">Course Materials</a>
+
+          <p class="nav-title">Students & Attendance</p>
+          <a class="nav-link" href="{% url 'lecturer_student_lists' %}">Student Lists</a>
+          <a class="nav-link" href="{% url 'lecturer_course_enrollments' %}">Course Enrollments</a>
+          <a class="nav-link" href="{% url 'lecturer_attendance_sessions' %}">Attendance Sessions</a>
+          <a class="nav-link" href="{% url 'lecturer_attendance_records' %}">Attendance Records</a>
 
           <p class="nav-title">Assessments</p>
-          <a class="nav-link" href="#">Student Lists</a>
-          <a class="nav-link" href="#">Upload Assignments</a>
-          <a class="nav-link" href="#">Enter Marks</a>
-          <a class="nav-link" href="#">Exam Scores</a>
+          <a class="nav-link" href="#">Assignments</a>
+          <a class="nav-link" href="#">Assignment Submissions</a>
+          <a class="nav-link" href="#">Exams</a>
+          <a class="nav-link" href="#">Exam Results</a>
+
+          <p class="nav-title">Marks & Grading</p>
+          <a class="nav-link" href="#">Continuous Assessments</a>
+          <a class="nav-link" href="#">Final Grades</a>
+          <a class="nav-link" href="#">Grading Scheme</a>
 
           <p class="nav-title">Communication</p>
-          <a class="nav-link" href="#">Message Students</a>
           <a class="nav-link" href="#">Announcements</a>
+          <a class="nav-link" href="#">Messages</a>
+          <a class="nav-link" href="#">Notifications</a>
 
-          <p class="nav-title">Reports</p>
+          <p class="nav-title">Reports & Analytics</p>
           <a class="nav-link" href="#">Performance Analytics</a>
-          <a class="nav-link" href="#">Attendance Reports</a>
+          <a class="nav-link" href="#">Report Logs</a>
 
-          <p class="nav-title">Settings</p>
+          <p class="nav-title">Audit & Settings</p>
+          <a class="nav-link" href="#">Audit Logs</a>
+          <a class="nav-link" href="#">Lecturer Settings</a>
           <a class="nav-link" href="#">Profile</a>
           <a class="nav-link" href="#">Change Password</a>
         </nav>

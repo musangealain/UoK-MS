@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Lecturer - Attendance Sessions</title>
+    <link rel="stylesheet" href="{% static 'dashboard/lecturer_attendance_sessions.css' %}">
+  </head>
+  <body>
+    <div class="lecturer-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/logo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Lecturer Portal</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Lecturer</p>
+            </div>
+          </div>
+          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <p class="nav-title">Dashboard</p>
+          <a class="nav-link" href="{% url 'lecturer_dashboard' %}">Overview</a>
+
+          <p class="nav-title">Teaching</p>
+          <a class="nav-link" href="{% url 'lecturer_courses' %}">My Courses</a>
+          <a class="nav-link" href="{% url 'lecturer_course_assignments' %}">Course Assignments</a>
+          <a class="nav-link" href="{% url 'lecturer_timetable' %}">Class Timetable</a>
+          <a class="nav-link" href="{% url 'lecturer_materials' %}">Course Materials</a>
+
+          <p class="nav-title">Students & Attendance</p>
+          <a class="nav-link" href="{% url 'lecturer_student_lists' %}">Student Lists</a>
+          <a class="nav-link" href="{% url 'lecturer_course_enrollments' %}">Course Enrollments</a>
+          <a class="nav-link active" href="{% url 'lecturer_attendance_sessions' %}">Attendance Sessions</a>
+          <a class="nav-link" href="{% url 'lecturer_attendance_records' %}">Attendance Records</a>
+
+          <p class="nav-title">Assessments</p>
+          <a class="nav-link" href="#">Assignments</a>
+          <a class="nav-link" href="#">Assignment Submissions</a>
+          <a class="nav-link" href="#">Exams</a>
+          <a class="nav-link" href="#">Exam Results</a>
+
+          <p class="nav-title">Marks & Grading</p>
+          <a class="nav-link" href="#">Continuous Assessments</a>
+          <a class="nav-link" href="#">Final Grades</a>
+          <a class="nav-link" href="#">Grading Scheme</a>
+
+          <p class="nav-title">Communication</p>
+          <a class="nav-link" href="#">Announcements</a>
+          <a class="nav-link" href="#">Messages</a>
+          <a class="nav-link" href="#">Notifications</a>
+
+          <p class="nav-title">Reports & Analytics</p>
+          <a class="nav-link" href="#">Performance Analytics</a>
+          <a class="nav-link" href="#">Report Logs</a>
+
+          <p class="nav-title">Audit & Settings</p>
+          <a class="nav-link" href="#">Audit Logs</a>
+          <a class="nav-link" href="#">Lecturer Settings</a>
+          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" href="#">Change Password</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="page-header">
+          <div>
+            <h1>Attendance Sessions</h1>
+            <p>Track and lock each teaching session.</p>
+          </div>
+          <div class="quick-actions">
+            <a class="primary-btn" href="#">Create Session</a>
+            <a class="ghost-btn" href="#">Export</a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Sessions</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Session ID</th>
+                  <th>Course</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Room</th>
+                  <th>Lecturer</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>S001</td>
+                  <td>CSC201</td>
+                  <td>05 Mar 2026</td>
+                  <td>09:00 - 11:00</td>
+                  <td>B203</td>
+                  <td>Dr. Alain</td>
+                  <td><span class="status-pill status-open">Open</span></td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-take" href="#">Take</a>
+                      <a class="btn-action btn-lock" href="#">Lock</a>
+                      <a class="btn-action btn-notify" href="#">Notify</a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>S002</td>
+                  <td>CSC201</td>
+                  <td>07 Mar 2026</td>
+                  <td>14:00 - 16:00</td>
+                  <td>Lab 2</td>
+                  <td>Dr. Alain</td>
+                  <td><span class="status-pill status-locked">Locked</span></td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-view" href="#">View</a>
+                      <a class="btn-action btn-notify" href="#">Notify</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

@@ -13,8 +13,8 @@
       <ul>
           <li><a href="{% url 'portal_student' %}">Student Portal</a></li>
           <li><a href="{% url 'portal_lecturer' %}">Lecturer Portal</a></li>
+          <li><a href="/staff-portal/">Staff Portal</a></li>
           <li><a href="{% url 'portal_admin' %}">Admin Portal</a></li>
-        <li><a href="/campuses/">Our Campuses</a></li>
       </ul>
     </div>
   </div>
@@ -258,19 +258,132 @@
             </div>
         </section>
 
-        <section class="quick-links">
+        <section class="trust-strip">
+            <div class="container trust-grid">
+                <div class="trust-item">
+                    <span>Accredited By</span>
+                    <strong>National Council for Higher Education</strong>
+                </div>
+                <div class="trust-item">
+                    <span>Ranked</span>
+                    <strong>Top Private University (Rwanda)</strong>
+                </div>
+                <div class="trust-item">
+                    <span>Industry Partners</span>
+                    <strong>70+ Employers</strong>
+                </div>
+                <div class="trust-item">
+                    <span>Quality Assurance</span>
+                    <strong>ISO‑Aligned Systems</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="campuses">
             <div class="container">
                 <div class="section-header">
-                    <h2>Quick Access</h2>
-                    <p>Jump straight to the services students and parents use most.</p>
+                    <h2>Our Campuses</h2>
+                    <p>Explore our learning locations across Rwanda.</p>
                 </div>
-                <div class="link-grid">
-                    <a href="{% url 'portal_student' %}" class="link-card">Student Portal</a>
-                    <a href="{% url 'portal_lecturer' %}" class="link-card">Lecturer Portal</a>
-                    <a href="{% url 'portal_admin' %}" class="link-card">Admin Portal</a>
-                    <a href="/academic-calendar/" class="link-card">Academic Calendar</a>
-                    <a href="/fees/" class="link-card">Fees & Payments</a>
-                    <a href="/library/" class="link-card">Digital Library</a>
+                <div class="campus-grid">
+                    <div class="campus-card">
+                        <h3>Kigali Main Campus</h3>
+                        <p>Business hub with modern lecture halls and innovation labs.</p>
+                        <span>Kigali City</span>
+                    </div>
+                    <div class="campus-card">
+                        <h3>Remera Campus</h3>
+                        <p>Science and technology facilities with vibrant student life.</p>
+                        <span>Remera</span>
+                    </div>
+                    <div class="campus-card">
+                        <h3>Musanze Campus</h3>
+                        <p>Community‑driven learning with research and outreach focus.</p>
+                        <span>Musanze</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="admissions-timeline">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Admissions Timeline</h2>
+                    <p>From application to enrollment in four clear steps.</p>
+                </div>
+                <div class="timeline-grid">
+                    <div class="timeline-card">
+                        <span>Step 1</span>
+                        <h3>Apply Online</h3>
+                        <p>Submit your application and choose your program.</p>
+                    </div>
+                    <div class="timeline-card">
+                        <span>Step 2</span>
+                        <h3>Assessment</h3>
+                        <p>We review your academic documents and eligibility.</p>
+                    </div>
+                    <div class="timeline-card">
+                        <span>Step 3</span>
+                        <h3>Offer Letter</h3>
+                        <p>Receive admission decision and next steps.</p>
+                    </div>
+                    <div class="timeline-card">
+                        <span>Step 4</span>
+                        <h3>Enrollment</h3>
+                        <p>Register courses and access your student portal.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="program-finder">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Find Your Program</h2>
+                    <p>Search by level, faculty, or study mode.</p>
+                </div>
+                <div class="finder-card">
+                    <div class="finder-grid">
+                        <div class="narrow-field">
+                            <label for="level">Level</label>
+                            <select id="level">
+                                <option selected disabled hidden>{{ level_label|default:"Select level" }}</option>
+                                <option>Undergraduate</option>
+                                <option>Graduate</option>
+                                <option>Professional</option>
+                                <option>Short Courses</option>
+                            </select>
+                        </div>
+                        <div class="degree-field">
+                            <label for="degree">Degree</label>
+                            <select id="degree">
+                                <option selected disabled hidden>{{ degree_label|default:"Select degree" }}</option>
+                            </select>
+                        </div>
+                        <div class="narrow-field">
+                            <label for="mode">Study Mode</label>
+                            <select id="mode">
+                                <option selected disabled hidden>{{ mode_label|default:"Select study mode" }}</option>
+                                <option>Full-time</option>
+                                <option>Part-time</option>
+                                <option>Evening</option>
+                                <option>Weekend</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="campus">Campus</label>
+                            <select id="campus">
+                                <option selected disabled hidden>{{ campus_label|default:"Select campus" }}</option>
+                                <option>Kigali Main Campus</option>
+                                <option>Remera Campus</option>
+                                <option>Musanze Campus</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="finder-actions">
+                        <a class="btn primary" href="/academics/">Search Programs</a>
+                        <a class="btn ghost" href="/admissions/">Admissions Info</a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -338,30 +451,29 @@
             </div>
         </section>
 
-        <section class="campus">
-            <div class="container campus-grid">
-                <div>
-                    <h2>Our Campuses</h2>
-                    <p>Learn in modern facilities across Rwanda with vibrant student life and support services.</p>
-                    <div class="campus-list">
-                        <div>
-                            <h4>Kigali Main Campus</h4>
-                            <p>Business hub with cutting-edge lecture halls.</p>
-                        </div>
-                        <div>
-                            <h4>Remera Campus</h4>
-                            <p>Science and technology facilities.</p>
-                        </div>
-                        <div>
-                            <h4>Musanze Campus</h4>
-                            <p>Community-driven learning and innovation.</p>
-                        </div>
-                    </div>
+        <section class="pillars">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Strategic Pillars</h2>
+                    <p>Our vision is anchored on four institutional priorities.</p>
                 </div>
-                <div class="campus-card">
-                    <h3>Student Support</h3>
-                    <p>Access counseling, career services, clubs, and health support to help you thrive.</p>
-                    <a href="/students/" class="btn secondary">Explore Student Life</a>
+                <div class="pillars-grid">
+                    <div class="pillar-card">
+                        <h3>Innovation</h3>
+                        <p>Applied learning, entrepreneurship, and technology‑driven solutions.</p>
+                    </div>
+                    <div class="pillar-card">
+                        <h3>Research</h3>
+                        <p>Scholarly output that drives policy, industry, and community impact.</p>
+                    </div>
+                    <div class="pillar-card">
+                        <h3>Employability</h3>
+                        <p>Career‑aligned curriculum with internships and employer partnerships.</p>
+                    </div>
+                    <div class="pillar-card">
+                        <h3>Inclusion</h3>
+                        <p>Access, equity, and support for diverse learners and communities.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -614,5 +726,104 @@
       </div>
       </div>
     </footer>
+
+    <script>
+      (function () {
+        const level = document.getElementById("level");
+        const degree = document.getElementById("degree");
+
+        const programs = {
+          Undergraduate: [
+            {
+              title: "School of Business Management and Economics",
+              degrees: [
+                "Bachelor of Arts in Public Administration and Local Governance",
+                "Bachelor of Science with Honors in Suppliers and Procurement Management",
+                "Bachelor of Science with Honors in Finance",
+                "Bachelor of Science with Honors in Marketing",
+                "Bachelor of Science with Honors in Economics",
+                "Bachelor of Science with Honors in Accounting",
+              ],
+            },
+            {
+              title: "School of Computing and Information Technology",
+              degrees: [
+                "Bachelor of Science with Honors in Information Technology",
+                "Bachelor of Science with Honors in Business Information Technology",
+                "Bachelor of Science with Honors in Computer Science",
+              ],
+            },
+            {
+              title: "School of Law",
+              degrees: ["Bachelor of Science with Honors in Law"],
+            },
+            {
+              title: "School of Education",
+              degrees: [
+                "Bachelor of Education with Honors in Early Childhood Development Education",
+              ],
+            },
+          ],
+          Graduate: [
+            {
+              title: "Graduate Programs",
+              degrees: [
+                "Executive Master of Business Administration",
+                "Master of Science in Information Technology",
+                "Master of Science in Procurement and Supply Chain Management",
+                "Master of Science in Economics",
+                "Master of Science in Project Management",
+                "Master of Science in Human Resource Management",
+                "Master of Science in Finance",
+                "Master of Education Management and Administration",
+                "Master of Business Administration in Human Resource Management",
+                "Master of Arts in Public Policy and Management",
+                "Master of Business Administration in Project Management",
+                "Master of Business Administration in Accounting and Finance",
+                "Post Graduate Diploma in Education",
+              ],
+            },
+          ],
+          Professional: [
+            {
+              title: "Professional Programs",
+              degrees: ["Coming soon"],
+            },
+          ],
+          "Short Courses": [
+            {
+              title: "Short Courses",
+              degrees: ["Coming soon"],
+            },
+          ],
+        };
+
+        function resetDegree() {
+          degree.innerHTML =
+            '<option selected disabled hidden>{{ degree_label|default:"Select degree" }}</option>';
+        }
+
+        function populateDegree(selectedLevel) {
+          resetDegree();
+          const groups = programs[selectedLevel] || [];
+          groups.forEach((group) => {
+            const optGroup = document.createElement("optgroup");
+            optGroup.label = group.title;
+            group.degrees.forEach((item) => {
+              const opt = document.createElement("option");
+              opt.textContent = item;
+              optGroup.appendChild(opt);
+            });
+            degree.appendChild(optGroup);
+          });
+        }
+
+        if (level) {
+          level.addEventListener("change", (event) => {
+            populateDegree(event.target.value);
+          });
+        }
+      })();
+    </script>
 </body>
 </html>

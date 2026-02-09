@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Lecturer - Course Materials</title>
+    <link rel="stylesheet" href="{% static 'dashboard/lecturer_materials.css' %}">
+  </head>
+  <body>
+    <div class="lecturer-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/logo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Lecturer Portal</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Lecturer</p>
+            </div>
+          </div>
+          <a class="logout-btn" href="/accounts/logout/?next=/">Logout</a>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <p class="nav-title">Dashboard</p>
+          <a class="nav-link {% if current_page == 'overview' or not current_page %}active{% endif %}" href="{% url 'lecturer_dashboard' %}">Overview</a>
+
+          <p class="nav-title">Teaching</p>
+          <a class="nav-link {% if current_page == 'courses' %}active{% endif %}" href="{% url 'lecturer_courses' %}">My Courses</a>
+          <a class="nav-link {% if current_page == 'course_assignments' %}active{% endif %}" href="{% url 'lecturer_course_assignments' %}">Course Assignments</a>
+          <a class="nav-link {% if current_page == 'timetable' %}active{% endif %}" href="{% url 'lecturer_timetable' %}">Class Timetable</a>
+          <a class="nav-link {% if current_page == 'materials' %}active{% endif %}" href="{% url 'lecturer_materials' %}">Course Materials</a>
+
+          <p class="nav-title">Students & Attendance</p>
+          <a class="nav-link {% if current_page == 'student_lists' %}active{% endif %}" href="{% url 'lecturer_student_lists' %}">Student Lists</a>
+          <a class="nav-link {% if current_page == 'course_enrollments' %}active{% endif %}" href="{% url 'lecturer_course_enrollments' %}">Course Enrollments</a>
+          <a class="nav-link {% if current_page == 'attendance_sessions' %}active{% endif %}" href="{% url 'lecturer_attendance_sessions' %}">Attendance Sessions</a>
+          <a class="nav-link {% if current_page == 'attendance_records' %}active{% endif %}" href="{% url 'lecturer_attendance_records' %}">Attendance Records</a>
+
+          <p class="nav-title">Assessments</p>
+          <a class="nav-link" href="#">Assignments</a>
+          <a class="nav-link" href="#">Assignment Submissions</a>
+          <a class="nav-link" href="#">Exams</a>
+          <a class="nav-link" href="#">Exam Results</a>
+
+          <p class="nav-title">Marks & Grading</p>
+          <a class="nav-link" href="#">Continuous Assessments</a>
+          <a class="nav-link" href="#">Final Grades</a>
+          <a class="nav-link" href="#">Grading Scheme</a>
+
+          <p class="nav-title">Communication</p>
+          <a class="nav-link" href="#">Announcements</a>
+          <a class="nav-link" href="#">Messages</a>
+          <a class="nav-link" href="#">Notifications</a>
+
+          <p class="nav-title">Reports & Analytics</p>
+          <a class="nav-link" href="#">Performance Analytics</a>
+          <a class="nav-link" href="#">Report Logs</a>
+
+          <p class="nav-title">Audit & Settings</p>
+          <a class="nav-link" href="#">Audit Logs</a>
+          <a class="nav-link" href="#">Lecturer Settings</a>
+          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" href="#">Change Password</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="page-header">
+          <div>
+            <h1>Course Materials</h1>
+            <p>Upload, organize, and share course content.</p>
+          </div>
+          <div class="quick-actions">
+            <a class="primary-btn" href="#">Upload Material</a>
+            <a class="ghost-btn" href="#">New Folder</a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Materials Library</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>File Type</th>
+                  <th>File Size</th>
+                  <th>Uploaded At</th>
+                  <th>Public</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CSC201</td>
+                  <td>Week 1 Lecture Notes</td>
+                  <td>Lecture Notes</td>
+                  <td>PDF</td>
+                  <td>2.4 MB</td>
+                  <td>2026-01-12</td>
+                  <td>Yes</td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-download" href="#">Download</a>
+                      <a class="btn-action btn-hide" href="#">Hide</a>
+                      <a class="btn-action btn-delete" href="#">Delete</a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CSC305</td>
+                  <td>Assignment 1 Brief</td>
+                  <td>Assignment</td>
+                  <td>PDF</td>
+                  <td>0.8 MB</td>
+                  <td>2026-01-15</td>
+                  <td>Yes</td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-download" href="#">Download</a>
+                      <a class="btn-action btn-hide" href="#">Hide</a>
+                      <a class="btn-action btn-delete" href="#">Delete</a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CSC310</td>
+                  <td>Syllabus Outline</td>
+                  <td>Syllabus</td>
+                  <td>DOC</td>
+                  <td>0.6 MB</td>
+                  <td>2026-01-08</td>
+                  <td>Yes</td>
+                  <td>
+                    <div class="action-row">
+                      <a class="btn-action btn-download" href="#">Download</a>
+                      <a class="btn-action btn-hide" href="#">Hide</a>
+                      <a class="btn-action btn-delete" href="#">Delete</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
