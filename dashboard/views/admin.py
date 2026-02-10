@@ -4,11 +4,18 @@ import string
 import time
 
 from django.contrib.auth.models import User
-from django.db import OperationalError
+from django.db import IntegrityError, OperationalError
 from django.db import transaction
 from django.db.models import Max
 from django.shortcuts import render, redirect
-from dashboard.models import Application, UserProfile
+from django.utils import timezone
+from dashboard.models import (
+    Application,
+    OFFICE_CHOICES,
+    OFFICE_PURPOSE,
+    StaffProfile,
+    UserProfile,
+)
 
 
 def _is_admin(user):
@@ -65,6 +72,62 @@ def _kpi_traffic_light(value, green_threshold=None, yellow_threshold=None, inver
     if score >= yellow:
         return "yellow"
     return "red"
+
+
+def _hire_office_head(*, office_code: str, full_name: str):
+    office_code = (office_code or "").strip().upper()
+    full_name = (full_name or "").strip()
+    valid_codes = {code for code, _label in OFFICE_CHOICES}
+    if office_code not in valid_codes:
+        raise ValueError("Invalid office code.")
+    if not full_name:
+        raise ValueError("Full name is required.")
+
+    now = timezone.now()
+    issue_year = int(now.year)
+    yy = issue_year % 100
+
+    for _ in range(3):
+        try:
+            with transaction.atomic():
+                last_seq = (
+                    StaffProfile.objects.filter(office_code=office_code, issue_year=issue_year)
+                    .aggregate(Max("sequence"))
+                    .get("sequence__max")
+                    or 0
+                )
+                next_seq = int(last_seq) + 1
+                staff_id = f"{office_code}{yy:02d}-{next_seq:03d}"
+                password = _generate_password(10)
+
+                user = User.objects.create_user(username=staff_id, password=password)
+                user.first_name = full_name[:150]
+                user.save(update_fields=["first_name"])
+
+                profile, _created = UserProfile.objects.get_or_create(user=user)
+                profile.role = "staff"
+                profile.save(update_fields=["role"])
+
+                StaffProfile.objects.create(
+                    user=user,
+                    staff_id=staff_id,
+                    office_code=office_code,
+                    issue_year=issue_year,
+                    sequence=next_seq,
+                    full_name=full_name,
+                )
+
+            return {
+                "office_code": office_code,
+                "full_name": full_name,
+                "staff_id": staff_id,
+                "password": password,
+            }
+        except (OperationalError, IntegrityError):
+            time.sleep(0.1)
+            continue
+
+    raise OperationalError("Could not allocate a unique staff id. Please retry.")
 @login_required
 def admin_dashboard(request):
     if not _is_admin(request.user):
@@ -123,9 +186,37 @@ def admin_kpi_monitor(request):
     if not _is_admin(request.user):
         return redirect('home')
 
+    if request.method == "POST" and request.POST.get("action") == "hire_office_head":
+        try:
+            hire_result = _hire_office_head(
+                office_code=request.POST.get("office_code"),
+                full_name=request.POST.get("full_name"),
+            )
+            request.session["office_head_hire_result"] = hire_result
+        except ValueError as exc:
+            request.session["office_head_hire_error"] = str(exc)
+        return redirect("admin_kpi_monitor")
+
     students = _get_students_with_records()
     lecturers = _get_lecturers()
     pending_applications = _get_applications()
+
+    office_rows = []
+    for code, label in OFFICE_CHOICES:
+        head = (
+            StaffProfile.objects.select_related("user")
+            .filter(office_code=code)
+            .order_by("-created_at")
+            .first()
+        )
+        office_rows.append(
+            {
+                "code": code,
+                "label": label,
+                "purpose": OFFICE_PURPOSE.get(code, ""),
+                "head": head,
+            }
+        )
 
     # Placeholder metrics: wire these to real models later.
     total_students = len(students)
@@ -178,6 +269,9 @@ def admin_kpi_monitor(request):
             "current_page": "executive.strategic_kpis",
             "kpis": kpis,
             "pending_applications_count": len(pending_applications),
+            "office_rows": office_rows,
+            "office_head_hire_result": request.session.pop("office_head_hire_result", None),
+            "office_head_hire_error": request.session.pop("office_head_hire_error", None),
         },
     )
 

@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Staff Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dashboard/student.css' %}">
+    {% block styles %}{% endblock %}
+  </head>
+  <body>
+    <div class="student-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Staff Portal{% if office_label %} — {{ office_label }}{% endif %}</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">{{ office_code|default:"Staff" }}</p>
+            </div>
+          </div>
+          <form class="logout-form" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <div class="nav-group">
+            <p class="nav-label">Office</p>
+            <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">Overview</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Account</p>
+            <a class="nav-link" href="{% url 'password_change' %}">Change Password</a>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="main">
+        {% block main %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>
+

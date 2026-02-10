@@ -35,6 +35,11 @@ def portal_admin(request):
     return redirect('admin_login')
 
 
+def portal_staff(request):
+    logout(request)
+    return redirect("staff_login")
+
+
 class StudentLoginView(LoginView):
     template_name = 'registration/login_student.html'
     def form_valid(self, form):
@@ -75,6 +80,27 @@ class AdminLoginView(LoginView):
         return super().form_valid(form)
     def get_success_url(self):
         return '/dashboard/admin/'
+
+
+class StaffLoginView(LoginView):
+    template_name = "registration/login_staff.html"
+
+    def form_valid(self, form):
+        user = form.get_user()
+        if getattr(user, "userprofile", None) is None or user.userprofile.role != "staff":
+            logout(self.request)
+            form.add_error(None, "This account is not a staff account.")
+            return self.form_invalid(form)
+        if getattr(user, "staffprofile", None) is None:
+            logout(self.request)
+            form.add_error(None, "Staff profile is missing. Contact admin.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        username = getattr(self.request.user, "username", "")
+        office_code = username[:3].upper()
+        return f"/dashboard/staff/{office_code}/"
 
 
 def _handle_signup(request, role, template_name, redirect_url):
