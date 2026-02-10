@@ -64,6 +64,9 @@
           <a class="sm-leaf {% if current_page == 'executive.strategic_initiatives' %}active{% endif %}" href="{% url 'admin_placeholder' page='executive.strategic_initiatives' %}">
             <span class="sm-bullet" aria-hidden="true">•</span>Strategic Initiatives
           </a>
+          <a class="sm-leaf {% if current_page == 'executive.leadership' %}active{% endif %}" href="{% url 'admin_placeholder' page='executive.leadership' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Leadership
+          </a>
 
           <p class="sm-section">PEOPLE ANALYTICS</p>
           <button class="sm-expand" type="button" data-section="people" data-group="people.office_performance" aria-expanded="false" aria-controls="panel-people-office">
@@ -108,7 +111,7 @@
             Faculty Performance
           </button>
           <div class="sm-panel" id="panel-people-faculty" role="region" aria-label="Faculty Performance links">
-            <a class="sm-sub {% if current_page == 'people.faculty_performance.teaching_load' %}active{% endif %}" href="{% url 'admin_lecturers' %}" data-page="people.faculty_performance.teaching_load"><span class="sm-bullet" aria-hidden="true">•</span>Teaching Load</a>
+            <a class="sm-sub {% if current_page == 'people.faculty_performance.teaching_load' %}active{% endif %}" href="{% url 'admin_lecturers' %}" data-page="people.faculty_performance.teaching_load"><span class="sm-bullet" aria-hidden="true">•</span>Teachers Database</a>
             <a class="sm-sub {% if current_page == 'people.faculty_performance.teaching_effectiveness' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.teaching_effectiveness' %}" data-page="people.faculty_performance.teaching_effectiveness"><span class="sm-bullet" aria-hidden="true">•</span>Teaching Effectiveness</a>
             <a class="sm-sub {% if current_page == 'people.faculty_performance.research_output' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.research_output' %}" data-page="people.faculty_performance.research_output"><span class="sm-bullet" aria-hidden="true">•</span>Research Output</a>
             <a class="sm-sub {% if current_page == 'people.faculty_performance.engagement_development' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.engagement_development' %}" data-page="people.faculty_performance.engagement_development"><span class="sm-bullet" aria-hidden="true">•</span>Engagement &amp; Development</a>

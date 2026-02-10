@@ -95,7 +95,13 @@ class StaffProfile(models.Model):
     office_code = models.CharField(max_length=3, choices=OFFICE_CHOICES)
     issue_year = models.PositiveIntegerField()
     sequence = models.PositiveIntegerField()
+    first_name = models.CharField(max_length=100)
+    surname = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100)
     full_name = models.CharField(max_length=200)
+    assigned_password = models.CharField(max_length=64)
+    is_active = models.BooleanField(default=True)
+    deactivated_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -11,54 +11,195 @@
       <a class="ghost-btn" href="{% url 'admin_dashboard' %}">Back to Institutional Dashboard</a>
     </div>
   </section>
+  {% if current_page == "executive.leadership" %}
+    <section class="panel" id="office-heads">
+      <div class="panel-header">
+        <h2>Office Heads</h2>
+        <span class="panel-pill">Staff IDs</span>
+      </div>
 
-  <section class="panel">
-    <div class="panel-header">
-      <h2>Coming Soon</h2>
-      <span class="panel-pill">Senior Management</span>
-    </div>
-    {% if "office_performance" in current_page %}
+      <p class="muted-text">
+        Hire or replace office leaders. Staff ID format: <code>[OfficeCode][YY]-[Sequence]</code> (example: <code>LIB24-005</code>).
+      </p>
+
+      {% if office_head_hire_error %}
+        <div class="notice notice-error">{{ office_head_hire_error }}</div>
+      {% endif %}
+
+      {% if office_head_hire_result %}
+        <div class="notice notice-success">
+          {{ office_head_action|default:"Updated" }} office head for <strong>{{ office_head_hire_result.full_name }}</strong> ({{ office_head_hire_result.office_code }}).
+          Staff ID: <code>{{ office_head_hire_result.staff_id }}</code> &middot; Password: <code>{{ office_head_hire_result.password }}</code>
+        </div>
+      {% endif %}
+
+      {% if vacant_offices %}
+        <form method="post" class="inline-form">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="hire_office_head">
+          <div class="form-grid">
+            <label class="form-field">
+              Office / Department
+              <select class="input" name="office_code" required>
+                {% for row in vacant_offices %}
+                  <option value="{{ row.code }}">{{ row.label }} ({{ row.code }})</option>
+                {% endfor %}
+              </select>
+            </label>
+
+            <label class="form-field">
+              First name
+              <input class="input" type="text" name="first_name" required placeholder="e.g., Jane">
+            </label>
+
+            <label class="form-field">
+              Surname (optional)
+              <input class="input" type="text" name="surname" placeholder="e.g., Marie">
+            </label>
+
+            <label class="form-field">
+              Last name
+              <input class="input" type="text" name="last_name" required placeholder="e.g., Doe">
+            </label>
+
+            <button class="primary-btn" type="submit">Hire / Generate Staff ID</button>
+          </div>
+        </form>
+      {% else %}
+        <div class="notice">All offices currently have active heads. Use replace or stop access.</div>
+      {% endif %}
+
       <div class="table-wrap">
         <table class="dashboard-table">
           <thead>
             <tr>
-              <th>Metric</th>
-              <th>Value</th>
-              <th>Trend</th>
-              <th>Status</th>
-              <th>Last Updated</th>
+              <th>Office</th>
+              <th>Code</th>
+              <th>Current Head</th>
+              <th>Staff ID</th>
+              <th>Password</th>
+              <th>Assigned</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Tickets Resolved</td>
-              <td>128</td>
-              <td>+6%</td>
-              <td><span class="status-badge status-approved">Green</span></td>
-              <td>Today</td>
-            </tr>
-            <tr>
-              <td>Average Processing Time</td>
-              <td>2.4 days</td>
-              <td>-3%</td>
-              <td><span class="status-badge status-pending">Yellow</span></td>
-              <td>Today</td>
-            </tr>
-            <tr>
-              <td>Escalations</td>
-              <td>7</td>
-              <td>+2</td>
-              <td><span class="status-badge status-rejected">Red</span></td>
-              <td>Today</td>
-            </tr>
+            {% for row in office_rows %}
+              <tr>
+                <td>{{ row.label }}</td>
+                <td>{{ row.code }}</td>
+                <td>{{ row.head.full_name|default:"-" }}</td>
+                <td>{{ row.head.staff_id|default:"-" }}</td>
+                <td>{{ row.head.assigned_password|default:"-" }}</td>
+                <td>{% if row.head %}{{ row.head.created_at|date:"Y-m-d" }}{% else %}-{% endif %}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6">No offices configured.</td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
-    {% else %}
-      <div class="chart-card">
-        <p>Route key: {{ current_page }}</p>
-        <div class="chart-placeholder"></div>
+
+      {% if occupied_offices %}
+        <form method="post" class="inline-form">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="replace_office_head">
+          <div class="form-grid">
+            <label class="form-field">
+              Office / Department
+              <select class="input" name="office_code" required>
+                {% for row in occupied_offices %}
+                  <option value="{{ row.code }}">{{ row.label }} ({{ row.code }})</option>
+                {% endfor %}
+              </select>
+            </label>
+
+            <label class="form-field">
+              First name
+              <input class="input" type="text" name="first_name" required placeholder="e.g., Jane">
+            </label>
+
+            <label class="form-field">
+              Surname (optional)
+              <input class="input" type="text" name="surname" placeholder="e.g., Marie">
+            </label>
+
+            <label class="form-field">
+              Last name
+              <input class="input" type="text" name="last_name" required placeholder="e.g., Doe">
+            </label>
+
+            <button class="primary-btn" type="submit">Replace Office Head</button>
+          </div>
+        </form>
+
+        <form method="post" class="inline-form">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="deactivate_office_head">
+          <div class="form-grid">
+            <label class="form-field">
+              Office / Department
+              <select class="input" name="office_code" required>
+                {% for row in occupied_offices %}
+                  <option value="{{ row.code }}">{{ row.label }} ({{ row.code }})</option>
+                {% endfor %}
+              </select>
+            </label>
+
+            <button class="ghost-btn" type="submit">Stop Access</button>
+          </div>
+        </form>
+      {% endif %}
+    </section>
+  {% else %}
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Coming Soon</h2>
+        <span class="panel-pill">Senior Management</span>
       </div>
-    {% endif %}
-  </section>
+      {% if "office_performance" in current_page %}
+        <div class="table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Value</th>
+                <th>Trend</th>
+                <th>Status</th>
+                <th>Last Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tickets Resolved</td>
+                <td>128</td>
+                <td>+6%</td>
+                <td><span class="status-badge status-approved">Green</span></td>
+                <td>Today</td>
+              </tr>
+              <tr>
+                <td>Average Processing Time</td>
+                <td>2.4 days</td>
+                <td>-3%</td>
+                <td><span class="status-badge status-pending">Yellow</span></td>
+                <td>Today</td>
+              </tr>
+              <tr>
+                <td>Escalations</td>
+                <td>7</td>
+                <td>+2</td>
+                <td><span class="status-badge status-rejected">Red</span></td>
+                <td>Today</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="chart-card">
+          <p>Route key: {{ current_page }}</p>
+          <div class="chart-placeholder"></div>
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
 {% endblock %}

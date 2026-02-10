@@ -74,18 +74,47 @@ def _kpi_traffic_light(value, green_threshold=None, yellow_threshold=None, inver
     return "red"
 
 
-def _hire_office_head(*, office_code: str, full_name: str):
+def _get_active_office_head(office_code: str):
+    return (
+        StaffProfile.objects.select_related("user")
+        .filter(office_code=office_code, is_active=True)
+        .order_by("-created_at")
+        .first()
+    )
+
+
+def _normalize_name_part(value: str) -> str:
+    return (value or "").strip()
+
+
+def _build_full_name(first_name: str, surname: str, last_name: str) -> str:
+    parts = [first_name]
+    if surname:
+        parts.append(surname)
+    parts.append(last_name)
+    return " ".join([p for p in parts if p])
+
+
+def _hire_office_head(*, office_code: str, first_name: str, last_name: str, surname: str = "", allow_replace: bool = False):
     office_code = (office_code or "").strip().upper()
-    full_name = (full_name or "").strip()
+    first_name = _normalize_name_part(first_name)
+    surname = _normalize_name_part(surname)
+    last_name = _normalize_name_part(last_name)
     valid_codes = {code for code, _label in OFFICE_CHOICES}
     if office_code not in valid_codes:
         raise ValueError("Invalid office code.")
-    if not full_name:
-        raise ValueError("Full name is required.")
+    if not first_name:
+        raise ValueError("First name is required.")
+    if not last_name:
+        raise ValueError("Last name is required.")
+
+    if not allow_replace and _get_active_office_head(office_code):
+        raise ValueError("This office already has an active head. Use replace or stop access first.")
 
     now = timezone.now()
     issue_year = int(now.year)
     yy = issue_year % 100
+    full_name = _build_full_name(first_name, surname, last_name)
 
     for _ in range(3):
         try:
@@ -101,8 +130,9 @@ def _hire_office_head(*, office_code: str, full_name: str):
                 password = _generate_password(10)
 
                 user = User.objects.create_user(username=staff_id, password=password)
-                user.first_name = full_name[:150]
-                user.save(update_fields=["first_name"])
+                user.first_name = first_name[:150]
+                user.last_name = _build_full_name(surname, "", last_name)[:150]
+                user.save(update_fields=["first_name", "last_name"])
 
                 profile, _created = UserProfile.objects.get_or_create(user=user)
                 profile.role = "staff"
@@ -114,7 +144,11 @@ def _hire_office_head(*, office_code: str, full_name: str):
                     office_code=office_code,
                     issue_year=issue_year,
                     sequence=next_seq,
+                    first_name=first_name,
+                    surname=surname,
+                    last_name=last_name,
                     full_name=full_name,
+                    assigned_password=password,
                 )
 
             return {
@@ -128,6 +162,20 @@ def _hire_office_head(*, office_code: str, full_name: str):
             continue
 
     raise OperationalError("Could not allocate a unique staff id. Please retry.")
+
+
+def _deactivate_office_head(office_code: str):
+    head = _get_active_office_head(office_code)
+    if not head:
+        raise ValueError("No active office head to deactivate.")
+    now = timezone.now()
+    StaffProfile.objects.filter(pk=head.pk, is_active=True).update(
+        is_active=False,
+        deactivated_at=now,
+    )
+    head.user.is_active = False
+    head.user.save(update_fields=["is_active"])
+    return head
 @login_required
 def admin_dashboard(request):
     if not _is_admin(request.user):
@@ -186,37 +234,9 @@ def admin_kpi_monitor(request):
     if not _is_admin(request.user):
         return redirect('home')
 
-    if request.method == "POST" and request.POST.get("action") == "hire_office_head":
-        try:
-            hire_result = _hire_office_head(
-                office_code=request.POST.get("office_code"),
-                full_name=request.POST.get("full_name"),
-            )
-            request.session["office_head_hire_result"] = hire_result
-        except ValueError as exc:
-            request.session["office_head_hire_error"] = str(exc)
-        return redirect("admin_kpi_monitor")
-
     students = _get_students_with_records()
     lecturers = _get_lecturers()
     pending_applications = _get_applications()
-
-    office_rows = []
-    for code, label in OFFICE_CHOICES:
-        head = (
-            StaffProfile.objects.select_related("user")
-            .filter(office_code=code)
-            .order_by("-created_at")
-            .first()
-        )
-        office_rows.append(
-            {
-                "code": code,
-                "label": label,
-                "purpose": OFFICE_PURPOSE.get(code, ""),
-                "head": head,
-            }
-        )
 
     # Placeholder metrics: wire these to real models later.
     total_students = len(students)
@@ -269,9 +289,6 @@ def admin_kpi_monitor(request):
             "current_page": "executive.strategic_kpis",
             "kpis": kpis,
             "pending_applications_count": len(pending_applications),
-            "office_rows": office_rows,
-            "office_head_hire_result": request.session.pop("office_head_hire_result", None),
-            "office_head_hire_error": request.session.pop("office_head_hire_error", None),
         },
     )
 
@@ -281,13 +298,78 @@ def admin_placeholder(request, page):
     if not _is_admin(request.user):
         return redirect("home")
     title = page.replace("-", " ").replace(".", " / ").replace("/", " / ").title()
+    context = {
+        "current_page": page,
+        "page_title": title,
+    }
+
+    if page == "executive.leadership":
+        if request.method == "POST":
+            action = request.POST.get("action")
+            try:
+                if action == "hire_office_head":
+                    hire_result = _hire_office_head(
+                        office_code=request.POST.get("office_code"),
+                        first_name=request.POST.get("first_name"),
+                        surname=request.POST.get("surname"),
+                        last_name=request.POST.get("last_name"),
+                    )
+                    request.session["office_head_hire_result"] = hire_result
+                    request.session["office_head_action"] = "Hired"
+                elif action == "replace_office_head":
+                    office_code = request.POST.get("office_code")
+                    _deactivate_office_head(office_code)
+                    hire_result = _hire_office_head(
+                        office_code=office_code,
+                        first_name=request.POST.get("first_name"),
+                        surname=request.POST.get("surname"),
+                        last_name=request.POST.get("last_name"),
+                        allow_replace=True,
+                    )
+                    request.session["office_head_hire_result"] = hire_result
+                    request.session["office_head_action"] = "Replaced"
+                elif action == "deactivate_office_head":
+                    office_code = request.POST.get("office_code")
+                    head = _deactivate_office_head(office_code)
+                    request.session["office_head_hire_result"] = {
+                        "office_code": office_code,
+                        "full_name": head.full_name,
+                        "staff_id": head.staff_id,
+                        "password": head.assigned_password,
+                    }
+                    request.session["office_head_action"] = "Access stopped"
+            except ValueError as exc:
+                request.session["office_head_hire_error"] = str(exc)
+            return redirect("admin_placeholder", page=page)
+
+        office_rows = []
+        for code, label in OFFICE_CHOICES:
+            head = _get_active_office_head(code)
+            office_rows.append(
+                {
+                    "code": code,
+                    "label": label,
+                    "purpose": OFFICE_PURPOSE.get(code, ""),
+                    "head": head,
+                }
+            )
+        vacant_offices = [row for row in office_rows if not row["head"]]
+        occupied_offices = [row for row in office_rows if row["head"]]
+
+        context.update(
+            {
+                "office_rows": office_rows,
+                "vacant_offices": vacant_offices,
+                "occupied_offices": occupied_offices,
+                "office_head_hire_result": request.session.pop("office_head_hire_result", None),
+                "office_head_hire_error": request.session.pop("office_head_hire_error", None),
+                "office_head_action": request.session.pop("office_head_action", None),
+            }
+        )
     return render(
         request,
         "dashboard/admin/placeholder.html",
-        {
-            "current_page": page,
-            "page_title": title,
-        },
+        context,
     )
 
 
