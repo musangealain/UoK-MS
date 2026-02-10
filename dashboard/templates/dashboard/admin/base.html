@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Senior Management Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dashboard/admin.css' %}">
+    {% block styles %}{% endblock %}
+  </head>
+  <body data-current-page="{{ current_page|default:'' }}">
+    <div class="admin-shell">
+      <header class="topbar">
+        <button class="sidebar-toggle" type="button" aria-label="Open menu" aria-controls="sm-sidebar" aria-expanded="false">
+          ☰
+        </button>
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Senior Management Command Center</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <path d="M12 22a2.4 2.4 0 0 0 2.3-1.7h-4.6A2.4 2.4 0 0 0 12 22Zm7-6V11a7 7 0 1 0-14 0v5l-2 2v1h18v-1l-2-2Zm-2 1H7v-6a5 5 0 0 1 10 0v6Z"/>
+            </svg>
+          </button>
+          <button class="icon-btn" type="button" title="Settings" aria-label="Settings">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <path d="M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8Zm8.4 3.4a6.8 6.8 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7.8 7.8 0 0 0-2-1.1l-.4-2.6H9.5L9 5.7a7.8 7.8 0 0 0-2 1.1l-2.4-1-2 3.4 2 1.6a6.8 6.8 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7.8 7.8 0 0 0 2 1.1l.4 2.6h4.1l.4-2.6a7.8 7.8 0 0 0 2-1.1l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2ZM12 16.8a4.8 4.8 0 1 1 0-9.6 4.8 4.8 0 0 1 0 9.6Z"/>
+            </svg>
+          </button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Senior Management</p>
+            </div>
+          </div>
+          <form class="logout-form" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
+        </div>
+      </header>
+
+      <div class="sidebar-overlay" data-sidebar-overlay></div>
+
+      <aside class="sidebar sidebar-sm" id="sm-sidebar" aria-label="Senior Management navigation">
+        <nav class="sm-nav" aria-label="Senior Management navigation">
+          <p class="sm-section">EXECUTIVE OVERVIEW</p>
+          <a class="sm-leaf {% if current_page == 'executive.institutional_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Institutional Dashboard
+          </a>
+
+          <a class="sm-leaf {% if current_page == 'executive.strategic_kpis' %}active{% endif %}" href="{% url 'admin_kpi_monitor' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Strategic KPIs
+          </a>
+          <a class="sm-leaf {% if current_page == 'executive.institutional_health' %}active{% endif %}" href="{% url 'admin_placeholder' page='executive.institutional_health' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Institutional Health
+          </a>
+          <a class="sm-leaf {% if current_page == 'executive.strategic_initiatives' %}active{% endif %}" href="{% url 'admin_placeholder' page='executive.strategic_initiatives' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Strategic Initiatives
+          </a>
+
+          <p class="sm-section">PEOPLE ANALYTICS</p>
+          <button class="sm-expand" type="button" data-section="people" data-group="people.office_performance" aria-expanded="false" aria-controls="panel-people-office">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Office Performance
+          </button>
+          <div class="sm-panel" id="panel-people-office" role="region" aria-label="Office Performance links">
+            <a class="sm-sub {% if current_page == 'people.office_performance.registrar_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.registrar_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>Registrar Office</a>
+            <a class="sm-sub {% if current_page == 'people.office_performance.finance_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.finance_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>Finance Office</a>
+            <a class="sm-sub {% if current_page == 'people.office_performance.hr_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.hr_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>HR Office</a>
+            <a class="sm-sub {% if current_page == 'people.office_performance.academic_affairs' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.academic_affairs' %}"><span class="sm-bullet" aria-hidden="true">•</span>Academic Affairs</a>
+            <a class="sm-sub {% if current_page == 'people.office_performance.admissions_office' %}active{% endif %}" href="{% url 'admin_applications' %}"><span class="sm-bullet" aria-hidden="true">•</span>Admissions Office</a>
+            <a class="sm-sub {% if current_page == 'people.office_performance.e_learning_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.e_learning_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>E-Learning Office</a>
+            <a class="sm-sub {% if current_page == 'people.office_performance.library_services' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.library_services' %}"><span class="sm-bullet" aria-hidden="true">•</span>Library Office</a>
+          </div>
+
+          <button class="sm-expand" type="button" data-section="people" data-group="people.student_performance" aria-expanded="false" aria-controls="panel-people-students">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Student Performance
+          </button>
+          <div class="sm-panel" id="panel-people-students" role="region" aria-label="Student Performance links">
+            <a class="sm-sub {% if current_page == 'people.student_performance.enrollment_demographics' %}active{% endif %}" href="{% url 'admin_students' %}" data-page="people.student_performance.enrollment_demographics"><span class="sm-bullet" aria-hidden="true">•</span>Enrollment &amp; Demographics</a>
+            <a class="sm-sub {% if current_page == 'people.student_performance.academic_results' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.student_performance.academic_results' %}" data-page="people.student_performance.academic_results"><span class="sm-bullet" aria-hidden="true">•</span>Academic Results</a>
+            <a class="sm-sub {% if current_page == 'people.student_performance.retention_progression' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.student_performance.retention_progression' %}" data-page="people.student_performance.retention_progression"><span class="sm-bullet" aria-hidden="true">•</span>Retention &amp; Progression</a>
+            <a class="sm-sub {% if current_page == 'people.student_performance.satisfaction_outcomes' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.student_performance.satisfaction_outcomes' %}" data-page="people.student_performance.satisfaction_outcomes"><span class="sm-bullet" aria-hidden="true">•</span>Satisfaction &amp; Outcomes</a>
+          </div>
+
+          <button class="sm-expand" type="button" data-section="people" data-group="people.faculty_performance" aria-expanded="false" aria-controls="panel-people-faculty">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Faculty Performance
+          </button>
+          <div class="sm-panel" id="panel-people-faculty" role="region" aria-label="Faculty Performance links">
+            <a class="sm-sub {% if current_page == 'people.faculty_performance.teaching_load' %}active{% endif %}" href="{% url 'admin_lecturers' %}" data-page="people.faculty_performance.teaching_load"><span class="sm-bullet" aria-hidden="true">•</span>Teaching Load</a>
+            <a class="sm-sub {% if current_page == 'people.faculty_performance.teaching_effectiveness' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.teaching_effectiveness' %}" data-page="people.faculty_performance.teaching_effectiveness"><span class="sm-bullet" aria-hidden="true">•</span>Teaching Effectiveness</a>
+            <a class="sm-sub {% if current_page == 'people.faculty_performance.research_output' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.research_output' %}" data-page="people.faculty_performance.research_output"><span class="sm-bullet" aria-hidden="true">•</span>Research Output</a>
+            <a class="sm-sub {% if current_page == 'people.faculty_performance.engagement_development' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.engagement_development' %}" data-page="people.faculty_performance.engagement_development"><span class="sm-bullet" aria-hidden="true">•</span>Engagement &amp; Development</a>
+          </div>
+
+          <p class="sm-section">ACADEMIC ANALYTICS</p>
+          <button class="sm-expand" type="button" data-section="academic" data-group="academic.program_performance" aria-expanded="false" aria-controls="panel-academic-programs">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Program Performance
+          </button>
+          <div class="sm-panel" id="panel-academic-programs" role="region" aria-label="Program Performance links">
+            <a class="sm-sub {% if current_page == 'academic.program_performance.business_school' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.program_performance.business_school' %}" data-page="academic.program_performance.business_school"><span class="sm-bullet" aria-hidden="true">•</span>Business School</a>
+            <a class="sm-sub {% if current_page == 'academic.program_performance.computing_it' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.program_performance.computing_it' %}" data-page="academic.program_performance.computing_it"><span class="sm-bullet" aria-hidden="true">•</span>Computing &amp; IT</a>
+            <a class="sm-sub {% if current_page == 'academic.program_performance.law_school' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.program_performance.law_school' %}" data-page="academic.program_performance.law_school"><span class="sm-bullet" aria-hidden="true">•</span>Law School</a>
+            <a class="sm-sub {% if current_page == 'academic.program_performance.short_courses' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.program_performance.short_courses' %}" data-page="academic.program_performance.short_courses"><span class="sm-bullet" aria-hidden="true">•</span>Short Courses</a>
+          </div>
+
+          <button class="sm-expand" type="button" data-section="academic" data-group="academic.course_analytics" aria-expanded="false" aria-controls="panel-academic-courses">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Course Analytics
+          </button>
+          <div class="sm-panel" id="panel-academic-courses" role="region" aria-label="Course Analytics links">
+            <a class="sm-sub {% if current_page == 'academic.course_analytics.popularity_demand' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.course_analytics.popularity_demand' %}" data-page="academic.course_analytics.popularity_demand"><span class="sm-bullet" aria-hidden="true">•</span>Popularity &amp; Demand</a>
+            <a class="sm-sub {% if current_page == 'academic.course_analytics.pass_fail_rates' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.course_analytics.pass_fail_rates' %}" data-page="academic.course_analytics.pass_fail_rates"><span class="sm-bullet" aria-hidden="true">•</span>Pass/Fail Rates</a>
+            <a class="sm-sub {% if current_page == 'academic.course_analytics.student_feedback' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.course_analytics.student_feedback' %}" data-page="academic.course_analytics.student_feedback"><span class="sm-bullet" aria-hidden="true">•</span>Student Feedback</a>
+          </div>
+
+          <button class="sm-expand" type="button" data-section="academic" data-group="academic.learning_outcomes" aria-expanded="false" aria-controls="panel-academic-outcomes">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Learning Outcomes
+          </button>
+          <div class="sm-panel" id="panel-academic-outcomes" role="region" aria-label="Learning Outcomes links">
+            <a class="sm-sub {% if current_page == 'academic.learning_outcomes.graduate_competencies' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.learning_outcomes.graduate_competencies' %}" data-page="academic.learning_outcomes.graduate_competencies"><span class="sm-bullet" aria-hidden="true">•</span>Graduate Competencies</a>
+            <a class="sm-sub {% if current_page == 'academic.learning_outcomes.employer_feedback' %}active{% endif %}" href="{% url 'admin_placeholder' page='academic.learning_outcomes.employer_feedback' %}" data-page="academic.learning_outcomes.employer_feedback"><span class="sm-bullet" aria-hidden="true">•</span>Employer Feedback</a>
+          </div>
+
+          <p class="sm-section">FINANCIAL ANALYTICS</p>
+          <button class="sm-expand" type="button" data-section="financial" data-group="financial.revenue_analysis" aria-expanded="false" aria-controls="panel-fin-revenue">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Revenue Analysis
+          </button>
+          <div class="sm-panel" id="panel-fin-revenue" role="region" aria-label="Revenue Analysis links">
+            <a class="sm-sub {% if current_page == 'financial.revenue_analysis.program_profitability' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.revenue_analysis.program_profitability' %}" data-page="financial.revenue_analysis.program_profitability"><span class="sm-bullet" aria-hidden="true">•</span>Program Profitability</a>
+            <a class="sm-sub {% if current_page == 'financial.revenue_analysis.revenue_streams' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.revenue_analysis.revenue_streams' %}" data-page="financial.revenue_analysis.revenue_streams"><span class="sm-bullet" aria-hidden="true">•</span>Revenue Streams</a>
+            <a class="sm-sub {% if current_page == 'financial.revenue_analysis.fee_collection_rates' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.revenue_analysis.fee_collection_rates' %}" data-page="financial.revenue_analysis.fee_collection_rates"><span class="sm-bullet" aria-hidden="true">•</span>Fee Collection Rates</a>
+          </div>
+
+          <button class="sm-expand" type="button" data-section="financial" data-group="financial.cost_analysis" aria-expanded="false" aria-controls="panel-fin-cost">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Cost Analysis
+          </button>
+          <div class="sm-panel" id="panel-fin-cost" role="region" aria-label="Cost Analysis links">
+            <a class="sm-sub {% if current_page == 'financial.cost_analysis.department_expenditure' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.cost_analysis.department_expenditure' %}" data-page="financial.cost_analysis.department_expenditure"><span class="sm-bullet" aria-hidden="true">•</span>Department Expenditure</a>
+            <a class="sm-sub {% if current_page == 'financial.cost_analysis.cost_per_student' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.cost_analysis.cost_per_student' %}" data-page="financial.cost_analysis.cost_per_student"><span class="sm-bullet" aria-hidden="true">•</span>Cost per Student</a>
+            <a class="sm-sub {% if current_page == 'financial.cost_analysis.resource_utilization' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.cost_analysis.resource_utilization' %}" data-page="financial.cost_analysis.resource_utilization"><span class="sm-bullet" aria-hidden="true">•</span>Resource Utilization</a>
+          </div>
+
+          <button class="sm-expand" type="button" data-section="financial" data-group="financial.budget_forecasting" aria-expanded="false" aria-controls="panel-fin-budget">
+            <span class="sm-arrow" aria-hidden="true">
+              <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">
+                <path d="M2 2l8 8 8-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Budget &amp; Forecasting
+          </button>
+          <div class="sm-panel" id="panel-fin-budget" role="region" aria-label="Budget & Forecasting links">
+            <a class="sm-sub {% if current_page == 'financial.budget_forecasting.budget_vs_actual' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.budget_forecasting.budget_vs_actual' %}" data-page="financial.budget_forecasting.budget_vs_actual"><span class="sm-bullet" aria-hidden="true">•</span>Budget vs. Actual</a>
+            <a class="sm-sub {% if current_page == 'financial.budget_forecasting.three_year_projections' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.budget_forecasting.three_year_projections' %}" data-page="financial.budget_forecasting.three_year_projections"><span class="sm-bullet" aria-hidden="true">•</span>3-Year Projections</a>
+            <a class="sm-sub {% if current_page == 'financial.budget_forecasting.roi_analysis' %}active{% endif %}" href="{% url 'admin_placeholder' page='financial.budget_forecasting.roi_analysis' %}" data-page="financial.budget_forecasting.roi_analysis"><span class="sm-bullet" aria-hidden="true">•</span>ROI Analysis</a>
+          </div>
+
+          <p class="sm-section">OPERATIONAL HEALTH</p>
+          <a class="sm-leaf {% if current_page == 'operational.system_utilization' %}active{% endif %}" href="{% url 'admin_placeholder' page='operational.system_utilization' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>System Utilization
+          </a>
+          <a class="sm-leaf {% if current_page == 'operational.portal_engagement' %}active{% endif %}" href="{% url 'admin_placeholder' page='operational.portal_engagement' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Portal Engagement
+          </a>
+          <a class="sm-leaf {% if current_page == 'operational.process_efficiency' %}active{% endif %}" href="{% url 'admin_placeholder' page='operational.process_efficiency' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Process Efficiency
+          </a>
+
+          <p class="sm-section">REPORTS &amp; EXPORTS</p>
+          <a class="sm-leaf {% if current_page == 'reports.board_reports' %}active{% endif %}" href="{% url 'admin_placeholder' page='reports.board_reports' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Board Reports
+          </a>
+          <a class="sm-leaf {% if current_page == 'reports.accreditation_reports' %}active{% endif %}" href="{% url 'admin_placeholder' page='reports.accreditation_reports' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Accreditation Reports
+          </a>
+          <a class="sm-leaf {% if current_page == 'reports.custom_reports' %}active{% endif %}" href="{% url 'admin_placeholder' page='reports.custom_reports' %}">
+            <span class="sm-bullet" aria-hidden="true">•</span>Custom Reports
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        {% block main %}{% endblock %}
+      </main>
+    </div>
+    <script src="{% static 'dashboard/admin_sidebar.js' %}" defer></script>
+  </body>
+</html>

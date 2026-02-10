@@ -1,86 +1,10 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Admin - Lecturers</title>
-    <link rel="stylesheet" href="{% static 'dashboard/admin.css' %}">
-  </head>
-  <body>
-    <div class="admin-shell">
-      <header class="topbar">
-        <div class="brand">
-          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
-          <div>
-            <p class="brand-title">University Management System</p>
-            <p class="brand-sub">Admin Control Panel</p>
-          </div>
-        </div>
-        <div class="topbar-actions">
-          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
-          <button class="icon-btn" type="button" title="Settings" aria-label="Settings">⚙️</button>
-          <div class="user-pill">
-            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
-            <div>
-              <p class="user-name">{{ user.first_name|default:user.username }}</p>
-              <p class="user-role">Admin</p>
-            </div>
-          </div>
-          <form class="logout-form" method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="/">
-            <button class="logout-btn" type="submit">Logout</button>
-          </form>
-        </div>
-      </header>
-
-      <aside class="sidebar">
-        <nav class="nav">
-          <p class="nav-title">User Management</p>
-          <a class="nav-link {% if current_page == 'dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Dashboard</a>
-          <a class="nav-link {% if current_page == 'students' %}active{% endif %}" href="{% url 'admin_students' %}">Students</a>
-          <a class="nav-link {% if current_page == 'lecturers' %}active{% endif %}" href="{% url 'admin_lecturers' %}">Lecturers</a>
-          <a class="nav-link" href="#">Staff</a>
-          <a class="nav-link" href="#">Admins</a>
-          <a class="nav-link" href="#">Roles & Permissions</a>
-          <a class="nav-link {% if current_page == 'applications' %}active{% endif %}" href="{% url 'admin_applications' %}">Applications</a>
-
-          <p class="nav-title">Academic Structure</p>
-          <a class="nav-link" href="#">Faculties</a>
-          <a class="nav-link" href="#">Departments</a>
-          <a class="nav-link" href="#">Programs</a>
-          <a class="nav-link" href="#">Courses</a>
-
-          <p class="nav-title">Academic Operations</p>
-          <a class="nav-link" href="#">Academic Calendar</a>
-          <a class="nav-link" href="#">Course Registration</a>
-
-          <p class="nav-title">Exams & Results</p>
-          <a class="nav-link" href="#">Results Management</a>
-          <a class="nav-link" href="#">Transcripts</a>
-
-          <p class="nav-title">Finance</p>
-          <a class="nav-link" href="#">Fee Structure</a>
-          <a class="nav-link" href="#">Payments</a>
-
-          <p class="nav-title">Communication</p>
-          <a class="nav-link" href="#">Announcements</a>
-          <a class="nav-link" href="#">Messages</a>
-
-          <p class="nav-title">Reports & Analytics</p>
-          <a class="nav-link" href="#">Academic Reports</a>
-          <a class="nav-link" href="#">Financial Reports</a>
-
-          <p class="nav-title">System Settings</p>
-          <a class="nav-link" href="#">System Configuration</a>
-        </nav>
-      </aside>
-
-      <main class="main">
+{% extends "dashboard/admin/base.html" %}
+{% block title %}Admin - Lecturers{% endblock %}
+{% block main %}
         <section class="page-header">
           <div>
             <h1>Lecturer Accounts</h1>
-            <p>Manage lecturer accounts and access details.</p>
+            <p>Manage faculty profiles, access status, and activity.</p>
           </div>
           <div class="quick-actions">
             <a class="primary-btn" href="#">Create Lecturer</a>
@@ -99,7 +23,6 @@
                   <th>Username</th>
                   <th>Email</th>
                   <th>Active</th>
-                  <th>Staff</th>
                   <th>Joined</th>
                   <th>Action</th>
                 </tr>
@@ -110,12 +33,11 @@
                     <td>{{ u.username }}</td>
                     <td>{{ u.email|default:"-" }}</td>
                     <td>{{ u.is_active }}</td>
-                    <td>{{ u.is_staff }}</td>
                     <td>{{ u.date_joined|date:"Y-m-d" }}</td>
                     <td>
                       <form class="delete-form" method="post" action="{% url 'user_delete' u.id %}">
                         {% csrf_token %}
-                        <button class="icon-btn" type="submit" title="Delete account" aria-label="Delete account">
+                        <button class="icon-btn icon-danger" type="submit" title="Delete account" aria-label="Delete account">
                           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                             <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
                           </svg>
@@ -125,17 +47,11 @@
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="6">No lecturers found.</td>
+                    <td colspan="5">No lecturers found.</td>
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
         </section>
-      </main>
-    </div>
-  </body>
-</html>
-
-
-
+{% endblock %}

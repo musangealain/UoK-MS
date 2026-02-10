@@ -1,90 +1,14 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="{% static 'dashboard/admin.css' %}">
-  </head>
-  <body>
-    <div class="admin-shell">
-      <header class="topbar">
-        <div class="brand">
-          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
-          <div>
-            <p class="brand-title">University Management System</p>
-            <p class="brand-sub">Admin Control Panel</p>
-          </div>
-        </div>
-        <div class="topbar-actions">
-          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">🔔</button>
-          <button class="icon-btn" type="button" title="Settings" aria-label="Settings">⚙️</button>
-          <div class="user-pill">
-            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
-            <div>
-              <p class="user-name">{{ user.first_name|default:user.username }}</p>
-              <p class="user-role">Admin</p>
-            </div>
-          </div>
-          <form class="logout-form" method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="/">
-            <button class="logout-btn" type="submit">Logout</button>
-          </form>
-        </div>
-      </header>
-
-      <aside class="sidebar">
-        <nav class="nav">
-          <p class="nav-title">User Management</p>
-          <a class="nav-link {% if current_page == 'dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Dashboard</a>
-          <a class="nav-link {% if current_page == 'students' %}active{% endif %}" href="{% url 'admin_students' %}">Students</a>
-          <a class="nav-link {% if current_page == 'lecturers' %}active{% endif %}" href="{% url 'admin_lecturers' %}">Lecturers</a>
-          <a class="nav-link" href="#">Staff</a>
-          <a class="nav-link" href="#">Admins</a>
-          <a class="nav-link" href="#">Roles & Permissions</a>
-          <a class="nav-link {% if current_page == 'applications' %}active{% endif %}" href="{% url 'admin_applications' %}">Applications</a>
-
-          <p class="nav-title">Academic Structure</p>
-          <a class="nav-link" href="#">Faculties</a>
-          <a class="nav-link" href="#">Departments</a>
-          <a class="nav-link" href="#">Programs</a>
-          <a class="nav-link" href="#">Courses</a>
-
-          <p class="nav-title">Academic Operations</p>
-          <a class="nav-link" href="#">Academic Calendar</a>
-          <a class="nav-link" href="#">Course Registration</a>
-
-          <p class="nav-title">Exams & Results</p>
-          <a class="nav-link" href="#">Results Management</a>
-          <a class="nav-link" href="#">Transcripts</a>
-
-          <p class="nav-title">Finance</p>
-          <a class="nav-link" href="#">Fee Structure</a>
-          <a class="nav-link" href="#">Payments</a>
-
-          <p class="nav-title">Communication</p>
-          <a class="nav-link" href="#">Announcements</a>
-          <a class="nav-link" href="#">Messages</a>
-
-          <p class="nav-title">Reports & Analytics</p>
-          <a class="nav-link" href="#">Academic Reports</a>
-          <a class="nav-link" href="#">Financial Reports</a>
-
-          <p class="nav-title">System Settings</p>
-          <a class="nav-link" href="#">System Configuration</a>
-        </nav>
-      </aside>
-
-      <main class="main">
+{% extends "dashboard/admin/base.html" %}
+{% block title %}Senior Management Dashboard{% endblock %}
+{% block main %}
         <section class="page-header">
           <div>
-            <h1>Admin Dashboard</h1>
-            <p>Welcome {{ user.first_name|default:user.username }}. Monitor system-wide activities and analytics.</p>
+            <h1>Senior Management Dashboard</h1>
+            <p>Welcome {{ user.first_name|default:user.username }}. Strategic oversight across programs, departments, and operations.</p>
           </div>
           <div class="quick-actions">
-            <a class="primary-btn" href="#">Create User</a>
-            <a class="ghost-btn" href="#">Post Announcement</a>
+            <a class="primary-btn" href="#">View KPI Brief</a>
+            <a class="ghost-btn" href="#">Download Executive Summary</a>
           </div>
         </section>
 
@@ -100,34 +24,34 @@
             <p class="summary-meta">Active faculty</p>
           </div>
           <div class="summary-card">
-            <p class="summary-label">Total Courses</p>
+            <p class="summary-label">Graduation Rate</p>
             <h3>128</h3>
-            <p class="summary-meta">Across all programs</p>
+            <p class="summary-meta">Placeholder metric</p>
           </div>
           <div class="summary-card">
-            <p class="summary-label">Total Revenue</p>
+            <p class="summary-label">Financial Health</p>
             <h3>24.5M RWF</h3>
-            <p class="summary-meta">This semester</p>
+            <p class="summary-meta">Placeholder metric</p>
           </div>
         </section>
 
         <section class="content-grid">
           <div class="panel panel-wide">
             <div class="panel-header">
-              <h2>System Analytics</h2>
+              <h2>Institutional Performance</h2>
               <span class="panel-pill">Last 30 Days</span>
             </div>
             <div class="chart-grid">
               <div class="chart-card">
-                <p>Enrollment by Faculty</p>
+                <p>Enrollment Health</p>
                 <div class="chart-placeholder"></div>
               </div>
               <div class="chart-card">
-                <p>Monthly Payments</p>
+                <p>Financial Health</p>
                 <div class="chart-placeholder"></div>
               </div>
               <div class="chart-card">
-                <p>GPA Distribution</p>
+                <p>Academic Performance</p>
                 <div class="chart-placeholder"></div>
               </div>
             </div>
@@ -135,18 +59,18 @@
 
           <div class="panel">
             <div class="panel-header">
-              <h2>Recent Activity</h2>
+              <h2>Executive Notes</h2>
             </div>
             <ul class="activity-list">
-              <li>Student registered courses · 10 mins ago</li>
-              <li>Lecturer submitted grades · 1 hour ago</li>
-              <li>Admin updated fee structure · 3 hours ago</li>
+              <li>Retention trend flagged for review - 10 mins ago</li>
+              <li>Department spending variance detected - 1 hour ago</li>
+              <li>Program performance summary generated - 3 hours ago</li>
             </ul>
           </div>
 
           <div class="panel">
             <div class="panel-header">
-              <h2>System Alerts</h2>
+              <h2>Risk & Alerts</h2>
               <span class="panel-pill panel-pill-alert">5</span>
             </div>
             <ul class="alert-list">
@@ -156,10 +80,4 @@
             </ul>
           </div>
         </section>
-
-      </main>
-    </div>
-  </body>
-</html>
-
-
+{% endblock %}

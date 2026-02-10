@@ -46,6 +46,25 @@ def _get_applications():
         Application.objects.exclude(status='approved')
         .order_by('-created_at')[:50]
     )
+
+
+def _kpi_traffic_light(value, green_threshold=None, yellow_threshold=None, invert=False):
+    """
+    Simple helper for placeholder KPIs.
+    - If invert=False: higher is better (e.g., retention rate).
+    - If invert=True: lower is better (e.g., dropout rate).
+    Thresholds define the boundary between green/yellow/red.
+    """
+    if value is None or green_threshold is None or yellow_threshold is None:
+        return "yellow"
+    score = -value if invert else value
+    green = -green_threshold if invert else green_threshold
+    yellow = -yellow_threshold if invert else yellow_threshold
+    if score >= green:
+        return "green"
+    if score >= yellow:
+        return "yellow"
+    return "red"
 @login_required
 def admin_dashboard(request):
     if not _is_admin(request.user):
@@ -58,7 +77,7 @@ def admin_dashboard(request):
         {
             'students': students,
             'lecturers': lecturers,
-            'current_page': 'dashboard',
+            'current_page': 'executive.institutional_dashboard',
         },
     )
 
@@ -71,7 +90,7 @@ def admin_students(request):
     return render(
         request,
         'dashboard/admin/students.html',
-        {'students': students, 'current_page': 'students'},
+        {'students': students, 'current_page': 'people.student_performance.enrollment_demographics'},
     )
 
 
@@ -83,7 +102,7 @@ def admin_lecturers(request):
     return render(
         request,
         'dashboard/admin/lecturers.html',
-        {'lecturers': lecturers, 'current_page': 'lecturers'},
+        {'lecturers': lecturers, 'current_page': 'people.faculty_performance.teaching_load'},
     )
 
 
@@ -95,7 +114,86 @@ def admin_applications(request):
     return render(
         request,
         'dashboard/admin/applications.html',
-        {'applications': applications, 'current_page': 'applications'},
+        {'applications': applications, 'current_page': 'people.office_performance.admissions_office'},
+    )
+
+
+@login_required
+def admin_kpi_monitor(request):
+    if not _is_admin(request.user):
+        return redirect('home')
+
+    students = _get_students_with_records()
+    lecturers = _get_lecturers()
+    pending_applications = _get_applications()
+
+    # Placeholder metrics: wire these to real models later.
+    total_students = len(students)
+    total_lecturers = len(lecturers)
+    student_staff_ratio = round(total_students / max(total_lecturers, 1), 1)
+
+    kpis = [
+        {
+            "group": "Enrollment Health",
+            "items": [
+                {"label": "Total Students", "value": total_students, "unit": "", "status": "green"},
+                {"label": "Growth Trend", "value": 3.2, "unit": "%", "status": "yellow"},
+                {"label": "Retention Rate", "value": 88.0, "unit": "%", "status": _kpi_traffic_light(88.0, 90.0, 80.0)},
+                {"label": "Dropout Rate", "value": 4.8, "unit": "%", "status": _kpi_traffic_light(4.8, 3.0, 6.0, invert=True)},
+            ],
+        },
+        {
+            "group": "Financial Health",
+            "items": [
+                {"label": "Revenue", "value": 24.5, "unit": "M RWF", "status": "green"},
+                {"label": "Expenses", "value": 18.1, "unit": "M RWF", "status": "yellow"},
+                {"label": "Program Profitability", "value": 9.6, "unit": "%", "status": "yellow"},
+                {"label": "Cash Flow Trend", "value": 1.2, "unit": "%", "status": "green"},
+            ],
+        },
+        {
+            "group": "Academic Performance",
+            "items": [
+                {"label": "Graduation Rate", "value": 74.0, "unit": "%", "status": _kpi_traffic_light(74.0, 80.0, 65.0)},
+                {"label": "Pass Rate", "value": 82.0, "unit": "%", "status": _kpi_traffic_light(82.0, 85.0, 75.0)},
+                {"label": "Student Satisfaction", "value": 4.1, "unit": "/5", "status": _kpi_traffic_light(4.1, 4.3, 3.8)},
+                {"label": "At-Risk Programs", "value": 2, "unit": "", "status": "red"},
+            ],
+        },
+        {
+            "group": "Staff Performance",
+            "items": [
+                {"label": "Total Lecturers", "value": total_lecturers, "unit": "", "status": "green"},
+                {"label": "Student-Staff Ratio", "value": student_staff_ratio, "unit": "", "status": _kpi_traffic_light(student_staff_ratio, 18.0, 25.0, invert=True)},
+                {"label": "Research Output", "value": 12, "unit": " pubs", "status": "yellow"},
+                {"label": "Workload Balance", "value": 0.72, "unit": "", "status": "yellow"},
+            ],
+        },
+    ]
+
+    return render(
+        request,
+        "dashboard/admin/kpi_monitor.html",
+        {
+            "current_page": "executive.strategic_kpis",
+            "kpis": kpis,
+            "pending_applications_count": len(pending_applications),
+        },
+    )
+
+
+@login_required
+def admin_placeholder(request, page):
+    if not _is_admin(request.user):
+        return redirect("home")
+    title = page.replace("-", " ").replace(".", " / ").replace("/", " / ").title()
+    return render(
+        request,
+        "dashboard/admin/placeholder.html",
+        {
+            "current_page": page,
+            "page_title": title,
+        },
     )
 
 

@@ -1,0 +1,50 @@
+{% extends "dashboard/admin/base.html" %}
+{% block title %}KPI Monitor{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>KPI Monitor</h1>
+      <p>Traffic-light KPIs for quick executive decisions. (Data is placeholder for now.)</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'admin_dashboard' %}">Back to Snapshot</a>
+      <a class="primary-btn" href="#">Export KPI Pack</a>
+    </div>
+  </section>
+
+  <section class="kpi-meta">
+    <div class="kpi-legend" aria-label="KPI legend">
+      <span class="kpi-dot kpi-dot-green" aria-hidden="true"></span><span class="kpi-legend-label">On target</span>
+      <span class="kpi-dot kpi-dot-yellow" aria-hidden="true"></span><span class="kpi-legend-label">Needs attention</span>
+      <span class="kpi-dot kpi-dot-red" aria-hidden="true"></span><span class="kpi-legend-label">Critical</span>
+    </div>
+    <div class="kpi-meta-right">
+      <span class="kpi-meta-pill">Admissions pending: {{ pending_applications_count }}</span>
+      <span class="kpi-meta-pill">Window: Last 30 Days</span>
+    </div>
+  </section>
+
+  {% for group in kpis %}
+    <section class="panel">
+      <div class="panel-header">
+        <h2>{{ group.group }}</h2>
+        <span class="panel-pill">KPI Set</span>
+      </div>
+
+      <div class="kpi-grid">
+        {% for item in group.items %}
+          <div class="kpi-card kpi-{{ item.status }}">
+            <p class="kpi-label">{{ item.label }}</p>
+            <p class="kpi-value">{{ item.value }}{{ item.unit }}</p>
+            <p class="kpi-status">
+              <span class="kpi-dot kpi-dot-{{ item.status }}" aria-hidden="true"></span>
+              <span class="kpi-status-text">{{ item.status|title }}</span>
+            </p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+{% endblock %}
+

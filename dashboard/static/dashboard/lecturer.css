@@ -96,6 +96,12 @@ html,body{
   justify-content:center;
 }
 
+.icon-btn svg{
+  width:18px;
+  height:18px;
+  fill:var(--navy);
+}
+
 .user-pill{
   display:flex;
   align-items:center;
@@ -130,15 +136,40 @@ html,body{
 }
 
 .logout-btn{
-  border:none;
+  border:1px solid rgba(16, 22, 47, 0.12);
   cursor:pointer;
-  background:var(--blue);
+  background:linear-gradient(135deg, #2b5fa7, #244f89);
   color:#fff;
   text-decoration:none;
-  padding:8px 14px;
-  border-radius:8px;
-  font-size:12px;
+  padding:8px 16px;
+  border-radius:10px;
+  font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size:14px;
   font-weight:700;
+  letter-spacing:0.2px;
+  box-shadow:0 10px 18px rgba(16, 22, 47, 0.18);
+  transition:transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease, filter 0.15s ease;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.logout-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 22px rgba(16, 22, 47, 0.22);
+  background:linear-gradient(135deg, #2f69b6, #24538f);
+  border-color:rgba(16, 22, 47, 0.18);
+}
+
+.logout-btn:active{
+  transform:translateY(0);
+  box-shadow:0 8px 14px rgba(16, 22, 47, 0.16);
+  filter:saturate(0.95);
+}
+
+.logout-btn:focus-visible{
+  outline:2px solid rgba(43, 95, 167, 0.45);
+  outline-offset:2px;
 }
 
 .sidebar{

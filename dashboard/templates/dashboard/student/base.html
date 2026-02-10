@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Student Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dashboard/student.css' %}">
+    {% block styles %}{% endblock %}
+  </head>
+  <body>
+    <div class="student-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="{% static 'website/UoKlogo.png' %}" alt="University logo">
+          <div>
+            <p class="brand-title">University Management System</p>
+            <p class="brand-sub">Student Portal</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" title="Notifications" aria-label="Notifications">
+            <span>🔔</span>
+          </button>
+          <button class="icon-btn" type="button" title="Settings" aria-label="Settings">
+            <span>⚙️</span>
+          </button>
+          <div class="user-pill">
+            <div class="user-avatar">{{ user.first_name|default:user.username|slice:":1" }}</div>
+            <div>
+              <p class="user-name">{{ user.first_name|default:user.username }}</p>
+              <p class="user-role">Student</p>
+            </div>
+          </div>
+          <form class="logout-form" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <nav class="nav">
+          <div class="nav-group">
+            <p class="nav-label">Dashboard</p>
+            <a class="nav-link {% if current_page == 'overview' or not current_page %}active{% endif %}" href="{% url 'student_dashboard' %}">Overview</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Academics</p>
+            <a class="nav-link" href="#">My Courses</a>
+            <a class="nav-link" href="#">Course Registration</a>
+            <a class="nav-link" href="#">Timetable</a>
+            <a class="nav-link" href="#">Course Materials</a>
+            <a class="nav-link" href="/e-learning/">E-Learning / LMS</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Exams & Grades</p>
+            <a class="nav-link" href="#">Results</a>
+            <a class="nav-link" href="#">Transcript</a>
+            <a class="nav-link" href="#">GPA / CGPA</a>
+            <a class="nav-link" href="#">Exam Schedule</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Finance</p>
+            <a class="nav-link" href="#">Fees Statement</a>
+            <a class="nav-link" href="#">Payment History</a>
+            <a class="nav-link" href="#">Make Payment</a>
+            <a class="nav-link" href="#">Scholarships</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Communication</p>
+            <a class="nav-link" href="#">Announcements</a>
+            <a class="nav-link" href="#">Messages</a>
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">Profile</p>
+            <a class="nav-link" href="#">Personal Info</a>
+            <a class="nav-link" href="#">Documents</a>
+            <a class="nav-link" href="#">Change Password</a>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="main">
+        {% block main %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>
