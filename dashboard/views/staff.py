@@ -46,6 +46,119 @@ OFFICE_FEATURES = {
         "Book lending & e-resources access",
         "Research support and user services",
     ],
+    "HRM": [
+        {
+            "slug": "staff-records",
+            "title": "Staff Records",
+            "description": "Maintain staff profiles, contracts, and employment history.",
+        },
+        {
+            "slug": "recruitment",
+            "title": "Recruitment",
+            "description": "Manage vacancies, applicants, interviews, and hiring decisions.",
+        },
+        {
+            "slug": "performance",
+            "title": "Performance Tracking",
+            "description": "Track performance reviews, KPIs, and appraisal cycles.",
+        },
+        {
+            "slug": "leave-management",
+            "title": "Leave Management",
+            "description": "Approve leave requests, balances, and absence records.",
+        },
+        {
+            "slug": "training",
+            "title": "Training Programs",
+            "description": "Plan and track training sessions and staff development.",
+        },
+        {
+            "slug": "payroll-summaries",
+            "title": "Payroll Summaries",
+            "description": "View payroll summaries and HR-related payroll insights.",
+        },
+    ],
+    "ACA": [
+        {
+            "slug": "curriculum",
+            "title": "Curriculum Development",
+            "description": "Manage curricula, program structures, and course definitions.",
+        },
+        {
+            "slug": "course-offerings",
+            "title": "Course Offerings",
+            "description": "Publish course offerings by term and manage availability.",
+        },
+        {
+            "slug": "faculty-workload",
+            "title": "Faculty Workload",
+            "description": "Track faculty assignments, load, and workload balance.",
+        },
+        {
+            "slug": "quality-assurance",
+            "title": "Academic Quality Assurance",
+            "description": "Monitor QA checks, reviews, and academic standards.",
+        },
+        {
+            "slug": "accreditation",
+            "title": "Accreditation Compliance",
+            "description": "Track accreditation requirements, evidence, and submissions.",
+        },
+    ],
+    "ELE": [
+        {
+            "slug": "lms-management",
+            "title": "LMS Management",
+            "description": "Manage LMS configuration, user access, and course spaces.",
+        },
+        {
+            "slug": "online-courses",
+            "title": "Online Courses",
+            "description": "Create and manage online course delivery and content structure.",
+        },
+        {
+            "slug": "virtual-classrooms",
+            "title": "Virtual Classrooms",
+            "description": "Schedule and support virtual sessions and class links.",
+        },
+        {
+            "slug": "digital-content",
+            "title": "Digital Content Development",
+            "description": "Track content production, reviews, and publishing workflows.",
+        },
+        {
+            "slug": "e-learning-support",
+            "title": "E-Learning Support",
+            "description": "Handle tickets, support requests, and platform guidance.",
+        },
+    ],
+    "LIB": [
+        {
+            "slug": "resource-catalog",
+            "title": "Resource Catalog",
+            "description": "Manage library catalog records for physical and digital resources.",
+        },
+        {
+            "slug": "book-lending",
+            "title": "Book Lending",
+            "description": "Issue and return books, manage due dates, and track borrowing history.",
+        },
+        {
+            "slug": "e-resources",
+            "title": "E-Resources Access",
+            "description": "Manage access to e-resources, subscriptions, and authentication.",
+        },
+        {
+            "slug": "research-support",
+            "title": "Research Support",
+            "description": "Handle research support requests and guidance services.",
+        },
+        {
+            "slug": "user-services",
+            "title": "Library User Services",
+            "description": "Manage memberships, user support, and library service requests.",
+        },
+    ],
 }
 
 
@@ -102,6 +215,38 @@ OFFICE_MODULES = {
             "slug": "student-support",
             "title": "Student Support Services",
             "description": "Manage student support requests and service follow-ups.",
+        },
+    ],
+    "FIN": [
+        {
+            "slug": "tuition-payments",
+            "title": "Tuition & Payments",
+            "description": "Track fee payments, post receipts, and monitor payment compliance.",
+        },
+        {
+            "slug": "budgeting",
+            "title": "Budgeting",
+            "description": "Create and review budgets, allocations, and department requests.",
+        },
+        {
+            "slug": "payroll",
+            "title": "Payroll",
+            "description": "Review payroll summaries and payment runs for staff.",
+        },
+        {
+            "slug": "expenditures",
+            "title": "Expenditure Tracking",
+            "description": "Track spending, approvals, and expense categorization.",
+        },
+        {
+            "slug": "procurement",
+            "title": "Procurement",
+            "description": "Manage procurement requests, quotes, purchase orders, and deliveries.",
+        },
+        {
+            "slug": "financial-reports",
+            "title": "Financial Reports",
+            "description": "Generate financial statements and management reports.",
         },
     ],
 }

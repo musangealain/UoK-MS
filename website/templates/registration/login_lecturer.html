@@ -19,7 +19,7 @@
         <form method="post" class="auth-form">
           {% csrf_token %}
           <label>
-            Reg. Number
+            Lecturer ID
             {{ form.username }}
           </label>
           <label>
@@ -28,8 +28,8 @@
           </label>
           <button type="submit" class="auth-submit">Log In</button>
         </form>
-        <p class="auth-helper">
-          Don’t have an account? <a href="{% url 'lecturer_signup' %}">Sign up</a>
+       <p class="auth-helper">
+          <a href="{% url 'student_signup' %}">Forgot Password?</a>
         </p>
         <div class="auth-footer">
           <span>2026 © Designed by Alain Systems</span>

@@ -1,83 +1,91 @@
 {% extends "dashboard/admin/base.html" %}
 {% block title %}Senior Management Dashboard{% endblock %}
 {% block main %}
-        <section class="page-header">
-          <div>
-            <h1>Senior Management Dashboard</h1>
-            <p>Welcome {{ user.first_name|default:user.username }}. Strategic oversight across programs, departments, and operations.</p>
-          </div>
-          <div class="quick-actions">
-            <a class="primary-btn" href="#">View KPI Brief</a>
-            <a class="ghost-btn" href="#">Download Executive Summary</a>
-          </div>
-        </section>
+  <section class="page-header">
+    <div>
+      <h1>Institutional Dashboard</h1>
+      <p>Strategic overview across people, academics, operations, and finance.</p>
+    </div>
+    <div class="quick-actions">
+      <a class="primary-btn" href="{% url 'admin_kpi_monitor' %}">View KPI Monitor</a>
+      <a class="ghost-btn" href="#">Export Snapshot</a>
+    </div>
+  </section>
 
-        <section class="summary-grid">
-          <div class="summary-card">
-            <p class="summary-label">Total Students</p>
-            <h3>{{ students|length }}</h3>
-            <p class="summary-meta">Active enrollments</p>
-          </div>
-          <div class="summary-card">
-            <p class="summary-label">Total Lecturers</p>
-            <h3>{{ lecturers|length }}</h3>
-            <p class="summary-meta">Active faculty</p>
-          </div>
-          <div class="summary-card">
-            <p class="summary-label">Graduation Rate</p>
-            <h3>128</h3>
-            <p class="summary-meta">Placeholder metric</p>
-          </div>
-          <div class="summary-card">
-            <p class="summary-label">Financial Health</p>
-            <h3>24.5M RWF</h3>
-            <p class="summary-meta">Placeholder metric</p>
-          </div>
-        </section>
+  <section class="quick-stats" aria-label="Quick stats">
+    <div class="qs-header">
+      <h2>Quick Stats</h2>
+      <span class="qs-pill">Today</span>
+    </div>
+    <div class="qs-grid">
+      {% for s in quick_stats %}
+        <article class="qs-card">
+          <p class="qs-label">{{ s.label }}</p>
+          <p class="qs-value">{{ s.value }}</p>
+          <p class="qs-delta qs-{{ s.dir }}">{% if s.dir == "up" %}▲{% elif s.dir == "down" %}▼{% else %}•{% endif %} {{ s.delta }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
 
-        <section class="content-grid">
-          <div class="panel panel-wide">
-            <div class="panel-header">
-              <h2>Institutional Performance</h2>
-              <span class="panel-pill">Last 30 Days</span>
+  <section class="dash-row" aria-label="Office and financial performance">
+    <section class="panel panel-compact">
+      <div class="panel-header">
+        <h2>Office Performance (Top 5)</h2>
+        <span class="panel-pill">Operational</span>
+      </div>
+      <div class="metric-table">
+        {% for row in office_performance_top5 %}
+          <div class="metric-row">
+            <div class="metric-left">
+              <span class="metric-name">{{ row.name }} ({{ row.code }})</span>
             </div>
-            <div class="chart-grid">
-              <div class="chart-card">
-                <p>Enrollment Health</p>
-                <div class="chart-placeholder"></div>
-              </div>
-              <div class="chart-card">
-                <p>Financial Health</p>
-                <div class="chart-placeholder"></div>
-              </div>
-              <div class="chart-card">
-                <p>Academic Performance</p>
-                <div class="chart-placeholder"></div>
-              </div>
+            <div class="metric-right">
+              <span class="metric-value">{{ row.score }}</span>
+              <span class="metric-delta metric-{{ row.dir }}">{% if row.dir == "up" %}▲{% else %}▼{% endif %} {{ row.delta }}</span>
+              <span class="metric-dot metric-dot-{{ row.status }}" aria-hidden="true"></span>
             </div>
           </div>
+        {% endfor %}
+      </div>
+      <a class="panel-link" href="{% url 'admin_placeholder' page='people.office_performance.registrar_office' %}">View All Offices →</a>
+    </section>
 
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Executive Notes</h2>
+    <section class="panel panel-compact">
+      <div class="panel-header">
+        <h2>Financial Health</h2>
+        <span class="panel-pill">YTD</span>
+      </div>
+      <div class="metric-table">
+        {% for row in financial_health %}
+          <div class="metric-row">
+            <div class="metric-left">
+              <span class="metric-name">{{ row.label }}</span>
             </div>
-            <ul class="activity-list">
-              <li>Retention trend flagged for review - 10 mins ago</li>
-              <li>Department spending variance detected - 1 hour ago</li>
-              <li>Program performance summary generated - 3 hours ago</li>
-            </ul>
+            <div class="metric-right">
+              <span class="metric-value">{{ row.value }}</span>
+              {% if row.delta %}
+                <span class="metric-delta metric-{{ row.dir }}">{% if row.dir == "up" %}▲{% elif row.dir == "down" %}▼{% else %}•{% endif %} {{ row.delta }}</span>
+              {% else %}
+                <span class="metric-delta metric-flat">•</span>
+              {% endif %}
+            </div>
           </div>
+        {% endfor %}
+      </div>
+      <a class="panel-link" href="{% url 'admin_placeholder' page='financial.revenue_analysis.program_profitability' %}">View Full Financials →</a>
+    </section>
+  </section>
 
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Risk & Alerts</h2>
-              <span class="panel-pill panel-pill-alert">5</span>
-            </div>
-            <ul class="alert-list">
-              <li>24 students have unpaid fees</li>
-              <li>7 results pending approval</li>
-              <li>2 system errors logged</li>
-            </ul>
-          </div>
-        </section>
+  <section class="panel" aria-label="Recent activity">
+    <div class="panel-header">
+      <h2>Recent Activity</h2>
+      <span class="panel-pill">Live</span>
+    </div>
+    <ul class="recent-list">
+      {% for item in recent_activity %}
+        <li><span class="recent-time">{{ item.time }}</span> <span class="recent-text">{{ item.text }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
 {% endblock %}

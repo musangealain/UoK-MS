@@ -313,12 +313,49 @@ def admin_dashboard(request):
         return redirect('home')
     students = _get_students_with_records()
     lecturers = _get_lecturers()
+    active_office_heads = StaffProfile.objects.filter(is_active=True).count()
+    total_staff = len(lecturers) + active_office_heads
+
+    quick_stats = [
+        {"label": "Total Students", "value": f"{len(students):,}", "delta": "8% YoY", "dir": "up"},
+        {"label": "Total Staff", "value": f"{total_staff:,}", "delta": "5% YoY", "dir": "up"},
+        {"label": "Retention Rate", "value": "88%", "delta": "2% YoY", "dir": "down"},
+        {"label": "Graduation Rate", "value": "82%", "delta": "3% YoY", "dir": "up"},
+        {"label": "Employment Rate", "value": "91%", "delta": "2% YoY", "dir": "up"},
+    ]
+
+    office_performance_top5 = [
+        {"name": "Registrar", "code": "ARG", "score": "85%", "delta": "2%", "dir": "up", "status": "green"},
+        {"name": "Finance", "code": "FIN", "score": "92%", "delta": "1%", "dir": "up", "status": "green"},
+        {"name": "HR", "code": "HRM", "score": "75%", "delta": "5%", "dir": "up", "status": "yellow"},
+        {"name": "Academic", "code": "ACA", "score": "95%", "delta": "3%", "dir": "up", "status": "green"},
+        {"name": "Admissions", "code": "ADM", "score": "70%", "delta": "8%", "dir": "down", "status": "red"},
+    ]
+
+    financial_health = [
+        {"label": "Revenue YTD", "value": "$4.2M", "delta": "12%", "dir": "up"},
+        {"label": "Expenses YTD", "value": "$3.1M", "delta": "8%", "dir": "up"},
+        {"label": "Net Surplus", "value": "$1.1M", "delta": "18%", "dir": "up"},
+        {"label": "Collection Rate", "value": "92%", "delta": "3%", "dir": "up"},
+        {"label": "Budget Variance", "value": "-2.5%", "delta": "", "dir": "flat"},
+    ]
+
+    recent_activity = [
+        {"time": "10:30 AM", "text": "Registrar Office issued 45 transcripts"},
+        {"time": "09:15 AM", "text": f"Finance Office processed payroll ({total_staff} staff)"},
+        {"time": "08:00 AM", "text": "Admissions Office sent 23 offer letters"},
+        {"time": "Yesterday", "text": "IT Department resolved 15 support tickets"},
+    ]
     return render(
         request,
         'dashboard/admin/index.html',
         {
             'students': students,
             'lecturers': lecturers,
+            'quick_stats': quick_stats,
+            'office_performance_top5': office_performance_top5,
+            'financial_health': financial_health,
+            'recent_activity': recent_activity,
             'current_page': 'executive.institutional_dashboard',
         },
     )
