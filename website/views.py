@@ -91,16 +91,21 @@ class StaffLoginView(LoginView):
             logout(self.request)
             form.add_error(None, "This account is not a staff account.")
             return self.form_invalid(form)
-        if getattr(user, "staffprofile", None) is None:
+        staff_profile = getattr(user, "staffprofile", None)
+        if staff_profile is None:
             logout(self.request)
             form.add_error(None, "Staff profile is missing. Contact admin.")
+            return self.form_invalid(form)
+        if not getattr(staff_profile, "is_active", True) or not getattr(user, "is_active", True):
+            logout(self.request)
+            form.add_error(None, "This staff account is inactive. Contact admin.")
             return self.form_invalid(form)
         return super().form_valid(form)
 
     def get_success_url(self):
-        username = getattr(self.request.user, "username", "")
-        office_code = username[:3].upper()
-        return f"/dashboard/staff/{office_code}/"
+        staff_profile = getattr(self.request.user, "staffprofile", None)
+        office_code = getattr(staff_profile, "office_code", "") or ""
+        return f"/dashboard/staff/{office_code.upper()}/"
 
 
 def _handle_signup(request, role, template_name, redirect_url):

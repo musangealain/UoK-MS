@@ -22,7 +22,7 @@ from dashboard.views.admin import (
     application_delete,
     user_delete,
 )
-from dashboard.views.staff import staff_office_dashboard
+from dashboard.views.staff import staff_dashboard, staff_office_dashboard, staff_office_module
 urlpatterns = [
     path('student/', student_dashboard, name='student_dashboard'),
     path('applicant/', applicant_dashboard, name='applicant_dashboard'),
@@ -44,5 +44,7 @@ urlpatterns = [
     path('admin/applications/<int:application_id>/decision/', application_decision, name='application_decision'),
     path('admin/applications/<int:application_id>/delete/', application_delete, name='application_delete'),
     path('admin/users/<int:user_id>/delete/', user_delete, name='user_delete'),
+    path('staff/', staff_dashboard, name='staff_dashboard'),
     path('staff/<str:office_code>/', staff_office_dashboard, name='staff_office_dashboard'),
+    path('staff/<str:office_code>/<slug:module_slug>/', staff_office_module, name='staff_office_module'),
 ]

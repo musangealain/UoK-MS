@@ -1,0 +1,56 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}{{ office_label }}{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>{{ office_label }}</h1>
+      <p>{{ office_purpose }}</p>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>My Access</h2>
+        <span class="panel-pill">{{ office_code }}</span>
+      </div>
+      <ul class="activity-list">
+        <li><strong>Staff ID:</strong> {{ staff_id }}</li>
+        <li><strong>Name:</strong> {{ staff_name }}</li>
+        <li><strong>Office:</strong> {{ office_label }}</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Key Features</h2>
+        <span class="panel-pill">Scope</span>
+      </div>
+      <ul class="activity-list">
+        {% for item in office_features %}
+          <li>{{ item }}</li>
+        {% empty %}
+          <li>Office features not configured yet.</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Dashboards</h2>
+      <span class="panel-pill">Modules</span>
+    </div>
+    <ul class="activity-list">
+      {% for m in office_modules %}
+        <li>
+          <a class="nav-title-link" href="{% url 'staff_office_module' office_code=office_code module_slug=m.slug %}">{{ m.title }}</a>
+          <div class="brand-sub" style="margin:2px 0 0;">{{ m.description }}</div>
+        </li>
+      {% empty %}
+        <li>Modules for this office are not configured yet.</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}

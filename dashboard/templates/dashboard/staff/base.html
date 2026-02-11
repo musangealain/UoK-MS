@@ -39,6 +39,15 @@
             <p class="nav-label">Office</p>
             <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">Overview</a>
           </div>
+
+          {% if office_modules %}
+            <div class="nav-group">
+              <p class="nav-label">Dashboards</p>
+              {% for m in office_modules %}
+                <a class="nav-link {% if current_page == 'staff.module.'|add:m.slug %}active{% endif %}" href="{% url 'staff_office_module' office_code=office_code module_slug=m.slug %}">{{ m.title }}</a>
+              {% endfor %}
+            </div>
+          {% endif %}
           <div class="nav-group">
             <p class="nav-label">Account</p>
             <a class="nav-link" href="{% url 'password_change' %}">Change Password</a>
@@ -52,4 +61,3 @@
     </div>
   </body>
 </html>
-

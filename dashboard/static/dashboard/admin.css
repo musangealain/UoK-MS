@@ -112,6 +112,24 @@ html,body{
   display:inline-flex;
   align-items:center;
   justify-content:center;
+  font-family:inherit;
+  transition:transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease, filter 0.12s ease;
+}
+
+.icon-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 18px rgba(16, 22, 47, 0.12);
+  border-color:rgba(16, 22, 47, 0.16);
+}
+
+.icon-btn:active{
+  transform:translateY(0);
+  box-shadow:none;
+}
+
+.icon-btn:focus-visible{
+  outline:2px solid rgba(247, 181, 72, 0.9);
+  outline-offset:2px;
 }
 
 .user-pill{
@@ -332,6 +350,10 @@ html,body{
   border-radius:8px;
   font-weight:700;
   font-size:12px;
+  font-family:inherit;
+  transition:transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease, filter 0.12s ease;
+  display:inline-flex;
+  align-items:center;
 }
 
 .primary-btn{
@@ -343,6 +365,31 @@ html,body{
   background:#fff;
   border:1px solid var(--border);
   color:var(--maroon-dark);
+}
+
+.primary-btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.05);
+  box-shadow:0 12px 20px rgba(16, 22, 47, 0.14);
+}
+
+.ghost-btn:hover{
+  transform:translateY(-1px);
+  background:#f8f9fc;
+  border-color:rgba(16, 22, 47, 0.14);
+  box-shadow:0 12px 20px rgba(16, 22, 47, 0.10);
+}
+
+.primary-btn:active,
+.ghost-btn:active{
+  transform:translateY(0);
+  box-shadow:none;
+}
+
+.primary-btn:focus-visible,
+.ghost-btn:focus-visible{
+  outline:2px solid rgba(247, 181, 72, 0.9);
+  outline-offset:2px;
 }
 
 .summary-grid{
@@ -517,6 +564,24 @@ html,body{
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  font-family: inherit;
+  transition:transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.action-btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.05);
+  box-shadow:0 10px 18px rgba(16, 22, 47, 0.12);
+}
+
+.action-btn:active{
+  transform:translateY(0);
+  box-shadow:none;
+}
+
+.action-btn:focus-visible{
+  outline:2px solid rgba(247, 181, 72, 0.9);
+  outline-offset:2px;
 }
 
 .action-approve {

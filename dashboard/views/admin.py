@@ -8,6 +8,7 @@ from django.db import IntegrityError, OperationalError
 from django.db import transaction
 from django.db.models import Max
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.utils import timezone
 from dashboard.models import (
     Application,
@@ -16,6 +17,136 @@ from dashboard.models import (
     StaffProfile,
     UserProfile,
 )
+
+ADMIN_GROUPS = {
+    "people.office_performance": {
+        "title": "Office Performance",
+        "items": [
+            {"key": "people.office_performance.registrar_office", "title": "Registrar Office"},
+            {"key": "people.office_performance.finance_office", "title": "Finance Office"},
+            {"key": "people.office_performance.hr_office", "title": "HR Office"},
+            {"key": "people.office_performance.academic_affairs", "title": "Academic Affairs"},
+            {"key": "people.office_performance.admissions_office", "title": "Admissions Office", "url_name": "admin_applications"},
+            {"key": "people.office_performance.e_learning_office", "title": "E-Learning Office"},
+            {"key": "people.office_performance.library_services", "title": "Library Office"},
+        ],
+    },
+    "people.student_performance": {
+        "title": "Student Performance",
+        "items": [
+            {"key": "people.student_performance.enrollment_demographics", "title": "Enrollment & Demographics", "url_name": "admin_students"},
+            {"key": "people.student_performance.academic_results", "title": "Academic Results"},
+            {"key": "people.student_performance.retention_progression", "title": "Retention & Progression"},
+            {"key": "people.student_performance.satisfaction_outcomes", "title": "Satisfaction & Outcomes"},
+        ],
+    },
+    "people.faculty_performance": {
+        "title": "Faculty Performance",
+        "items": [
+            {"key": "people.faculty_performance.teaching_load", "title": "Teachers Database", "url_name": "admin_lecturers"},
+            {"key": "people.faculty_performance.teaching_effectiveness", "title": "Teaching Effectiveness"},
+            {"key": "people.faculty_performance.research_output", "title": "Research Output"},
+            {"key": "people.faculty_performance.engagement_development", "title": "Engagement & Development"},
+        ],
+    },
+    "academic.program_performance": {
+        "title": "Program Performance",
+        "items": [
+            {"key": "academic.program_performance.business_school", "title": "Business School"},
+            {"key": "academic.program_performance.computing_it", "title": "Computing & IT"},
+            {"key": "academic.program_performance.law_school", "title": "Law School"},
+            {"key": "academic.program_performance.short_courses", "title": "Short Courses"},
+        ],
+    },
+    "academic.course_analytics": {
+        "title": "Course Analytics",
+        "items": [
+            {"key": "academic.course_analytics.popularity_demand", "title": "Popularity & Demand"},
+            {"key": "academic.course_analytics.pass_fail_rates", "title": "Pass/Fail Rates"},
+            {"key": "academic.course_analytics.student_feedback", "title": "Student Feedback"},
+        ],
+    },
+    "academic.learning_outcomes": {
+        "title": "Learning Outcomes",
+        "items": [
+            {"key": "academic.learning_outcomes.graduate_competencies", "title": "Graduate Competencies"},
+            {"key": "academic.learning_outcomes.employer_feedback", "title": "Employer Feedback"},
+        ],
+    },
+    "financial.revenue_analysis": {
+        "title": "Revenue Analysis",
+        "items": [
+            {"key": "financial.revenue_analysis.program_profitability", "title": "Program Profitability"},
+            {"key": "financial.revenue_analysis.revenue_streams", "title": "Revenue Streams"},
+            {"key": "financial.revenue_analysis.fee_collection_rates", "title": "Fee Collection Rates"},
+        ],
+    },
+    "financial.cost_analysis": {
+        "title": "Cost Analysis",
+        "items": [
+            {"key": "financial.cost_analysis.department_expenditure", "title": "Department Expenditure"},
+            {"key": "financial.cost_analysis.cost_per_student", "title": "Cost per Student"},
+            {"key": "financial.cost_analysis.resource_utilization", "title": "Resource Utilization"},
+        ],
+    },
+    "financial.budget_forecasting": {
+        "title": "Budget & Forecasting",
+        "items": [
+            {"key": "financial.budget_forecasting.budget_vs_actual", "title": "Budget vs. Actual"},
+            {"key": "financial.budget_forecasting.three_year_projections", "title": "3-Year Projections"},
+            {"key": "financial.budget_forecasting.roi_analysis", "title": "ROI Analysis"},
+        ],
+    },
+}
+
+
+def _admin_subnav_for_page(page: str):
+    page = (page or "").strip()
+    if not page:
+        return None
+    for group_key, group in ADMIN_GROUPS.items():
+        if page == group_key or page.startswith(group_key + "."):
+            items = []
+            for raw in group.get("items", []):
+                key = raw["key"]
+                url_name = raw.get("url_name")
+                if url_name:
+                    href = reverse(url_name)
+                else:
+                    href = reverse("admin_placeholder", kwargs={"page": key})
+                items.append(
+                    {
+                        "key": key,
+                        "title": raw.get("title", key),
+                        "href": href,
+                    }
+                )
+            is_group_page = page == group_key
+            title = group.get("title", group_key)
+            active = next((i for i in items if i["key"] == page), None)
+            page_title = active["title"] if active else title
+            return {
+                "group_key": group_key,
+                "title": title,
+                "items": items,
+                "is_group_page": is_group_page,
+                "page_title": page_title,
+            }
+    return None
+
+
+def _maybe_add_admin_subnav(context: dict, current_page: str):
+    subnav = _admin_subnav_for_page(current_page)
+    if not subnav:
+        return context
+    context.update(
+        {
+            "subnav_title": subnav["title"],
+            "subnav_items": subnav["items"],
+            "subnav_is_group_page": subnav["is_group_page"],
+        }
+    )
+    return context
 
 
 def _is_admin(user):
@@ -198,10 +329,15 @@ def admin_students(request):
     if not _is_admin(request.user):
         return redirect('home')
     students = _get_students_with_records()
+    context = {
+        "students": students,
+        "current_page": "people.student_performance.enrollment_demographics",
+    }
+    _maybe_add_admin_subnav(context, context["current_page"])
     return render(
         request,
         'dashboard/admin/students.html',
-        {'students': students, 'current_page': 'people.student_performance.enrollment_demographics'},
+        context,
     )
 
 
@@ -210,10 +346,15 @@ def admin_lecturers(request):
     if not _is_admin(request.user):
         return redirect('home')
     lecturers = _get_lecturers()
+    context = {
+        "lecturers": lecturers,
+        "current_page": "people.faculty_performance.teaching_load",
+    }
+    _maybe_add_admin_subnav(context, context["current_page"])
     return render(
         request,
         'dashboard/admin/lecturers.html',
-        {'lecturers': lecturers, 'current_page': 'people.faculty_performance.teaching_load'},
+        context,
     )
 
 
@@ -222,10 +363,15 @@ def admin_applications(request):
     if not _is_admin(request.user):
         return redirect('home')
     applications = _get_applications()
+    context = {
+        "applications": applications,
+        "current_page": "people.office_performance.admissions_office",
+    }
+    _maybe_add_admin_subnav(context, context["current_page"])
     return render(
         request,
         'dashboard/admin/applications.html',
-        {'applications': applications, 'current_page': 'people.office_performance.admissions_office'},
+        context,
     )
 
 
@@ -298,9 +444,15 @@ def admin_placeholder(request, page):
     if not _is_admin(request.user):
         return redirect("home")
     title = page.replace("-", " ").replace(".", " / ").replace("/", " / ").title()
+    subnav = _admin_subnav_for_page(page)
+    if subnav and subnav.get("page_title"):
+        title = subnav["page_title"]
     context = {
         "current_page": page,
         "page_title": title,
+        "subnav_title": subnav["title"] if subnav else None,
+        "subnav_items": subnav["items"] if subnav else None,
+        "subnav_is_group_page": subnav["is_group_page"] if subnav else False,
     }
 
     if page == "executive.leadership":

@@ -1,0 +1,26 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>{{ module.title }}</h1>
+      <p>{{ module.description }}</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Workspace</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <ul class="activity-list">
+      <li>This module is ready for the next step: add models + forms + tables for real workflows.</li>
+      <li><strong>Next:</strong> tell me what fields/actions you want for “{{ module.title }}”.</li>
+    </ul>
+  </section>
+{% endblock %}
+

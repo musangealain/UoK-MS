@@ -1,130 +1,216 @@
 {% extends "dashboard/student/base.html" %}
 {% block title %}Student Dashboard{% endblock %}
+
+{% block styles %}
+  <style>
+    .student-shell .main{
+      padding:18px 22px 26px;
+    }
+    .overview-compact .page-header{
+      margin-bottom:14px;
+    }
+    .overview-compact .stats-grid{
+      margin-bottom:14px;
+    }
+    .overview-compact .stat-card{
+      padding:14px;
+    }
+    .overview-compact .stat-card h3{
+      font-size:16px;
+    }
+  </style>
+{% endblock %}
+
 {% block main %}
-        <section class="page-header">
-          <div>
-            <h1>Student Dashboard</h1>
-            <p>Welcome back, {{ user.first_name|default:user.username }}. Track your academics, timetable, and finances.</p>
-          </div>
-          <div class="quick-actions">
-            <a class="primary-btn" href="#">Register Courses</a>
-            <a class="ghost-btn" href="#">Pay Fees</a>
-          </div>
-        </section>
+  <div class="overview-compact">
+    <section class="page-header">
+      <div>
+        <h1>Student Dashboard</h1>
+        <p>Welcome back, {{ user.first_name|default:user.username }}. Register modules and manage your semester schedule.</p>
+      </div>
+      <div class="quick-actions">
+        <a class="primary-btn" href="#module-registration">Module Registration</a>
+        <a class="ghost-btn" href="#">Pay Fees</a>
+      </div>
+    </section>
 
-        <section class="stats-grid">
-          <article class="stat-card">
-            <p class="stat-label">Enrolled Program</p>
-            <h3>{% if application %}{{ application.program }}{% else %}Program pending{% endif %}</h3>
-            <p class="stat-meta">Year/Semester: Year 2 · Sem 1</p>
-          </article>
-          <article class="stat-card">
-            <p class="stat-label">Registered Courses</p>
-            <h3>6</h3>
-            <p class="stat-meta">Credits: 18 this semester</p>
-          </article>
-          <article class="stat-card">
-            <p class="stat-label">Current GPA</p>
-            <h3>3.52</h3>
-            <p class="stat-meta">CGPA: 3.41</p>
-          </article>
-          <article class="stat-card">
-            <p class="stat-label">Fee Balance</p>
-            <h3>245,000 RWF</h3>
-            <p class="stat-meta">Status: Pending</p>
-          </article>
-        </section>
-
-        <section class="analytics-panel">
-          <div class="panel-header">
-            <div>
-              <h2>Academic Overview</h2>
-              <p class="panel-sub">Monitor your progress and upcoming classes.</p>
-            </div>
-            <span class="panel-pill">This Semester</span>
+    <section class="overview-grid" aria-label="Student overview summary">
+      <article class="overview-card overview-card-schedule">
+        <p class="overview-label">Today Schedule</p>
+        <h3 class="overview-value">Data Structures</h3>
+        <div class="mini-schedule" role="list" aria-label="Today schedule">
+          <div class="mini-row" role="listitem">
+            <span class="mini-time">08:00</span>
+            <span class="mini-main">Stacks &amp; Queues</span>
+            <span class="mini-meta">B201</span>
           </div>
-          <div class="analytics-grid">
-            <div class="analytics-card">
-              <p class="analytics-title">Attendance Trend</p>
-              <div class="chart-placeholder">Chart placeholder</div>
-            </div>
-            <div class="analytics-card">
-              <p class="analytics-title">Grade Distribution</p>
-              <div class="chart-placeholder">Chart placeholder</div>
-            </div>
-            <div class="analytics-card">
-              <p class="analytics-title">Fee Payments</p>
-              <div class="chart-placeholder">Chart placeholder</div>
-            </div>
+          <div class="mini-row" role="listitem">
+            <span class="mini-time">10:00</span>
+            <span class="mini-main">SQL Joins &amp; Indexes</span>
+            <span class="mini-meta">A105</span>
           </div>
-        </section>
+        </div>
+      </article>
 
-        <section class="content-grid">
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Today&rsquo;s Classes</h2>
-              <span class="panel-pill">Monday</span>
-            </div>
-            <div class="timetable">
-              <div class="timetable-row timetable-header">
-                <span>Time</span>
-                <span>Course</span>
-                <span>Room</span>
+      <article class="overview-card overview-card-deadlines">
+        <p class="overview-label">Upcoming Deadlines</p>
+        <h3 class="overview-value">This Week</h3>
+        <ul class="mini-list" aria-label="Upcoming deadlines">
+          <li><span class="mini-dot" aria-hidden="true"></span>Assignment 2 submission — Thu</li>
+          <li><span class="mini-dot" aria-hidden="true"></span>Fees payment deadline — Fri</li>
+        </ul>
+      </article>
+
+      <article class="overview-card overview-card-wallet">
+        <p class="overview-label">Wallet Snapshot</p>
+        <h3 class="overview-value">245,000 RWF</h3>
+        <p class="mini-note">Available: 120,000 RWF</p>
+        <p class="mini-note">Spent (30 days): 45,000 RWF</p>
+      </article>
+
+      <article class="overview-card overview-card-announcements">
+        <p class="overview-label">Announcements</p>
+        <h3 class="overview-value">Latest Updates</h3>
+        <ul class="mini-list" aria-label="Announcements">
+          <li><span class="mini-dot" aria-hidden="true"></span>Mid-semester exams timetable released — Today</li>
+          <li><span class="mini-dot" aria-hidden="true"></span>Library clearance required before registration closes — Yesterday</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel panel-tight" id="module-registration" aria-label="Module registration">
+      <div class="panel-header">
+        <div>
+          <h2>Module Registration</h2>
+          <p class="panel-sub">Book your modules based on registration type and complete payment to confirm.</p>
+        </div>
+        <span class="panel-pill">This Semester</span>
+      </div>
+
+      <div class="reg-layout">
+        <section class="reg-box">
+          <h3 class="reg-box-title">Register For</h3>
+          <p class="reg-box-sub">Select registration type to get modules to book</p>
+
+          <form class="reg-form" method="post" action="#">
+            {% csrf_token %}
+            <details class="reg-dropdown">
+              <summary class="reg-summary">
+                <span class="reg-summary-title">Registration type</span>
+                <span class="reg-summary-value">Choose…</span>
+              </summary>
+              <div class="reg-options" role="group" aria-label="Registration type">
+                <div class="reg-option">
+                  <input class="reg-radio" type="radio" id="reg-first-attempt" name="registration_type" value="first_attempt" checked>
+                  <label class="reg-option-label" for="reg-first-attempt">First attempt Registration</label>
+                </div>
+                <div class="reg-option">
+                  <input class="reg-radio" type="radio" id="reg-retake" name="registration_type" value="retake">
+                  <label class="reg-option-label" for="reg-retake">Retake Registration</label>
+                </div>
               </div>
-              <div class="timetable-row">
-                <span>08:00</span>
-                <span>Data Structures</span>
-                <span>B201</span>
-              </div>
-              <div class="timetable-row">
-                <span>10:00</span>
-                <span>Database Systems</span>
-                <span>A105</span>
-              </div>
-            </div>
-          </div>
+            </details>
 
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Recent Activity</h2>
-              <span class="panel-pill">Last 7 days</span>
+            <div class="reg-actions">
+              <button class="action-btn action-danger" type="submit">Book Module</button>
+              <button class="action-btn action-success" type="button">Make Payment</button>
             </div>
-            <ul class="activity-list">
-              <li>Registered 3 courses · 2 hours ago</li>
-              <li>Downloaded transcript · yesterday</li>
-              <li>Fee payment received · 3 days ago</li>
-            </ul>
+          </form>
+        </section>
+
+        <section class="reg-box">
+          <h3 class="reg-box-title">Module List</h3>
+          <p class="reg-box-sub">Modules you have booked for this semester</p>
+          <div class="table-wrap table-wrap-compact">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Module Code</th>
+                  <th>Unit Name</th>
+                  <th>Credit hours</th>
+                  <th>Semester</th>
+                  <th>Month</th>
+                  <th>Session</th>
+                  <th>Room</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CSC201</td>
+                  <td>Data Structures</td>
+                  <td>3</td>
+                  <td>1</td>
+                  <td>Feb</td>
+                  <td>Morning</td>
+                  <td>B201</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="action-btn action-approve" type="button">Register Module</button>
+                      <button class="action-btn action-deny" type="button">Drop</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CSC205</td>
+                  <td>Database Systems</td>
+                  <td>3</td>
+                  <td>1</td>
+                  <td>Feb</td>
+                  <td>Afternoon</td>
+                  <td>A105</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="action-btn action-approve" type="button">Register Module</button>
+                      <button class="action-btn action-deny" type="button">Drop</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
-        <section class="content-grid">
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Announcements</h2>
-              <span class="panel-pill panel-pill-alert">2 New</span>
-            </div>
-            <div class="announcement">
-              <h4>Mid-semester exams timetable released</h4>
-              <p>Check the exam schedule section for details.</p>
-              <span>Updated 2 hours ago</span>
-            </div>
-            <div class="announcement">
-              <h4>Library clearance required</h4>
-              <p>Complete clearance before registration closes.</p>
-              <span>Updated yesterday</span>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Quick Actions</h2>
-            </div>
-            <div class="action-grid">
-              <a href="#" class="action-card">Register Courses</a>
-              <a href="#" class="action-card">View Results</a>
-              <a href="#" class="action-card">Pay Fees</a>
-              <a href="#" class="action-card">Download Transcript</a>
-            </div>
+        <section class="reg-box reg-box-wide">
+          <h3 class="reg-box-title">Registration List</h3>
+          <p class="reg-box-sub">Your past registered modules and history</p>
+          <div class="table-wrap table-wrap-compact">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Academic Year</th>
+                  <th>Semester</th>
+                  <th>Module Code</th>
+                  <th>Unit Name</th>
+                  <th>Credits</th>
+                  <th>Status</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2024/2025</td>
+                  <td>2</td>
+                  <td>CSC102</td>
+                  <td>Introduction to Programming</td>
+                  <td>3</td>
+                  <td><span class="status-badge status-approved">Completed</span></td>
+                  <td>A</td>
+                </tr>
+                <tr>
+                  <td>2024/2025</td>
+                  <td>2</td>
+                  <td>MTH110</td>
+                  <td>Discrete Mathematics</td>
+                  <td>3</td>
+                  <td><span class="status-badge status-approved">Completed</span></td>
+                  <td>B+</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
+      </div>
+    </section>
+  </div>
 {% endblock %}

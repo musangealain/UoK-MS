@@ -152,54 +152,70 @@
       {% endif %}
     </section>
   {% else %}
-    <section class="panel">
-      <div class="panel-header">
-        <h2>Coming Soon</h2>
-        <span class="panel-pill">Senior Management</span>
-      </div>
-      {% if "office_performance" in current_page %}
-        <div class="table-wrap">
-          <table class="dashboard-table">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                <th>Value</th>
-                <th>Trend</th>
-                <th>Status</th>
-                <th>Last Updated</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Tickets Resolved</td>
-                <td>128</td>
-                <td>+6%</td>
-                <td><span class="status-badge status-approved">Green</span></td>
-                <td>Today</td>
-              </tr>
-              <tr>
-                <td>Average Processing Time</td>
-                <td>2.4 days</td>
-                <td>-3%</td>
-                <td><span class="status-badge status-pending">Yellow</span></td>
-                <td>Today</td>
-              </tr>
-              <tr>
-                <td>Escalations</td>
-                <td>7</td>
-                <td>+2</td>
-                <td><span class="status-badge status-rejected">Red</span></td>
-                <td>Today</td>
-              </tr>
-            </tbody>
-          </table>
+    {% if subnav_is_group_page and subnav_items %}
+      <section class="panel">
+        <div class="panel-header">
+          <h2>{{ subnav_title }}</h2>
+          <span class="panel-pill">Dashboards</span>
         </div>
-      {% else %}
-        <div class="chart-card">
-          <p>Route key: {{ current_page }}</p>
-          <div class="chart-placeholder"></div>
+        <ul class="activity-list">
+          {% for item in subnav_items %}
+            <li>
+              <a class="nav-title-link" href="{{ item.href }}">{{ item.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% else %}
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Coming Soon</h2>
+          <span class="panel-pill">Senior Management</span>
         </div>
-      {% endif %}
-    </section>
+        {% if "office_performance" in current_page %}
+          <div class="table-wrap">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Value</th>
+                  <th>Trend</th>
+                  <th>Status</th>
+                  <th>Last Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tickets Resolved</td>
+                  <td>128</td>
+                  <td>+6%</td>
+                  <td><span class="status-badge status-approved">Green</span></td>
+                  <td>Today</td>
+                </tr>
+                <tr>
+                  <td>Average Processing Time</td>
+                  <td>2.4 days</td>
+                  <td>-3%</td>
+                  <td><span class="status-badge status-pending">Yellow</span></td>
+                  <td>Today</td>
+                </tr>
+                <tr>
+                  <td>Escalations</td>
+                  <td>7</td>
+                  <td>+2</td>
+                  <td><span class="status-badge status-rejected">Red</span></td>
+                  <td>Today</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="chart-card">
+            <p>Route key: {{ current_page }}</p>
+            <div class="chart-placeholder"></div>
+          </div>
+        {% endif %}
+      </section>
+    {% endif %}
   {% endif %}
 {% endblock %}
