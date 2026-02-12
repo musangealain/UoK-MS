@@ -5,111 +5,212 @@
 
 {% block styles %}
   <link rel="stylesheet" href="{% static 'dashboard/lecturer.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard/student.css' %}">
+  <style>
+    .lecturer-shell .main{
+      padding:18px 22px 26px;
+    }
+    .overview-compact .page-header{
+      margin-bottom:14px;
+    }
+    .overview-compact .overview-grid{
+      margin-bottom:14px;
+    }
+    .overview-compact .overview-card{
+      padding:10px;
+    }
+  </style>
 {% endblock %}
 
 {% block main %}
-  <section class="page-header">
-    <div>
-      <h1>Lecturer Dashboard</h1>
-      <p>Welcome back, {{ user.first_name|default:user.username }}. Manage classes, grading, and student engagement.</p>
-    </div>
-    <div class="quick-actions">
-      <a class="primary-btn" href="#">Open Attendance</a>
-      <a class="ghost-btn" href="#">Publish Results</a>
-    </div>
-  </section>
-
-  <section class="summary-grid">
-    <div class="summary-card">
-      <p class="summary-label">Teaching Load</p>
-      <h3>4 Courses</h3>
-      <p class="summary-meta">Active this semester</p>
-    </div>
-    <div class="summary-card">
-      <p class="summary-label">Enrolled Students</p>
-      <h3>230</h3>
-      <p class="summary-meta">Across assigned courses</p>
-    </div>
-    <div class="summary-card">
-      <p class="summary-label">Grading Queue</p>
-      <h3>12 Scripts</h3>
-      <p class="summary-meta">Awaiting review</p>
-    </div>
-    <div class="summary-card">
-      <p class="summary-label">Student Queries</p>
-      <h3>5 New</h3>
-      <p class="summary-meta">Unread messages</p>
-    </div>
-  </section>
-
-  <section class="content-grid">
-    <div class="panel panel-wide">
-      <div class="panel-header">
-        <h2>Teaching Timetable</h2>
-        <span class="panel-pill">Week at a Glance</span>
+  <div class="overview-compact">
+    <section class="page-header">
+      <div>
+        <h1>Lecturer Dashboard</h1>
+        <p>Welcome back, {{ user.first_name|default:user.username }}</p>
       </div>
-      <div class="timetable">
-        <div class="timetable-row timetable-header">
-          <span>Day</span>
-          <span>Course</span>
-          <span>Time</span>
-          <span>Room</span>
+      <div class="quick-actions">
+        <a class="primary-btn" href="#teaching-operations">Start Attendance</a>
+        <a class="ghost-btn" href="#">Publish Grades</a>
+      </div>
+    </section>
+
+    <section class="overview-grid" aria-label="Lecturer overview summary">
+      <article class="overview-card overview-card-schedule">
+        <p class="overview-label">Today Classes</p>
+        <h3 class="overview-value">Applied Algorithms</h3>
+        <div class="mini-schedule" role="list" aria-label="Today classes">
+          <div class="mini-row" role="listitem">
+            <span class="mini-time">09:00</span>
+            <span class="mini-main">Lecture - Topic 5: Graph Search</span>
+            <span class="mini-meta">B203</span>
+          </div>
+          <div class="mini-row" role="listitem">
+            <span class="mini-time">13:00</span>
+            <span class="mini-main">Lab - Implementation Clinic</span>
+            <span class="mini-meta">Lab 2</span>
+          </div>
         </div>
-        <div class="timetable-row">
-          <span>Monday</span>
-          <span>Data Structures</span>
-          <span>9:00 - 11:00</span>
-          <span>B203</span>
+      </article>
+
+      <article class="overview-card overview-card-deadlines">
+        <p class="overview-label">Pending Tasks</p>
+        <h3 class="overview-value">This Week</h3>
+        <ul class="mini-list" aria-label="Pending tasks">
+          <li><span class="mini-dot" aria-hidden="true"></span>Upload midterm marking guide - Thu</li>
+          <li><span class="mini-dot" aria-hidden="true"></span>Submit attendance summary - Fri</li>
+        </ul>
+      </article>
+
+      <article class="overview-card overview-card-wallet">
+        <p class="overview-label">Teaching Snapshot</p>
+        <h3 class="overview-value">4 Active Courses</h3>
+        <p class="mini-note">Students: 236 total</p>
+        <p class="mini-note">Sessions this week: 9</p>
+      </article>
+
+      <article class="overview-card overview-card-announcements">
+        <p class="overview-label">Announcements</p>
+        <h3 class="overview-value">Faculty Updates</h3>
+        <ul class="mini-list" aria-label="Faculty updates">
+          <li><span class="mini-dot" aria-hidden="true"></span>QA moderation meeting moved to Thursday</li>
+          <li><span class="mini-dot" aria-hidden="true"></span>LMS maintenance scheduled for Saturday 02:00</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel panel-tight" id="teaching-operations" aria-label="Teaching operations">
+      <div class="panel-header">
+        <div>
+          <h2>Teaching Operations</h2>
+          <p class="panel-sub">Plan sessions, manage class activity, and track ongoing assessment workflows.</p>
         </div>
-        <div class="timetable-row">
-          <span>Wednesday</span>
-          <span>Algorithms</span>
-          <span>2:00 - 4:00</span>
-          <span>A105</span>
-        </div>
+        <span class="panel-pill">This Semester</span>
       </div>
-    </div>
 
-    <div class="panel">
-      <div class="panel-header">
-        <h2>Student Management</h2>
-      </div>
-      <div class="action-grid">
-        <a class="action-card" href="#">View Student List</a>
-        <a class="action-card" href="#">Attendance Sheet</a>
-        <a class="action-card" href="#">Advising Notes</a>
-        <a class="action-card" href="#">Progress Alerts</a>
-      </div>
-    </div>
+      <div class="reg-layout">
+        <section class="reg-box">
+          <h3 class="reg-box-title">Session Setup</h3>
+          <p class="reg-box-sub">Choose the activity type before starting a class session</p>
 
-    <div class="panel">
-      <div class="panel-header">
-        <h2>Assessment Management</h2>
-      </div>
-      <div class="action-grid">
-        <a class="action-card" href="#">Create Assessment</a>
-        <a class="action-card" href="#">Set Deadlines</a>
-        <a class="action-card" href="#">Grade Submissions</a>
-        <a class="action-card" href="#">Release Feedback</a>
-      </div>
-    </div>
+          <form class="reg-form" method="post" action="#">
+            {% csrf_token %}
+            <details class="reg-dropdown">
+              <summary class="reg-summary">
+                <span class="reg-summary-title">Activity type</span>
+                <span class="reg-summary-value">Choose...</span>
+              </summary>
+              <div class="reg-options" role="group" aria-label="Activity type">
+                <div class="reg-option">
+                  <input class="reg-radio" type="radio" id="activity-lecture" name="activity_type" value="lecture" checked>
+                  <label class="reg-option-label" for="activity-lecture">Lecture Session</label>
+                </div>
+                <div class="reg-option">
+                  <input class="reg-radio" type="radio" id="activity-lab" name="activity_type" value="lab">
+                  <label class="reg-option-label" for="activity-lab">Laboratory Session</label>
+                </div>
+              </div>
+            </details>
 
-    <div class="panel">
-      <div class="panel-header">
-        <h2>Lecturer Announcements</h2>
-        <span class="panel-pill panel-pill-alert">2</span>
+            <div class="reg-actions">
+              <button class="action-btn action-danger" type="submit">Start Session</button>
+              <button class="action-btn action-success" type="button">Open Gradebook</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="reg-box">
+          <h3 class="reg-box-title">Today Teaching List</h3>
+          <p class="reg-box-sub">Scheduled classes and immediate actions</p>
+          <div class="table-wrap table-wrap-compact">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Course Code</th>
+                  <th>Unit Name</th>
+                  <th>Year</th>
+                  <th>Time</th>
+                  <th>Room</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CSC305</td>
+                  <td>Applied Algorithms</td>
+                  <td>3</td>
+                  <td>09:00</td>
+                  <td>B203</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="action-btn action-approve" type="button">Take Attendance</button>
+                      <button class="action-btn action-deny" type="button">Reschedule</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CSC312</td>
+                  <td>Database Administration</td>
+                  <td>3</td>
+                  <td>13:00</td>
+                  <td>Lab 2</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="action-btn action-approve" type="button">Take Attendance</button>
+                      <button class="action-btn action-deny" type="button">Reschedule</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="reg-box reg-box-wide">
+          <h3 class="reg-box-title">Recent Assessment Activity</h3>
+          <p class="reg-box-sub">Latest coursework pipelines and grading progress</p>
+          <div class="table-wrap table-wrap-compact">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Assessment</th>
+                  <th>Due Date</th>
+                  <th>Submissions</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CSC305</td>
+                  <td>Assignment 2 - Graph Pathfinding</td>
+                  <td>2026-02-14</td>
+                  <td>68 / 72</td>
+                  <td><span class="status-badge status-pending">In Review</span></td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="action-btn action-approve" type="button">Grade Now</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CSC312</td>
+                  <td>Lab Report 1 - Query Optimization</td>
+                  <td>2026-02-10</td>
+                  <td>55 / 55</td>
+                  <td><span class="status-badge status-approved">Ready to Publish</span></td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="action-btn action-danger" type="button">Publish Feedback</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
-      <div class="announcement">
-        <h4>Class moved to online session</h4>
-        <p>Session link posted in the LMS.</p>
-        <span>Updated 2 hours ago</span>
-      </div>
-      <div class="announcement">
-        <h4>Assessment moderation</h4>
-        <p>Please finalize marks before Friday.</p>
-        <span>Updated yesterday</span>
-      </div>
-      <a class="panel-link" href="#">Post Announcement</a>
-    </div>
-  </section>
+    </section>
+  </div>
 {% endblock %}
