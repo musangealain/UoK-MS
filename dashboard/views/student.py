@@ -12,6 +12,7 @@ def student_dashboard(request):
     application = (
         Application.objects.filter(applicant=request.user).first()
         or Application.objects.filter(reg_number=request.user.username).first()
+        or Application.objects.filter(student_number=request.user.username).first()
     )
     context = {
         'current_page': 'overview',
@@ -29,6 +30,7 @@ def applicant_dashboard(request):
     application = (
         Application.objects.filter(applicant=request.user).first()
         or Application.objects.filter(reg_number=request.user.username).first()
+        or Application.objects.filter(student_number=request.user.username).first()
     )
     if not application:
         return render(request, 'dashboard/student/applicant.html', {'missing_application': True})

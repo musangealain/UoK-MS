@@ -4,11 +4,7 @@
         <section class="page-header">
           <div>
             <h1>Lecturer Accounts</h1>
-            <p>Manage faculty profiles, access status, and activity.</p>
-          </div>
-          <div class="quick-actions">
-            <a class="primary-btn" href="#">Create Lecturer</a>
-            <a class="ghost-btn" href="#">Export List</a>
+            <p>Faculty directory view (read-only).</p>
           </div>
         </section>
 
@@ -24,7 +20,6 @@
                   <th>Email</th>
                   <th>Active</th>
                   <th>Joined</th>
-                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -34,20 +29,10 @@
                     <td>{{ u.email|default:"-" }}</td>
                     <td>{{ u.is_active }}</td>
                     <td>{{ u.date_joined|date:"Y-m-d" }}</td>
-                    <td>
-                      <form class="delete-form" method="post" action="{% url 'user_delete' u.id %}">
-                        {% csrf_token %}
-                        <button class="icon-btn icon-danger" type="submit" title="Delete account" aria-label="Delete account">
-                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                            <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
-                          </svg>
-                        </button>
-                      </form>
-                    </td>
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="5">No lecturers found.</td>
+                    <td colspan="4">No lecturers found.</td>
                   </tr>
                 {% endfor %}
               </tbody>

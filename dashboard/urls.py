@@ -13,13 +13,9 @@ from dashboard.views.lecturer import (
 )
 from dashboard.views.admin import (
     admin_dashboard,
-    admin_students,
     admin_lecturers,
-    admin_applications,
     admin_kpi_monitor,
     admin_placeholder,
-    application_decision,
-    application_delete,
     user_delete,
 )
 from dashboard.views.staff import staff_dashboard, staff_office_dashboard, staff_office_module
@@ -38,11 +34,7 @@ urlpatterns = [
     path('admin/', admin_dashboard, name='admin_dashboard'),
     path('admin/kpis/', admin_kpi_monitor, name='admin_kpi_monitor'),
     path('admin/sm/<path:page>/', admin_placeholder, name='admin_placeholder'),
-    path('admin/students/', admin_students, name='admin_students'),
     path('admin/lecturers/', admin_lecturers, name='admin_lecturers'),
-    path('admin/applications/', admin_applications, name='admin_applications'),
-    path('admin/applications/<int:application_id>/decision/', application_decision, name='application_decision'),
-    path('admin/applications/<int:application_id>/delete/', application_delete, name='application_delete'),
     path('admin/users/<int:user_id>/delete/', user_delete, name='user_delete'),
     path('staff/', staff_dashboard, name='staff_dashboard'),
     path('staff/<str:office_code>/', staff_office_dashboard, name='staff_office_dashboard'),

@@ -1,5 +1,6 @@
 import random
 import string
+import re
 
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
@@ -77,6 +78,10 @@ class AdminLoginView(LoginView):
             logout(self.request)
             form.add_error(None, "This account is not an admin account.")
             return self.form_invalid(form)
+        if not re.match(r"^OIT\d{2}-\d{3}$", user.username or ""):
+            logout(self.request)
+            form.add_error(None, "Admin ID must use the OIT format (e.g., OIT26-001).")
+            return self.form_invalid(form)
         return super().form_valid(form)
     def get_success_url(self):
         return '/dashboard/admin/'
@@ -114,6 +119,12 @@ def _handle_signup(request, role, template_name, redirect_url):
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
         if username and password:
+            if role == 'admin' and not re.match(r"^OIT\d{2}-\d{3}$", username):
+                return render(
+                    request,
+                    template_name,
+                    {'error': 'Admin ID must use the OIT format (e.g., OIT26-001).'},
+                )
             if User.objects.filter(username=username).exists():
                 return render(request, template_name, {'error': 'Username already exists.'})
             user = User.objects.create_user(username=username, email=email, password=password)
@@ -176,6 +187,7 @@ def apply_step2(request):
             Application.objects.create(
                 applicant=user,
                 reg_number=reg_number,
+                reg_password=password,
                 full_name=data['full_name'],
                 email=data['email'],
                 phone=data['phone'],

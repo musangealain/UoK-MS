@@ -26,7 +26,7 @@ ADMIN_GROUPS = {
             {"key": "people.office_performance.finance_office", "title": "Finance Office"},
             {"key": "people.office_performance.hr_office", "title": "HR Office"},
             {"key": "people.office_performance.academic_affairs", "title": "Academic Affairs"},
-            {"key": "people.office_performance.admissions_office", "title": "Admissions Office", "url_name": "admin_applications"},
+            {"key": "people.office_performance.admissions_office", "title": "Admissions Office"},
             {"key": "people.office_performance.e_learning_office", "title": "E-Learning Office"},
             {"key": "people.office_performance.library_services", "title": "Library Office"},
         ],
@@ -34,7 +34,7 @@ ADMIN_GROUPS = {
     "people.student_performance": {
         "title": "Student Performance",
         "items": [
-            {"key": "people.student_performance.enrollment_demographics", "title": "Enrollment & Demographics", "url_name": "admin_students"},
+            {"key": "people.student_performance.enrollment_demographics", "title": "Enrollment & Demographics"},
             {"key": "people.student_performance.academic_results", "title": "Academic Results"},
             {"key": "people.student_performance.retention_progression", "title": "Retention & Progression"},
             {"key": "people.student_performance.satisfaction_outcomes", "title": "Satisfaction & Outcomes"},
@@ -43,7 +43,6 @@ ADMIN_GROUPS = {
     "people.faculty_performance": {
         "title": "Faculty Performance",
         "items": [
-            {"key": "people.faculty_performance.teaching_load", "title": "Teachers Database", "url_name": "admin_lecturers"},
             {"key": "people.faculty_performance.teaching_effectiveness", "title": "Teaching Effectiveness"},
             {"key": "people.faculty_performance.research_output", "title": "Research Output"},
             {"key": "people.faculty_performance.engagement_development", "title": "Engagement & Development"},

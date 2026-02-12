@@ -1,0 +1,82 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}Enrolled Students{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>Enrolled Students</h1>
+      <p>Monitor active student records and enrollment details.</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
+    </div>
+  </section>
+
+  {% if flash or flash_error %}
+    <section class="panel panel-tight">
+      <div class="panel-header">
+        <h2>Updates</h2>
+        <span class="panel-pill">ADM</span>
+      </div>
+      {% if flash %}
+        <p class="panel-pill">{{ flash }}</p>
+      {% endif %}
+      {% if flash_error %}
+        <p class="panel-pill panel-pill-alert">{{ flash_error }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Enrollment Records</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Student No.</th>
+            <th>Issued Password</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Program</th>
+            <th>Status</th>
+            <th>Active</th>
+            <th>Joined</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in students %}
+            <tr>
+              <td>{{ u.username }}</td>
+              <td>{{ u.application_record.issued_password|default:"-" }}</td>
+              <td>{{ u.application_record.full_name|default:"-" }}</td>
+              <td>{{ u.email|default:"-" }}</td>
+              <td>{{ u.application_record.program|default:"-" }}</td>
+              <td>{{ u.userprofile.student_status|default:"-" }}</td>
+              <td>{{ u.is_active }}</td>
+              <td>{{ u.date_joined|date:"Y-m-d" }}</td>
+              <td>
+                <form class="delete-form" method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ u.id }}">
+                  <button class="icon-btn icon-danger" type="submit" title="Delete enrolled student" aria-label="Delete enrolled student">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"></path>
+                    </svg>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="9">No enrolled students found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

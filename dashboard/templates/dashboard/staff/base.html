@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <title>{% block title %}Staff Portal{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'dashboard/student.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/staff.css' %}">
     {% block styles %}{% endblock %}
   </head>
   <body>
@@ -35,19 +35,84 @@
 
       <aside class="sidebar">
         <nav class="nav">
-          <div class="nav-group">
-            <p class="nav-label">Office</p>
-            <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">Overview</a>
-          </div>
-
-          {% if office_modules %}
+          {% if office_code == "HRM" %}
             <div class="nav-group">
-              <p class="nav-label">Dashboards</p>
-              {% for m in office_modules %}
-                <a class="nav-link {% if current_page == 'staff.module.'|add:m.slug %}active{% endif %}" href="{% url 'staff_office_module' office_code=office_code module_slug=m.slug %}">{{ m.title }}</a>
-              {% endfor %}
+              <p class="nav-label">Overview</p>
+              <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">Dashboard</a>
             </div>
+
+            <div class="nav-group">
+              <p class="nav-label">Staff Management</p>
+              <a class="nav-link" href="#">All Staff Directory</a>
+              <a class="nav-link {% if current_page == 'staff.module.academic-staff' %}active{% endif %}" href="{% url 'staff_office_module' office_code=office_code module_slug='academic-staff' %}">Academic Staff</a>
+              <a class="nav-link" href="#">Administrative Staff</a>
+              <a class="nav-link" href="#">Support Staff</a>
+              <a class="nav-link" href="#">Onboarding</a>
+              <a class="nav-link" href="#">Contract Renewals</a>
+              <a class="nav-link" href="#">Separations &amp; Exit</a>
+            </div>
+
+            <div class="nav-group">
+              <p class="nav-label">Recruitment</p>
+              <a class="nav-link" href="#">Open Positions</a>
+              <a class="nav-link" href="#">Applications Pipeline</a>
+              <a class="nav-link" href="#">Interview Schedule</a>
+              <a class="nav-link" href="#">Offer Management </a>
+              <a class="nav-link" href="#">Faculty Recruitment Dashboard</a>
+            </div>
+
+            <div class="nav-group">
+              <p class="nav-label">Leave &amp; Attendance</p>
+              <a class="nav-link" href="#">Pending Requests</a>
+              <a class="nav-link" href="#">Leave Calendar</a>
+              <a class="nav-link" href="#">Today's Attendance</a>
+              <a class="nav-link" href="#">Leave Balances</a>
+              <a class="nav-link" href="#">Attendance Reports</a>
+            </div>
+
+            <div class="nav-group">
+              <p class="nav-label">Performance Management</p>
+              <a class="nav-link" href="#">Pending Appraisals</a>
+              <a class="nav-link" href="#">Overdue Appraisals </a>
+              <a class="nav-link" href="#">Academic Staff Evaluation</a>
+              <a class="nav-link" href="#">Completed Appraisals</a>
+              <a class="nav-link" href="#">Appraisal Calendar</a>
+            </div>
+
+            <div class="nav-group">
+              <p class="nav-label">Training &amp; Development</p>
+              <a class="nav-link" href="#">Upcoming Trainings</a>
+              <a class="nav-link" href="#">Training Catalog</a>
+              <a class="nav-link" href="#">Enrollment Tracker</a>
+              <a class="nav-link" href="#">Faculty Development Programs</a>
+              <a class="nav-link" href="#">Certification &amp; Compliance</a>
+            </div>
+
+            <div class="nav-group">
+              <p class="nav-label">Payroll &amp; Compensation</p>
+              <a class="nav-link" href="#">Current Payroll Run</a>
+              <a class="nav-link" href="#">Payroll History</a>
+              <a class="nav-link" href="#">Salary Structure</a>
+              <a class="nav-link" href="#">Lecturer Workload Compensation</a>
+              <a class="nav-link" href="#">Benefits Administration</a>
+              <a class="nav-link" href="#">Deductions &amp; Tax</a>
+            </div>
+          {% else %}
+            <div class="nav-group">
+              <p class="nav-label">Office</p>
+              <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">Overview</a>
+            </div>
+
+            {% if office_modules %}
+              <div class="nav-group">
+                <p class="nav-label">Dashboards</p>
+                {% for m in office_modules %}
+                  <a class="nav-link {% if current_page == 'staff.module.'|add:m.slug %}active{% endif %}" href="{% url 'staff_office_module' office_code=office_code module_slug=m.slug %}">{{ m.title }}</a>
+                {% endfor %}
+              </div>
+            {% endif %}
           {% endif %}
+
           <div class="nav-group">
             <p class="nav-label">Account</p>
             <a class="nav-link" href="{% url 'password_change' %}">Change Password</a>

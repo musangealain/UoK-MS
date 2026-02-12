@@ -212,6 +212,67 @@ html,body{
   font-size:13px;
 }
 
+.inline-form{
+  margin-top:14px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:12px;
+  align-items:end;
+}
+
+.form-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+  font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.input{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:13px;
+  font-weight:600;
+  color:#1b1f2a;
+  background:#fff;
+  font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+select.input,
+select.input option{
+  font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.input:focus{
+  outline:none;
+  border-color:rgba(43, 95, 167, 0.35);
+  box-shadow:0 0 0 2px rgba(43, 95, 167, 0.12);
+}
+
+.notice{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.notice-success{
+  background:rgba(43, 122, 75, 0.12);
+  color:#2b7a4b;
+}
+
+.notice-error{
+  background:rgba(217, 75, 75, 0.12);
+  color:#b23a3a;
+}
+
 .nav-dot{
   width:8px;
   height:8px;
@@ -269,21 +330,51 @@ html,body{
 .primary-btn,
 .ghost-btn{
   text-decoration:none;
-  padding:9px 14px;
+  padding:8px 12px;
   border-radius:8px;
   font-weight:700;
   font-size:12px;
+  line-height:1.2;
+  font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  cursor:pointer;
+  transition:transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, background 0.12s ease, border-color 0.12s ease;
 }
 
 .primary-btn{
   background:var(--maroon);
   color:#fff;
+  border:1px solid transparent;
 }
 
 .ghost-btn{
   background:#fff;
   border:1px solid var(--border);
   color:var(--maroon-dark);
+}
+
+.primary-btn:hover,
+.ghost-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 18px rgba(16, 22, 47, 0.12);
+}
+
+.primary-btn:hover{
+  filter:brightness(1.04);
+}
+
+.ghost-btn:hover{
+  background:#f8f9fc;
+  border-color:rgba(16, 22, 47, 0.16);
+}
+
+.form-action-btn{
+  width:auto;
+  justify-self:start;
+}
+
+.stop-access-btn{
+  width:auto;
+  justify-self:start;
 }
 
 .summary-grid{
@@ -829,7 +920,7 @@ html,body{
   font-size:12px;
   font-weight:800;
   cursor:pointer;
-  font-family:inherit;
+  font-family:"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   transition:transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
 }
 

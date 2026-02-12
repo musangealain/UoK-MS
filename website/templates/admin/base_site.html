@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{% translate "Django administration" %}</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+<a href="/dashboard/admin/" style="color:#fff;font-weight:600;text-decoration:none;">
+  Back to Dashboard
+</a>
+{% endblock %}

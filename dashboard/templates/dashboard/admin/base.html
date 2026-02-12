@@ -68,14 +68,7 @@
             <span class="sm-bullet" aria-hidden="true">•</span>Leadership
           </a>
 
-          {% if subnav_title and subnav_items %}
-            <p class="sm-section">SUB-DASHBOARDS</p>
-            <div class="sm-panel sm-panel-static" role="region" aria-label="Sub-dashboard links">
-              {% for item in subnav_items %}
-                <a class="sm-sub {% if current_page == item.key %}active{% endif %}" href="{{ item.href }}"><span class="sm-bullet" aria-hidden="true">•</span>{{ item.title }}</a>
-              {% endfor %}
-            </div>
-          {% endif %}
+          
 
           <p class="sm-section">PEOPLE ANALYTICS</p>
           <button class="sm-expand" type="button" data-section="people" data-group="people.office_performance" aria-expanded="false" aria-controls="panel-people-office">
@@ -91,7 +84,7 @@
             <a class="sm-sub {% if current_page == 'people.office_performance.finance_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.finance_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>Finance Office</a>
             <a class="sm-sub {% if current_page == 'people.office_performance.hr_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.hr_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>HR Office</a>
             <a class="sm-sub {% if current_page == 'people.office_performance.academic_affairs' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.academic_affairs' %}"><span class="sm-bullet" aria-hidden="true">•</span>Academic Affairs</a>
-            <a class="sm-sub {% if current_page == 'people.office_performance.admissions_office' %}active{% endif %}" href="{% url 'admin_applications' %}"><span class="sm-bullet" aria-hidden="true">•</span>Admissions Office</a>
+            <a class="sm-sub {% if current_page == 'people.office_performance.admissions_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.admissions_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>Admissions Office</a>
             <a class="sm-sub {% if current_page == 'people.office_performance.e_learning_office' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.e_learning_office' %}"><span class="sm-bullet" aria-hidden="true">•</span>E-Learning Office</a>
             <a class="sm-sub {% if current_page == 'people.office_performance.library_services' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.office_performance.library_services' %}"><span class="sm-bullet" aria-hidden="true">•</span>Library Office</a>
           </div>
@@ -105,7 +98,7 @@
             Student Performance
           </button>
           <div class="sm-panel" id="panel-people-students" role="region" aria-label="Student Performance links">
-            <a class="sm-sub {% if current_page == 'people.student_performance.enrollment_demographics' %}active{% endif %}" href="{% url 'admin_students' %}" data-page="people.student_performance.enrollment_demographics"><span class="sm-bullet" aria-hidden="true">•</span>Enrollment &amp; Demographics</a>
+            <a class="sm-sub {% if current_page == 'people.student_performance.enrollment_demographics' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.student_performance.enrollment_demographics' %}" data-page="people.student_performance.enrollment_demographics"><span class="sm-bullet" aria-hidden="true">•</span>Enrollment &amp; Demographics</a>
             <a class="sm-sub {% if current_page == 'people.student_performance.academic_results' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.student_performance.academic_results' %}" data-page="people.student_performance.academic_results"><span class="sm-bullet" aria-hidden="true">•</span>Academic Results</a>
             <a class="sm-sub {% if current_page == 'people.student_performance.retention_progression' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.student_performance.retention_progression' %}" data-page="people.student_performance.retention_progression"><span class="sm-bullet" aria-hidden="true">•</span>Retention &amp; Progression</a>
             <a class="sm-sub {% if current_page == 'people.student_performance.satisfaction_outcomes' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.student_performance.satisfaction_outcomes' %}" data-page="people.student_performance.satisfaction_outcomes"><span class="sm-bullet" aria-hidden="true">•</span>Satisfaction &amp; Outcomes</a>
@@ -120,7 +113,6 @@
             Faculty Performance
           </button>
           <div class="sm-panel" id="panel-people-faculty" role="region" aria-label="Faculty Performance links">
-            <a class="sm-sub {% if current_page == 'people.faculty_performance.teaching_load' %}active{% endif %}" href="{% url 'admin_lecturers' %}" data-page="people.faculty_performance.teaching_load"><span class="sm-bullet" aria-hidden="true">•</span>Teachers Database</a>
             <a class="sm-sub {% if current_page == 'people.faculty_performance.teaching_effectiveness' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.teaching_effectiveness' %}" data-page="people.faculty_performance.teaching_effectiveness"><span class="sm-bullet" aria-hidden="true">•</span>Teaching Effectiveness</a>
             <a class="sm-sub {% if current_page == 'people.faculty_performance.research_output' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.research_output' %}" data-page="people.faculty_performance.research_output"><span class="sm-bullet" aria-hidden="true">•</span>Research Output</a>
             <a class="sm-sub {% if current_page == 'people.faculty_performance.engagement_development' %}active{% endif %}" href="{% url 'admin_placeholder' page='people.faculty_performance.engagement_development' %}" data-page="people.faculty_performance.engagement_development"><span class="sm-bullet" aria-hidden="true">•</span>Engagement &amp; Development</a>
@@ -219,7 +211,7 @@
           </div>
 
           <p class="sm-section">OPERATIONAL HEALTH</p>
-          <a class="sm-leaf {% if current_page == 'operational.system_utilization' %}active{% endif %}" href="{% url 'admin_placeholder' page='operational.system_utilization' %}">
+          <a class="sm-leaf {% if current_page == 'operational.system_utilization' %}active{% endif %}" href="{% url 'admin:index' %}">
             <span class="sm-bullet" aria-hidden="true">•</span>System Utilization
           </a>
           <a class="sm-leaf {% if current_page == 'operational.portal_engagement' %}active{% endif %}" href="{% url 'admin_placeholder' page='operational.portal_engagement' %}">

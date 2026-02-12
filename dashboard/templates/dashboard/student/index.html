@@ -26,7 +26,7 @@
     <section class="page-header">
       <div>
         <h1>Student Dashboard</h1>
-        <p>Welcome back, {{ user.first_name|default:user.username }}. Register modules and manage your semester schedule.</p>
+        <p>Welcome back, {{ application.full_name|default:user.first_name|default:user.username }}</p>
       </div>
       <div class="quick-actions">
         <a class="primary-btn" href="#module-registration">Module Registration</a>

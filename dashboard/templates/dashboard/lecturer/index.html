@@ -11,34 +11,34 @@
   <section class="page-header">
     <div>
       <h1>Lecturer Dashboard</h1>
-      <p>Manage your courses, assessments, and student communication.</p>
+      <p>Welcome back, {{ user.first_name|default:user.username }}. Manage classes, grading, and student engagement.</p>
     </div>
     <div class="quick-actions">
-      <a class="primary-btn" href="#">Upload Assignment</a>
-      <a class="ghost-btn" href="#">Enter Marks</a>
+      <a class="primary-btn" href="#">Open Attendance</a>
+      <a class="ghost-btn" href="#">Publish Results</a>
     </div>
   </section>
 
   <section class="summary-grid">
     <div class="summary-card">
-      <p class="summary-label">Courses Assigned</p>
-      <h3>4</h3>
-      <p class="summary-meta">Current semester</p>
+      <p class="summary-label">Teaching Load</p>
+      <h3>4 Courses</h3>
+      <p class="summary-meta">Active this semester</p>
     </div>
     <div class="summary-card">
-      <p class="summary-label">Total Students</p>
+      <p class="summary-label">Enrolled Students</p>
       <h3>230</h3>
-      <p class="summary-meta">Across all courses</p>
+      <p class="summary-meta">Across assigned courses</p>
     </div>
     <div class="summary-card">
-      <p class="summary-label">Pending Marks</p>
-      <h3>12</h3>
-      <p class="summary-meta">Awaiting submission</p>
+      <p class="summary-label">Grading Queue</p>
+      <h3>12 Scripts</h3>
+      <p class="summary-meta">Awaiting review</p>
     </div>
     <div class="summary-card">
-      <p class="summary-label">Unread Messages</p>
-      <h3>5</h3>
-      <p class="summary-meta">New student queries</p>
+      <p class="summary-label">Student Queries</p>
+      <h3>5 New</h3>
+      <p class="summary-meta">Unread messages</p>
     </div>
   </section>
 
@@ -46,7 +46,7 @@
     <div class="panel panel-wide">
       <div class="panel-header">
         <h2>Teaching Timetable</h2>
-        <span class="panel-pill">This Week</span>
+        <span class="panel-pill">Week at a Glance</span>
       </div>
       <div class="timetable">
         <div class="timetable-row timetable-header">
@@ -76,9 +76,9 @@
       </div>
       <div class="action-grid">
         <a class="action-card" href="#">View Student List</a>
-        <a class="action-card" href="#">Download List (PDF)</a>
-        <a class="action-card" href="#">Download List (Excel)</a>
         <a class="action-card" href="#">Attendance Sheet</a>
+        <a class="action-card" href="#">Advising Notes</a>
+        <a class="action-card" href="#">Progress Alerts</a>
       </div>
     </div>
 
@@ -87,10 +87,10 @@
         <h2>Assessment Management</h2>
       </div>
       <div class="action-grid">
-        <a class="action-card" href="#">Upload Assignment PDF</a>
-        <a class="action-card" href="#">Set Deadline</a>
+        <a class="action-card" href="#">Create Assessment</a>
+        <a class="action-card" href="#">Set Deadlines</a>
         <a class="action-card" href="#">Grade Submissions</a>
-        <a class="action-card" href="#">Publish Results</a>
+        <a class="action-card" href="#">Release Feedback</a>
       </div>
     </div>
 
@@ -100,13 +100,13 @@
         <span class="panel-pill panel-pill-alert">2</span>
       </div>
       <div class="announcement">
-        <h4>Class canceled - Friday</h4>
-        <p>Use the LMS for revision materials.</p>
+        <h4>Class moved to online session</h4>
+        <p>Session link posted in the LMS.</p>
         <span>Updated 2 hours ago</span>
       </div>
       <div class="announcement">
-        <h4>Exam reminder</h4>
-        <p>Final exam schedule will be released next week.</p>
+        <h4>Assessment moderation</h4>
+        <p>Please finalize marks before Friday.</p>
         <span>Updated yesterday</span>
       </div>
       <a class="panel-link" href="#">Post Announcement</a>
