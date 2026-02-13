@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class UserProfile(models.Model):
@@ -24,6 +25,13 @@ class UserProfile(models.Model):
         max_length=20,
         choices=STUDENT_STATUS_CHOICES,
         default='applicant',
+        blank=True,
+    )
+    program = models.ForeignKey(
+        "Program",
+        on_delete=models.SET_NULL,
+        related_name="student_profiles",
+        null=True,
         blank=True,
     )
 
@@ -63,6 +71,276 @@ class Application(models.Model):
 
     def __str__(self):
         return f"{self.reg_number} - {self.full_name}"
+
+
+class Faculty(models.Model):
+    code = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=150)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["code", "name"]
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
+
+class Department(models.Model):
+    faculty = models.ForeignKey(
+        Faculty,
+        on_delete=models.CASCADE,
+        related_name="departments",
+    )
+    code = models.CharField(max_length=20)
+    name = models.CharField(max_length=150)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["faculty__code", "code", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["faculty", "code"],
+                name="uniq_department_per_faculty_code",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.faculty.code}/{self.code} - {self.name}"
+
+
+class Program(models.Model):
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        related_name="programs",
+    )
+    code = models.CharField(max_length=30)
+    name = models.CharField(max_length=180)
+    duration_years = models.PositiveSmallIntegerField(default=4)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["department__code", "code", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["department", "code"],
+                name="uniq_program_per_department_code",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
+
+class AcademicModule(models.Model):
+    code = models.CharField(max_length=20, unique=True)
+    title = models.CharField(max_length=220)
+    credit_hours = models.PositiveSmallIntegerField(default=3)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["code"]
+
+    def __str__(self):
+        return f"{self.code} - {self.title}"
+
+
+class ProgramModule(models.Model):
+    program = models.ForeignKey(
+        Program,
+        on_delete=models.CASCADE,
+        related_name="program_modules",
+    )
+    module = models.ForeignKey(
+        AcademicModule,
+        on_delete=models.CASCADE,
+        related_name="program_modules",
+    )
+    semester = models.PositiveSmallIntegerField(default=1)
+    is_core = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["program__code", "semester", "module__code"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["program", "module"],
+                name="uniq_program_module",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.program.code} -> {self.module.code} (S{self.semester})"
+
+
+class AcademicSession(models.Model):
+    year_start = models.PositiveIntegerField()
+    year_end = models.PositiveIntegerField()
+    semester = models.PositiveSmallIntegerField(default=1)
+    name = models.CharField(max_length=50, unique=True)
+    starts_on = models.DateField(null=True, blank=True)
+    ends_on = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-year_start", "-semester", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["year_start", "year_end", "semester"],
+                name="uniq_academic_session_window",
+            )
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class TeachingAssignment(models.Model):
+    instructor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="teaching_assignments",
+    )
+    module = models.ForeignKey(
+        AcademicModule,
+        on_delete=models.CASCADE,
+        related_name="teaching_assignments",
+    )
+    session = models.ForeignKey(
+        AcademicSession,
+        on_delete=models.CASCADE,
+        related_name="teaching_assignments",
+    )
+    assigned_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="created_teaching_assignments",
+        null=True,
+        blank=True,
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["instructor", "module", "session"],
+                name="uniq_teaching_assignment",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.instructor.username} - {self.module.code} ({self.session.name})"
+
+
+class Enrollment(models.Model):
+    STATUS_CHOICES = [
+        ("enrolled", "Enrolled"),
+        ("dropped", "Dropped"),
+        ("completed", "Completed"),
+    ]
+
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="enrollments",
+    )
+    program = models.ForeignKey(
+        Program,
+        on_delete=models.SET_NULL,
+        related_name="enrollments",
+        null=True,
+        blank=True,
+    )
+    module = models.ForeignKey(
+        AcademicModule,
+        on_delete=models.CASCADE,
+        related_name="enrollments",
+    )
+    session = models.ForeignKey(
+        AcademicSession,
+        on_delete=models.CASCADE,
+        related_name="enrollments",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="enrolled")
+    grade = models.CharField(max_length=5, blank=True, default="")
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-enrolled_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["student", "module", "session"],
+                name="uniq_enrollment_student_module_session",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["student", "session"]),
+            models.Index(fields=["module", "session"]),
+        ]
+
+    def __str__(self):
+        return f"{self.student.username} - {self.module.code} ({self.session.name})"
+
+
+class AttendanceSession(models.Model):
+    teaching_assignment = models.ForeignKey(
+        TeachingAssignment,
+        on_delete=models.CASCADE,
+        related_name="attendance_sessions",
+    )
+    topic = models.CharField(max_length=200)
+    held_on = models.DateField(default=timezone.now)
+    starts_at = models.TimeField(null=True, blank=True)
+    ends_at = models.TimeField(null=True, blank=True)
+    notes = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-held_on", "-id"]
+
+    def __str__(self):
+        return f"{self.teaching_assignment.module.code} - {self.topic} ({self.held_on})"
+
+
+class AttendanceRecord(models.Model):
+    STATUS_CHOICES = [
+        ("present", "Present"),
+        ("absent", "Absent"),
+        ("late", "Late"),
+        ("excused", "Excused"),
+    ]
+
+    attendance_session = models.ForeignKey(
+        AttendanceSession,
+        on_delete=models.CASCADE,
+        related_name="records",
+    )
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="attendance_records",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="present")
+    marked_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["attendance_session__held_on", "student__username"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["attendance_session", "student"],
+                name="uniq_attendance_record",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.student.username} - {self.attendance_session} [{self.status}]"
 
 
 OFFICE_CHOICES = [
@@ -142,6 +420,7 @@ class StaffProfile(models.Model):
 
 
 class LecturerProfile(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -169,7 +448,7 @@ class LecturerProfile(models.Model):
             )
         ]
         indexes = [
-            models.Index(fields=["module_code", "issue_year"]),
+            models.Index(fields=["module_code", "issue_year"], name="dashboard_l_module__4c2b08_idx"),
         ]
 
     def __str__(self):

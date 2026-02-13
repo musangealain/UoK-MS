@@ -3,11 +3,21 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 from .models import (
+    AcademicModule,
+    AcademicSession,
     Application,
+    AttendanceRecord,
+    AttendanceSession,
+    Department,
+    Enrollment,
+    Faculty,
     LecturerProfile,
     PortalRegistry,
     PortalTable,
+    Program,
+    ProgramModule,
     StaffProfile,
+    TeachingAssignment,
     UserProfile,
 )
 
@@ -28,6 +38,16 @@ admin.site.register(UserProfile)
 admin.site.register(Application)
 admin.site.register(StaffProfile)
 admin.site.register(LecturerProfile)
+admin.site.register(Faculty)
+admin.site.register(Department)
+admin.site.register(Program)
+admin.site.register(AcademicModule)
+admin.site.register(ProgramModule)
+admin.site.register(AcademicSession)
+admin.site.register(TeachingAssignment)
+admin.site.register(Enrollment)
+admin.site.register(AttendanceSession)
+admin.site.register(AttendanceRecord)
 
 
 class PortalTableInline(admin.TabularInline):

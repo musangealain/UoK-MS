@@ -42,6 +42,7 @@
         <nav class="nav">
           <p class="nav-title">Dashboard</p>
           <a class="nav-link {% if current_page == 'overview' or not current_page %}active{% endif %}" href="{% url 'lecturer_dashboard' %}">Overview</a>
+          <a class="nav-link {% if current_page == 'academic_workspace' %}active{% endif %}" href="{% url 'lecturer_academic_workspace' %}">Academic Workspace</a>
 
           <p class="nav-title">Teaching</p>
           <a class="nav-link {% if current_page == 'courses' %}active{% endif %}" href="{% url 'lecturer_courses' %}">My Courses</a>

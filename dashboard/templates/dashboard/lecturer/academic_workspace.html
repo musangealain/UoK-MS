@@ -1,0 +1,165 @@
+{% extends "dashboard/lecturer/base.html" %}
+{% load static %}
+{% block title %}Lecturer - Academic Workspace{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'dashboard/lecturer.css' %}">
+{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>Academic Workspace</h1>
+      <p>Manage attendance sessions and records for your assigned module deliveries.</p>
+    </div>
+    <div class="quick-actions">
+      <a class="primary-btn" href="#attendance-session-form">Create Session</a>
+      <a class="ghost-btn" href="#attendance-mark-form">Mark Attendance</a>
+    </div>
+  </section>
+
+  {% if flash %}
+    <div class="panel" style="margin-bottom:14px; border-color:rgba(43,122,75,0.25);">{{ flash }}</div>
+  {% endif %}
+  {% if flash_error %}
+    <div class="panel" style="margin-bottom:14px; border-color:rgba(217,75,75,0.3);">{{ flash_error }}</div>
+  {% endif %}
+
+  <section class="content-grid">
+    <section class="panel" id="attendance-session-form">
+      <div class="panel-header">
+        <h2>Create Attendance Session</h2>
+        <span class="panel-pill">Lecturer</span>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_attendance_session">
+        <div class="action-grid" style="grid-template-columns:1fr;">
+          <label class="summary-label" style="margin-bottom:4px;">
+            Assignment
+            <select name="assignment_id" class="ghost-btn" style="width:100%; margin-top:6px;" required>
+              <option value="">Choose...</option>
+              {% for a in assignments %}
+                <option value="{{ a.id }}">{{ a.module.code }} - {{ a.module.title }} ({{ a.session.name }})</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="summary-label" style="margin-bottom:4px;">
+            Topic
+            <input type="text" name="topic" class="ghost-btn" style="width:100%; margin-top:6px;" placeholder="Topic covered" required>
+          </label>
+          <label class="summary-label" style="margin-bottom:4px;">
+            Date
+            <input type="date" name="held_on" class="ghost-btn" style="width:100%; margin-top:6px;">
+          </label>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="primary-btn" type="submit">Create Attendance Session</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="attendance-mark-form">
+      <div class="panel-header">
+        <h2>Mark Attendance</h2>
+        <span class="panel-pill">Module -> Attendance -> Student</span>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="mark_attendance">
+        <div class="action-grid" style="grid-template-columns:1fr;">
+          <label class="summary-label" style="margin-bottom:4px;">
+            Attendance Session
+            <select name="attendance_session_id" class="ghost-btn" style="width:100%; margin-top:6px;" required>
+              <option value="">Choose...</option>
+              {% for row in attendance_sessions %}
+                <option value="{{ row.id }}">{{ row.teaching_assignment.module.code }} - {{ row.topic }} ({{ row.held_on }})</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="summary-label" style="margin-bottom:4px;">
+            Student
+            <select name="student_id" class="ghost-btn" style="width:100%; margin-top:6px;" required>
+              <option value="">Choose...</option>
+              {% for e in enrollments %}
+                <option value="{{ e.student.id }}">{{ e.student.username }} - {{ e.module.code }} ({{ e.session.name }})</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="summary-label" style="margin-bottom:4px;">
+            Status
+            <select name="status" class="ghost-btn" style="width:100%; margin-top:6px;" required>
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+              <option value="late">Late</option>
+              <option value="excused">Excused</option>
+            </select>
+          </label>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="primary-btn" type="submit">Save Attendance Record</button>
+        </div>
+      </form>
+    </section>
+  </section>
+
+  <section class="panel panel-wide" style="margin-top:18px;">
+    <div class="panel-header">
+      <h2>Assigned Modules</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>Title</th>
+            <th>Session</th>
+            <th>Students Enrolled</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in assignments %}
+            <tr>
+              <td>{{ a.module.code }}</td>
+              <td>{{ a.module.title }}</td>
+              <td>{{ a.session.name }}</td>
+              <td>{{ a.student_count|default:0 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No assignments found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:18px;">
+    <div class="panel-header">
+      <h2>Recent Attendance Records</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Module</th>
+            <th>Student</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in attendance_records %}
+            <tr>
+              <td>{{ r.attendance_session.held_on }}</td>
+              <td>{{ r.attendance_session.teaching_assignment.module.code }}</td>
+              <td>{{ r.student.username }}</td>
+              <td>{{ r.status|title }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No attendance records yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

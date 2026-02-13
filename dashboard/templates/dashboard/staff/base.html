@@ -39,6 +39,7 @@
             <div class="nav-group">
               <p class="nav-label">Overview</p>
               <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">Dashboard</a>
+              <a class="nav-link {% if current_page == 'staff.academic_workspace' %}active{% endif %}" href="{% url 'staff_academic_workspace' office_code=office_code %}">Academic Workspace</a>
             </div>
 
             <div class="nav-group">
@@ -101,6 +102,7 @@
             <div class="nav-group">
               <p class="nav-label">Office</p>
               <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">Overview</a>
+              <a class="nav-link {% if current_page == 'staff.academic_workspace' %}active{% endif %}" href="{% url 'staff_academic_workspace' office_code=office_code %}">Academic Workspace</a>
             </div>
 
             {% if office_modules %}

@@ -47,6 +47,7 @@
           </div>
           <div class="nav-group">
             <p class="nav-label">Academics</p>
+            <a class="nav-link {% if current_page == 'academic_workspace' %}active{% endif %}" href="{% url 'student_academic_workspace' %}">Academic Workspace</a>
             <a class="nav-link" href="#">My Courses</a>
             <a class="nav-link" href="#">Timetable</a>
             <a class="nav-link" href="#">Course Materials</a>

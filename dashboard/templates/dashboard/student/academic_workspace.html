@@ -1,0 +1,143 @@
+{% extends "dashboard/student/base.html" %}
+{% block title %}Student - Academic Workspace{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>Academic Workspace</h1>
+      <p>View your program plan, enroll modules by session, and track attendance records.</p>
+    </div>
+    <div class="quick-actions">
+      <a class="primary-btn" href="#self-enroll">Enroll Module</a>
+      <a class="ghost-btn" href="#attendance-log">Attendance Log</a>
+    </div>
+  </section>
+
+  {% if flash %}
+    <div class="notice notice-success">{{ flash }}</div>
+  {% endif %}
+  {% if flash_error %}
+    <div class="notice notice-error">{{ flash_error }}</div>
+  {% endif %}
+
+  <section class="panel panel-tight" id="self-enroll">
+    <div class="panel-header">
+      <div>
+        <h2>Self Enrollment</h2>
+        <p class="panel-sub">Program -> Students -> Session. Register modules mapped to your current program.</p>
+      </div>
+      <span class="panel-pill">{% if program %}{{ program.code }}{% else %}No Program{% endif %}</span>
+    </div>
+
+    <form method="post" class="reg-layout">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="enroll_self">
+      <section class="reg-box">
+        <h3 class="reg-box-title">Program Details</h3>
+        <p class="reg-box-sub">{% if program %}{{ program.name }}{% else %}Program not assigned yet{% endif %}</p>
+        <p class="reg-box-sub">
+          {% if program %}
+            Department: {{ program.department.code }} | Duration: {{ program.duration_years }} years
+          {% else %}
+            Contact admissions/registrar office for assignment.
+          {% endif %}
+        </p>
+      </section>
+
+      <section class="reg-box">
+        <h3 class="reg-box-title">Enroll in Module</h3>
+        <p class="reg-box-sub">Choose module and academic session.</p>
+        <label class="reg-box-sub" for="module_id">Module</label>
+        <select class="ghost-btn" id="module_id" name="module_id" style="width:100%; margin-bottom:10px;" required>
+          <option value="">Choose...</option>
+          {% for pm in program_modules %}
+            <option value="{{ pm.module.id }}">{{ pm.module.code }} - {{ pm.module.title }} (Sem {{ pm.semester }})</option>
+          {% endfor %}
+        </select>
+        <label class="reg-box-sub" for="session_id">Session</label>
+        <select class="ghost-btn" id="session_id" name="session_id" style="width:100%; margin-bottom:10px;" required>
+          <option value="">Choose...</option>
+          {% for s in sessions %}
+            <option value="{{ s.id }}">{{ s.name }}</option>
+          {% endfor %}
+        </select>
+        <button class="primary-btn" type="submit">Save Enrollment</button>
+      </section>
+    </form>
+  </section>
+
+  <section class="panel" style="margin-top:18px;">
+    <div class="panel-header">
+      <h2>My Enrollments</h2>
+    </div>
+    <div class="table-wrap table-wrap-compact">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Program</th>
+            <th>Module</th>
+            <th>Session</th>
+            <th>Status</th>
+            <th>Grade</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in enrollments %}
+            <tr>
+              <td>{{ row.program.code|default:"-" }}</td>
+              <td>{{ row.module.code }} - {{ row.module.title }}</td>
+              <td>{{ row.session.name }}</td>
+              <td>{{ row.status|title }}</td>
+              <td>{{ row.grade|default:"-" }}</td>
+              <td>
+                {% if row.status == "enrolled" %}
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="drop_self">
+                    <input type="hidden" name="enrollment_id" value="{{ row.id }}">
+                    <button class="action-btn action-deny" type="submit">Drop</button>
+                  </form>
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6">No enrollments available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" id="attendance-log" style="margin-top:18px;">
+    <div class="panel-header">
+      <h2>Attendance Log</h2>
+    </div>
+    <div class="table-wrap table-wrap-compact">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Module</th>
+            <th>Topic</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in attendance_records %}
+            <tr>
+              <td>{{ row.attendance_session.held_on }}</td>
+              <td>{{ row.attendance_session.teaching_assignment.module.code }}</td>
+              <td>{{ row.attendance_session.topic }}</td>
+              <td>{{ row.status|title }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No attendance records yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

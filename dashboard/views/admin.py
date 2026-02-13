@@ -11,10 +11,18 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
 from dashboard.models import (
+    AcademicModule,
+    AcademicSession,
     Application,
+    Department,
+    Enrollment,
+    Faculty,
     OFFICE_CHOICES,
     OFFICE_PURPOSE,
+    Program,
+    ProgramModule,
     StaffProfile,
+    TeachingAssignment,
     UserProfile,
 )
 
@@ -471,6 +479,181 @@ def admin_kpi_monitor(request):
             "current_page": "executive.strategic_kpis",
             "kpis": kpis,
             "pending_applications_count": len(pending_applications),
+        },
+    )
+
+
+@login_required
+def admin_academic_workspace(request):
+    if not _is_admin(request.user):
+        return redirect("home")
+
+    if request.method == "POST":
+        action = request.POST.get("action", "").strip()
+        try:
+            if action == "create_faculty":
+                code = (request.POST.get("code") or "").strip().upper()
+                name = (request.POST.get("name") or "").strip()
+                if not code or not name:
+                    raise ValueError("Faculty code and name are required.")
+                Faculty.objects.update_or_create(
+                    code=code,
+                    defaults={"name": name, "is_active": True},
+                )
+                request.session["academic_admin_flash"] = f"Faculty {code} saved."
+
+            elif action == "create_department":
+                faculty_id = int(request.POST.get("faculty_id") or 0)
+                code = (request.POST.get("code") or "").strip().upper()
+                name = (request.POST.get("name") or "").strip()
+                if not faculty_id or not code or not name:
+                    raise ValueError("Faculty, department code and name are required.")
+                Department.objects.update_or_create(
+                    faculty_id=faculty_id,
+                    code=code,
+                    defaults={"name": name, "is_active": True},
+                )
+                request.session["academic_admin_flash"] = f"Department {code} saved."
+
+            elif action == "create_program":
+                department_id = int(request.POST.get("department_id") or 0)
+                code = (request.POST.get("code") or "").strip().upper()
+                name = (request.POST.get("name") or "").strip()
+                duration_years = int(request.POST.get("duration_years") or 4)
+                if not department_id or not code or not name:
+                    raise ValueError("Department, program code and name are required.")
+                if duration_years < 1:
+                    raise ValueError("Program duration must be at least 1 year.")
+                Program.objects.update_or_create(
+                    department_id=department_id,
+                    code=code,
+                    defaults={
+                        "name": name,
+                        "duration_years": duration_years,
+                        "is_active": True,
+                    },
+                )
+                request.session["academic_admin_flash"] = f"Program {code} saved."
+
+            elif action == "create_module":
+                code = (request.POST.get("code") or "").strip().upper()
+                title = (request.POST.get("title") or "").strip()
+                credit_hours = int(request.POST.get("credit_hours") or 3)
+                if not code or not title:
+                    raise ValueError("Module code and title are required.")
+                if credit_hours < 1:
+                    raise ValueError("Credit hours must be at least 1.")
+                AcademicModule.objects.update_or_create(
+                    code=code,
+                    defaults={
+                        "title": title,
+                        "credit_hours": credit_hours,
+                        "is_active": True,
+                    },
+                )
+                request.session["academic_admin_flash"] = f"Module {code} saved."
+
+            elif action == "create_session":
+                year_start = int(request.POST.get("year_start") or 0)
+                year_end = int(request.POST.get("year_end") or 0)
+                semester = int(request.POST.get("semester") or 1)
+                name = (request.POST.get("name") or "").strip()
+                if not year_start or not year_end:
+                    raise ValueError("Academic session years are required.")
+                if year_end < year_start:
+                    raise ValueError("End year cannot be before start year.")
+                if semester not in {1, 2, 3}:
+                    raise ValueError("Semester must be 1, 2, or 3.")
+                if not name:
+                    name = f"{year_start}/{year_end} - Semester {semester}"
+                AcademicSession.objects.update_or_create(
+                    year_start=year_start,
+                    year_end=year_end,
+                    semester=semester,
+                    defaults={"name": name, "is_active": True},
+                )
+                request.session["academic_admin_flash"] = f"Session {name} saved."
+
+            elif action == "map_program_module":
+                program_id = int(request.POST.get("program_id") or 0)
+                module_id = int(request.POST.get("module_id") or 0)
+                semester = int(request.POST.get("semester") or 1)
+                is_core = bool(request.POST.get("is_core"))
+                if not program_id or not module_id:
+                    raise ValueError("Program and module are required.")
+                ProgramModule.objects.update_or_create(
+                    program_id=program_id,
+                    module_id=module_id,
+                    defaults={"semester": semester, "is_core": is_core},
+                )
+                request.session["academic_admin_flash"] = "Program-module mapping saved."
+
+            elif action == "create_teaching_assignment":
+                instructor_id = int(request.POST.get("instructor_id") or 0)
+                module_id = int(request.POST.get("module_id") or 0)
+                session_id = int(request.POST.get("session_id") or 0)
+                if not instructor_id or not module_id or not session_id:
+                    raise ValueError("Lecturer, module and session are required.")
+                instructor = (
+                    User.objects.filter(pk=instructor_id, userprofile__role="lecturer")
+                    .only("id")
+                    .first()
+                )
+                if not instructor:
+                    raise ValueError("Selected lecturer is invalid.")
+                TeachingAssignment.objects.update_or_create(
+                    instructor_id=instructor.id,
+                    module_id=module_id,
+                    session_id=session_id,
+                    defaults={
+                        "assigned_by": request.user,
+                        "is_active": True,
+                    },
+                )
+                request.session["academic_admin_flash"] = "Teaching assignment saved."
+
+        except (ValueError, IntegrityError) as exc:
+            request.session["academic_admin_error"] = str(exc)
+        return redirect("admin_academic_workspace")
+
+    faculties = Faculty.objects.filter(is_active=True).order_by("code")
+    departments = Department.objects.select_related("faculty").order_by("faculty__code", "code")
+    programs = Program.objects.select_related("department", "department__faculty").order_by("code")
+    modules = AcademicModule.objects.filter(is_active=True).order_by("code")
+    sessions = AcademicSession.objects.filter(is_active=True).order_by("-year_start", "-semester")
+    program_modules = (
+        ProgramModule.objects.select_related("program", "module")
+        .order_by("program__code", "semester", "module__code")
+    )
+    lecturers = (
+        User.objects.filter(userprofile__role="lecturer", is_active=True)
+        .order_by("username")
+    )
+    assignments = (
+        TeachingAssignment.objects.select_related("instructor", "module", "session")
+        .order_by("-created_at")[:100]
+    )
+    enrollments = (
+        Enrollment.objects.select_related("student", "module", "session", "program")
+        .order_by("-enrolled_at")[:120]
+    )
+
+    return render(
+        request,
+        "dashboard/admin/academic_workspace.html",
+        {
+            "current_page": "academic.operations.workspace",
+            "faculties": faculties,
+            "departments": departments,
+            "programs": programs,
+            "modules": modules,
+            "sessions": sessions,
+            "program_modules": program_modules,
+            "lecturers": lecturers,
+            "assignments": assignments,
+            "enrollments": enrollments,
+            "flash": request.session.pop("academic_admin_flash", None),
+            "flash_error": request.session.pop("academic_admin_error", None),
         },
     )
 

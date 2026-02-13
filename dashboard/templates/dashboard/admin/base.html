@@ -119,6 +119,9 @@
           </div>
 
           <p class="sm-section">ACADEMIC ANALYTICS</p>
+          <a class="sm-leaf {% if current_page == 'academic.operations.workspace' %}active{% endif %}" href="{% url 'admin_academic_workspace' %}">
+            <span class="sm-bullet" aria-hidden="true">&bull;</span>Academic Workspace
+          </a>
           <button class="sm-expand" type="button" data-section="academic" data-group="academic.program_performance" aria-expanded="false" aria-controls="panel-academic-programs">
             <span class="sm-arrow" aria-hidden="true">
               <svg class="sm-chevron" viewBox="0 0 20 12" focusable="false" aria-hidden="true">

@@ -12,11 +12,16 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from dashboard.models import (
+    AcademicModule,
+    AcademicSession,
     Application,
+    Enrollment,
     LecturerProfile,
     MODULE_CHOICES,
     OFFICE_CHOICES,
     OFFICE_PURPOSE,
+    Program,
+    ProgramModule,
     UserProfile,
 )
 
@@ -443,6 +448,116 @@ def staff_office_dashboard(request, office_code):
             "office_modules": _get_office_modules(office_code),
             "staff_id": staff_profile.staff_id,
             "staff_name": staff_profile.full_name or request.user.first_name or request.user.username,
+        },
+    )
+
+
+@login_required
+def staff_academic_workspace(request, office_code):
+    staff_profile, response = _require_staff_access(request, office_code)
+    if response is not None:
+        return response
+
+    office_code = (office_code or "").strip().upper()
+    office_map = dict(OFFICE_CHOICES)
+
+    if request.method == "POST":
+        action = request.POST.get("action", "").strip()
+        try:
+            if action == "assign_student_program":
+                student_id = int(request.POST.get("student_id") or 0)
+                program_id = int(request.POST.get("program_id") or 0)
+                profile = (
+                    UserProfile.objects.select_related("user")
+                    .filter(user_id=student_id, role="student")
+                    .first()
+                )
+                if not profile:
+                    raise ValueError("Student account not found.")
+                if not Program.objects.filter(pk=program_id).exists():
+                    raise ValueError("Program not found.")
+                profile.program_id = program_id
+                profile.save(update_fields=["program"])
+                request.session["staff_academic_flash"] = "Student program assignment saved."
+
+            elif action == "enroll_student":
+                student_id = int(request.POST.get("student_id") or 0)
+                module_id = int(request.POST.get("module_id") or 0)
+                session_id = int(request.POST.get("session_id") or 0)
+                profile = (
+                    UserProfile.objects.select_related("user")
+                    .filter(user_id=student_id, role="student")
+                    .first()
+                )
+                if not profile:
+                    raise ValueError("Student account not found.")
+                if not AcademicModule.objects.filter(pk=module_id).exists():
+                    raise ValueError("Module not found.")
+                if not AcademicSession.objects.filter(pk=session_id).exists():
+                    raise ValueError("Session not found.")
+                Enrollment.objects.update_or_create(
+                    student_id=student_id,
+                    module_id=module_id,
+                    session_id=session_id,
+                    defaults={
+                        "program_id": profile.program_id,
+                        "status": "enrolled",
+                    },
+                )
+                request.session["staff_academic_flash"] = "Student enrollment saved."
+
+            elif action == "drop_enrollment":
+                enrollment_id = int(request.POST.get("enrollment_id") or 0)
+                updated = Enrollment.objects.filter(pk=enrollment_id).update(status="dropped")
+                if not updated:
+                    raise ValueError("Enrollment record not found.")
+                request.session["staff_academic_flash"] = "Enrollment updated to dropped."
+
+        except (ValueError, IntegrityError) as exc:
+            request.session["staff_academic_error"] = str(exc)
+        return redirect("staff_academic_workspace", office_code=office_code)
+
+    students = (
+        User.objects.select_related("userprofile")
+        .filter(
+            userprofile__role="student",
+            userprofile__student_status="enrolled",
+            is_active=True,
+        )
+        .exclude(username__startswith="REG")
+        .order_by("username")
+    )
+    programs = Program.objects.select_related("department").order_by("code")
+    modules = AcademicModule.objects.filter(is_active=True).order_by("code")
+    sessions = AcademicSession.objects.filter(is_active=True).order_by("-year_start", "-semester")
+    program_modules = (
+        ProgramModule.objects.select_related("program", "module")
+        .order_by("program__code", "semester", "module__code")
+    )
+    enrollments = (
+        Enrollment.objects.select_related("student", "program", "module", "session")
+        .order_by("-enrolled_at")[:150]
+    )
+
+    return render(
+        request,
+        "dashboard/staff/academic_workspace.html",
+        {
+            "current_page": "staff.academic_workspace",
+            "office_code": office_code,
+            "office_label": office_map[office_code],
+            "office_purpose": OFFICE_PURPOSE.get(office_code, ""),
+            "office_modules": _get_office_modules(office_code),
+            "staff_id": staff_profile.staff_id,
+            "staff_name": staff_profile.full_name or request.user.first_name or request.user.username,
+            "students": students,
+            "programs": programs,
+            "modules": modules,
+            "sessions": sessions,
+            "program_modules": program_modules,
+            "enrollments": enrollments,
+            "flash": request.session.pop("staff_academic_flash", None),
+            "flash_error": request.session.pop("staff_academic_error", None),
         },
     )
 
