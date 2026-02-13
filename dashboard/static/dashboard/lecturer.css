@@ -183,7 +183,8 @@ html,body{
   font-size:12px;
   text-transform:uppercase;
   letter-spacing:1px;
-  `r`n  font-weight:700;`r`ncolor:var(--maroon);
+  font-weight:700;
+  color:var(--maroon);
 }
 
 .nav-link{
