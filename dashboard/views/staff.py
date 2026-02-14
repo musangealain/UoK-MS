@@ -2,13 +2,16 @@ import random
 import string
 import time
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db import IntegrityError, OperationalError
 from django.db import transaction
 from django.db.models import Max
 from django.http import Http404
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils import timezone
 
 from dashboard.models import (
@@ -454,6 +457,96 @@ def _generate_password(length=10):
     return "".join(random.choice(chars) for _ in range(length))
 
 
+def _adm_student_login_url(request=None):
+    login_path = reverse("student_login")
+    if request is not None:
+        return request.build_absolute_uri(login_path)
+    configured = (getattr(settings, "STUDENT_PORTAL_LOGIN_URL", "") or "").strip()
+    if configured:
+        return configured
+    return f"http://localhost:8000{login_path}"
+
+
+def _adm_has_portal_access(application: Application, applicant_user=None):
+    user = applicant_user or application.applicant
+    if user is None and application.reg_number:
+        user = (
+            User.objects.select_related("userprofile")
+            .filter(username=application.reg_number)
+            .first()
+        )
+    if user is None:
+        return False
+    profile = getattr(user, "userprofile", None)
+    return bool(
+        application.student_number
+        and user.is_active
+        and profile
+        and profile.role == "student"
+        and profile.student_status == "enrolled"
+    )
+
+
+def _adm_tag_portal_access(applications):
+    for app in applications:
+        app.portal_access_issued = _adm_has_portal_access(app)
+    return applications
+
+
+def _send_portal_access_email(
+    application: Application,
+    *,
+    temporary_password: str,
+    reset_password: bool,
+    login_url: str,
+):
+    if not application.email:
+        raise ValueError("Applicant email is missing; cannot deliver portal credentials.")
+
+    subject = (
+        "UoK Student Portal Access Reset"
+        if reset_password
+        else "UoK Student Portal Access Issued"
+    )
+    action_line = (
+        "Your student portal access has been reset by Admissions."
+        if reset_password
+        else "Your student portal access has been issued by Admissions."
+    )
+    lines = [
+        f"Dear {application.full_name},",
+        "",
+        action_line,
+        "",
+        "Use the following credentials for your next sign-in:",
+        f"Username (REG): {application.reg_number}",
+        f"Temporary Password: {temporary_password}",
+        f"Student Number: {application.student_number or 'Pending'}",
+        "",
+        f"Student Portal Login: {login_url}",
+        "",
+        "Security notice:",
+        "- This temporary password is delivered one time.",
+        "- Change your password immediately after login.",
+        "- If you did not request this, contact Admissions immediately.",
+        "",
+        "Admissions and Student Services Office",
+    ]
+
+    try:
+        send_mail(
+            subject,
+            "\n".join(lines),
+            getattr(settings, "DEFAULT_FROM_EMAIL", None),
+            [application.email],
+            fail_silently=False,
+        )
+    except Exception as exc:
+        raise ValueError(
+            f"Credentials email could not be delivered to {application.email}. {exc}"
+        ) from exc
+
+
 def _normalize_name_part(value: str) -> str:
     return (value or "").strip()
 
@@ -570,13 +663,23 @@ def _adm_delete_enrolled_student(user_id: int):
     user.delete()
 
 
-def _adm_issue_portal_access(application_id: int, *, reset_password: bool = False):
+def _adm_issue_portal_access(
+    application_id: int,
+    *,
+    reset_password: bool = False,
+    request=None,
+):
     success = False
-    issued_password = None
+    recipient_email = ""
     for _ in range(3):
         try:
             with transaction.atomic():
-                application = Application.objects.select_for_update().filter(pk=application_id).first()
+                application = (
+                    Application.objects.select_related("applicant", "applicant__userprofile")
+                    .select_for_update()
+                    .filter(pk=application_id)
+                    .first()
+                )
                 if not application:
                     raise ValueError("Admission case not found.")
                 if application.status != "approved":
@@ -587,34 +690,42 @@ def _adm_issue_portal_access(application_id: int, *, reset_password: bool = Fals
                     raise ValueError("Applicant user account is missing.")
                 if applicant_user.username != application.reg_number:
                     raise ValueError("Applicant account no longer matches the REG reference.")
+                if _adm_has_portal_access(application, applicant_user=applicant_user) and not reset_password:
+                    raise ValueError("Portal access is already active. Use Reset Access instead.")
 
                 if not application.student_number:
                     application.student_number = _unique_student_number()
+                should_attach_applicant = not application.applicant_id
                 if not application.applicant_id:
                     application.applicant = applicant_user
 
-                if (
-                    reset_password
-                    or not application.issued_password
-                    or len(application.issued_password) != 10
-                ):
-                    application.issued_password = _generate_password(10)
-                issued_password = application.issued_password
-                application.reg_password = application.issued_password
+                issued_password = _generate_password(10)
+                login_url = _adm_student_login_url(request)
+
+                application.issued_password = None
+                application.reg_password = None
                 update_fields = ["student_number", "issued_password", "reg_password"]
-                if application.applicant_id:
+                if should_attach_applicant:
                     update_fields.append("applicant")
                 application.save(update_fields=update_fields)
 
                 applicant_user.email = application.email
                 applicant_user.is_active = True
-                applicant_user.set_password(application.issued_password)
+                applicant_user.set_password(issued_password)
                 applicant_user.save(update_fields=["email", "is_active", "password"])
 
                 profile, _ = UserProfile.objects.get_or_create(user=applicant_user)
                 profile.role = "student"
                 profile.student_status = "enrolled"
                 profile.save(update_fields=["role", "student_status"])
+
+                _send_portal_access_email(
+                    application,
+                    temporary_password=issued_password,
+                    reset_password=reset_password,
+                    login_url=login_url,
+                )
+                recipient_email = application.email
 
             success = True
             break
@@ -624,7 +735,7 @@ def _adm_issue_portal_access(application_id: int, *, reset_password: bool = Fals
 
     if not success:
         raise OperationalError("Portal access issuance failed. Please retry.")
-    return issued_password
+    return recipient_email
 
 
 def _adm_set_application_status(application_id: int, status: str):
@@ -670,11 +781,12 @@ def _adm_update_document_flags(
 def _adm_build_offer_letter_preview(application: Application, office_label: str):
     issued_on = timezone.localdate().strftime("%Y-%m-%d")
     student_number = application.student_number or "Pending Student Number"
+    portal_access_issued = _adm_has_portal_access(application)
     credential_note = (
         f"Student Portal Username (REG): {application.reg_number}\n"
-        f"Student Portal Password: {application.issued_password}\n"
+        "Credentials have been delivered to your registered email.\n"
         f"Student Number: {application.student_number}"
-        if application.student_number and application.issued_password
+        if application.student_number and portal_access_issued
         else "Your portal access will be issued by Admissions from the Offer Letters dashboard."
     )
     lines = [
@@ -1109,17 +1221,18 @@ def staff_office_module(request, office_code, module_slug):
                     request.session.pop("adm_offer_preview", None)
                 elif action in {"issue_portal_access", "reset_portal_access"}:
                     application_id = int(request.POST.get("application_id") or 0)
-                    issued_password = _adm_issue_portal_access(
+                    recipient_email = _adm_issue_portal_access(
                         application_id,
                         reset_password=(action == "reset_portal_access"),
+                        request=request,
                     )
                     if action == "reset_portal_access":
                         request.session["adm_flash"] = (
-                            f"Portal access reset successfully. New REG password: {issued_password}"
+                            f"Portal access reset and credentials sent to {recipient_email}."
                         )
                     else:
                         request.session["adm_flash"] = (
-                            f"Portal access issued successfully. REG password: {issued_password}"
+                            f"Portal access issued and credentials sent to {recipient_email}."
                         )
                 elif action == "generate_offer_preview":
                     application_id = int(request.POST.get("application_id") or 0)
@@ -1139,7 +1252,12 @@ def staff_office_module(request, office_code, module_slug):
                 request.session["adm_flash_error"] = str(exc)
             return redirect("staff_office_module", office_code=office_code, module_slug=module_slug)
 
-        approved_applications = Application.objects.filter(status="approved").order_by("-created_at")[:120]
+        approved_applications = list(
+            Application.objects.select_related("applicant", "applicant__userprofile")
+            .filter(status="approved")
+            .order_by("-created_at")[:120]
+        )
+        _adm_tag_portal_access(approved_applications)
         return render(
             request,
             "dashboard/staff/adm_offer_letters.html",
@@ -1181,7 +1299,10 @@ def staff_office_module(request, office_code, module_slug):
                 request.session["adm_flash_error"] = str(exc)
             return redirect("staff_office_module", office_code=office_code, module_slug=module_slug)
 
-        applications = Application.objects.select_related("applicant").order_by("-created_at")
+        applications = Application.objects.select_related(
+            "applicant",
+            "applicant__userprofile",
+        ).order_by("-created_at")
         pending_applications = applications.filter(status="under_review")[:100]
         for app in pending_applications:
             docs_complete = int(app.doc_id_uploaded) + int(app.doc_transcript_uploaded) + int(
@@ -1189,7 +1310,8 @@ def staff_office_module(request, office_code, module_slug):
             )
             app.docs_complete = docs_complete
             app.docs_percent = int((docs_complete / 3) * 100)
-        approved_applications = applications.filter(status="approved")[:100]
+        approved_applications = list(applications.filter(status="approved")[:100])
+        _adm_tag_portal_access(approved_applications)
         rejected_applications = applications.filter(status="rejected")[:100]
         return render(
             request,

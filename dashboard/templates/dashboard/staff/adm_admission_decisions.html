@@ -103,7 +103,7 @@
               <td>{{ app.program }}</td>
               <td><span class="status-badge status-approved">Approved</span></td>
               <td>
-                {% if app.issued_password %}
+                {% if app.portal_access_issued %}
                   <span class="status-badge status-approved">Issued</span>
                 {% else %}
                   <span class="status-badge status-pending">Pending In Offer Letters</span>

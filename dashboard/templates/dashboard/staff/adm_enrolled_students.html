@@ -38,7 +38,7 @@
           <tr>
             <th>Portal Username</th>
             <th>Student No.</th>
-            <th>Issued Password</th>
+            <th>Portal Access</th>
             <th>Full Name</th>
             <th>Email</th>
             <th>Program</th>
@@ -53,7 +53,7 @@
             <tr>
               <td>{{ u.application_record.reg_number|default:u.username }}</td>
               <td>{{ u.application_record.student_number|default:"-" }}</td>
-              <td>{{ u.application_record.issued_password|default:"-" }}</td>
+              <td><span class="status-badge status-approved">Active</span></td>
               <td>{{ u.application_record.full_name|default:"-" }}</td>
               <td>{{ u.email|default:"-" }}</td>
               <td>{{ u.application_record.program|default:"-" }}</td>

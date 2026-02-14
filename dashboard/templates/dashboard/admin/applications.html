@@ -27,7 +27,7 @@
                   <th>Program</th>
                   <th>Status</th>
                   <th>Submitted</th>
-                  <th>Issued Password</th>
+                  <th>Portal Access</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -43,7 +43,13 @@
                       <span class="status-badge status-{{ app.status }}">{{ app.get_status_display }}</span>
                     </td>
                     <td>{{ app.submitted_at|date:"Y-m-d" }}</td>
-                    <td>{{ app.issued_password|default:"-" }}</td>
+                    <td>
+                      {% if app.status == "approved" and app.student_number %}
+                        <span class="status-badge status-approved">Provisioned</span>
+                      {% else %}
+                        <span class="status-badge status-pending">Pending</span>
+                      {% endif %}
+                    </td>
                     <td>
                       <form class="action-form" method="post" action="{% url 'application_decision' app.id %}">
                         {% csrf_token %}

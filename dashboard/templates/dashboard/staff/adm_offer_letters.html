@@ -65,9 +65,10 @@
               <td>{{ app.program }}</td>
               <td>{{ app.student_number|default:"Pending" }}</td>
               <td>
-                {% if app.issued_password %}
+                {% if app.portal_access_issued %}
+                  <span class="status-badge status-approved">Issued</span>
                   <div class="summary-meta">Username: {{ app.reg_number }}</div>
-                  <div class="summary-meta">Password: {{ app.issued_password }}</div>
+                  <div class="summary-meta">Credentials delivered by email</div>
                 {% else %}
                   <span class="status-badge status-pending">Not Issued</span>
                 {% endif %}
@@ -77,7 +78,7 @@
                   {% csrf_token %}
                   <input type="hidden" name="application_id" value="{{ app.id }}">
                   <button class="action-btn action-success" name="action" value="generate_offer_preview">Generate Preview</button>
-                  {% if app.issued_password %}
+                  {% if app.portal_access_issued %}
                     <button class="action-btn action-deny" name="action" value="reset_portal_access">Reset Access</button>
                   {% else %}
                     <button class="action-btn action-approve" name="action" value="issue_portal_access">Issue Portal Access</button>
