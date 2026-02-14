@@ -11,7 +11,7 @@
       <div class="apply-card">
         <h1>Application Submitted</h1>
         {% if email_sent %}
-          <p>We sent your credentials to {{ email }}.</p>
+          <p>We sent your applicant credentials (REG number + 10-character password) to {{ email }}.</p>
         {% else %}
           <p>Email could not be sent. Use the credentials below to log in:</p>
           <p><strong>Username:</strong> {{ reg_number }}</p>

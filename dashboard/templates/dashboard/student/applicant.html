@@ -29,11 +29,15 @@
               </span>
               <p class="status-note">
                 {% if application.status == 'submitted' %}
-                  Awaiting your documents before review can begin.
+                  {% if is_final_submitted %}
+                    Application submitted successfully. Admissions will process your intake queue.
+                  {% else %}
+                    Complete all required documents, then submit for admissions intake.
+                  {% endif %}
                 {% elif application.status == 'under_review' %}
-                  Your application is under review by the admin team.
+                  Your application is under review by the admissions team.
                 {% elif application.status == 'approved' %}
-                  Congratulations! You have been approved.
+                  Congratulations. Your admission is approved. Portal access is issued from the Admissions Offer Letters workflow.
                 {% elif application.status == 'rejected' %}
                   Your application was not approved.
                 {% endif %}
@@ -48,27 +52,29 @@
               <form class="doc-form" method="post">
                 {% csrf_token %}
                 <label class="doc-item">
-                  <input type="checkbox" name="doc_id_uploaded" {% if application.doc_id_uploaded %}checked{% endif %} {% if application.status != 'submitted' %}disabled{% endif %}>
+                  <input type="checkbox" name="doc_id_uploaded" {% if application.doc_id_uploaded %}checked{% endif %} {% if application.status != 'submitted' or is_final_submitted %}disabled{% endif %}>
                   National ID / Passport
                 </label>
                 <label class="doc-item">
-                  <input type="checkbox" name="doc_transcript_uploaded" {% if application.doc_transcript_uploaded %}checked{% endif %} {% if application.status != 'submitted' %}disabled{% endif %}>
+                  <input type="checkbox" name="doc_transcript_uploaded" {% if application.doc_transcript_uploaded %}checked{% endif %} {% if application.status != 'submitted' or is_final_submitted %}disabled{% endif %}>
                   Previous Academic Transcript
                 </label>
                 <label class="doc-item">
-                  <input type="checkbox" name="doc_recommendation_uploaded" {% if application.doc_recommendation_uploaded %}checked{% endif %} {% if application.status != 'submitted' %}disabled{% endif %}>
+                  <input type="checkbox" name="doc_recommendation_uploaded" {% if application.doc_recommendation_uploaded %}checked{% endif %} {% if application.status != 'submitted' or is_final_submitted %}disabled{% endif %}>
                   Recommendation Letter
                 </label>
                 <div class="doc-actions">
-                  <button class="ghost-btn" type="submit" name="action" value="save" {% if application.status != 'submitted' %}disabled{% endif %}>
+                  <button class="ghost-btn" type="submit" name="action" value="save" {% if application.status != 'submitted' or is_final_submitted %}disabled{% endif %}>
                     Save Documents
                   </button>
-                  <button class="primary-btn" type="submit" name="action" value="submit" {% if not all_docs_uploaded or application.status != 'submitted' %}disabled{% endif %}>
+                  <button class="primary-btn" type="submit" name="action" value="submit" {% if not all_docs_uploaded or application.status != 'submitted' or is_final_submitted %}disabled{% endif %}>
                     Submit for Review
                   </button>
                 </div>
                 {% if application.status != 'submitted' %}
                   <p class="doc-hint">Documents are locked while your application is being reviewed.</p>
+                {% elif is_final_submitted %}
+                  <p class="doc-hint">Application already submitted. Admissions will move it through verification and review.</p>
                 {% elif not all_docs_uploaded %}
                   <p class="doc-hint">Submit becomes available after all documents are marked uploaded.</p>
                 {% endif %}

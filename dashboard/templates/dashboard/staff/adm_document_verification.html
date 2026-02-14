@@ -1,0 +1,113 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>{{ module.title }}</h1>
+      <p>{{ module.description }}</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
+    </div>
+  </section>
+
+  {% if flash or flash_error %}
+    <section class="panel panel-tight">
+      <div class="panel-header">
+        <h2>Updates</h2>
+        <span class="panel-pill">ADM</span>
+      </div>
+      {% if flash %}
+        <p class="panel-pill">{{ flash }}</p>
+      {% endif %}
+      {% if flash_error %}
+        <p class="panel-pill panel-pill-alert">{{ flash_error }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Verification Queue</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Reg No.</th>
+            <th>Applicant</th>
+            <th>Status</th>
+            <th>Document Progress</th>
+            <th>Verification</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in applications %}
+            <tr>
+              <td>{{ app.reg_number }}</td>
+              <td>
+                <strong>{{ app.full_name }}</strong><br>
+                <span class="summary-meta">{{ app.program }}</span>
+              </td>
+              <td>
+                {% if app.status == "approved" %}
+                  <span class="status-badge status-approved">Approved</span>
+                {% elif app.status == "rejected" %}
+                  <span class="status-badge status-rejected">Rejected</span>
+                {% elif app.status == "under_review" %}
+                  <span class="status-badge status-submitted">Under Review</span>
+                {% else %}
+                  <span class="status-badge status-pending">Submitted</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="docs-meter" role="presentation">
+                  <div class="docs-meter-fill" style="width:{{ app.docs_percent }}%;"></div>
+                </div>
+                <span class="summary-meta">{{ app.docs_complete }}/3 verified</span>
+              </td>
+              <td>
+                <form class="inline-form" method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="application_id" value="{{ app.id }}">
+                  <div class="table-actions">
+                    <label>
+                      <input type="checkbox" name="doc_id_uploaded" {% if app.doc_id_uploaded %}checked{% endif %} {% if app.status == "under_review" %}disabled{% endif %}>
+                      ID
+                    </label>
+                    <label>
+                      <input type="checkbox" name="doc_transcript_uploaded" {% if app.doc_transcript_uploaded %}checked{% endif %} {% if app.status == "under_review" %}disabled{% endif %}>
+                      Transcript
+                    </label>
+                    <label>
+                      <input type="checkbox" name="doc_recommendation_uploaded" {% if app.doc_recommendation_uploaded %}checked{% endif %} {% if app.status == "under_review" %}disabled{% endif %}>
+                      Recommendation
+                    </label>
+                  </div>
+                  <div class="table-actions" style="margin-top:8px;">
+                    {% if app.status == "submitted" %}
+                      <button class="action-btn action-success" name="action" value="save_docs">Save</button>
+                      {% if app.docs_complete == 3 %}
+                        <button class="action-btn action-approve" name="action" value="mark_review_ready">Mark Review Ready</button>
+                      {% else %}
+                        <button class="action-btn action-approve" type="button" disabled>Mark Review Ready</button>
+                      {% endif %}
+                    {% else %}
+                      <button class="action-btn action-success" type="button" disabled>Locked In Review</button>
+                    {% endif %}
+                  </div>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5">No applications found for verification.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

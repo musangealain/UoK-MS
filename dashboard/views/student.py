@@ -13,7 +13,7 @@ from dashboard.models import (
 def student_dashboard(request):
     if request.user.userprofile.role != 'student':
         return redirect('home')
-    if request.user.username.upper().startswith('REG') or request.user.userprofile.student_status == 'applicant':
+    if request.user.userprofile.student_status == 'applicant':
         return redirect('applicant_dashboard')
     application = (
         Application.objects.filter(applicant=request.user).first()
@@ -31,7 +31,7 @@ def student_dashboard(request):
 def applicant_dashboard(request):
     if request.user.userprofile.role != 'student':
         return redirect('home')
-    if not request.user.username.upper().startswith('REG') and request.user.userprofile.student_status != 'applicant':
+    if request.user.userprofile.student_status != 'applicant':
         return redirect('student_dashboard')
     application = (
         Application.objects.filter(applicant=request.user).first()
@@ -44,17 +44,18 @@ def applicant_dashboard(request):
     if request.method == 'POST':
         if application.status == 'submitted':
             action = request.POST.get('action')
-            application.doc_id_uploaded = bool(request.POST.get('doc_id_uploaded'))
-            application.doc_transcript_uploaded = bool(request.POST.get('doc_transcript_uploaded'))
-            application.doc_recommendation_uploaded = bool(request.POST.get('doc_recommendation_uploaded'))
+            if not application.submitted_at:
+                application.doc_id_uploaded = bool(request.POST.get('doc_id_uploaded'))
+                application.doc_transcript_uploaded = bool(request.POST.get('doc_transcript_uploaded'))
+                application.doc_recommendation_uploaded = bool(request.POST.get('doc_recommendation_uploaded'))
             if action == 'submit':
                 if (
                     application.doc_id_uploaded
                     and application.doc_transcript_uploaded
                     and application.doc_recommendation_uploaded
                 ):
-                    application.status = 'under_review'
-                    application.submitted_at = timezone.now()
+                    if not application.submitted_at:
+                        application.submitted_at = timezone.now()
             application.save()
         return redirect('applicant_dashboard')
 
@@ -63,10 +64,15 @@ def applicant_dashboard(request):
         and application.doc_transcript_uploaded
         and application.doc_recommendation_uploaded
     )
+    is_final_submitted = bool(application.submitted_at and application.status == 'submitted')
     return render(
         request,
         'dashboard/student/applicant.html',
-        {'application': application, 'all_docs_uploaded': all_docs_uploaded},
+        {
+            'application': application,
+            'all_docs_uploaded': all_docs_uploaded,
+            'is_final_submitted': is_final_submitted,
+        },
     )
 
 
@@ -74,7 +80,7 @@ def applicant_dashboard(request):
 def student_academic_workspace(request):
     if request.user.userprofile.role != "student":
         return redirect("home")
-    if request.user.username.upper().startswith("REG") or request.user.userprofile.student_status == "applicant":
+    if request.user.userprofile.student_status == "applicant":
         return redirect("applicant_dashboard")
 
     profile = request.user.userprofile

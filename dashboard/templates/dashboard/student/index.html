@@ -34,6 +34,18 @@
       </div>
     </section>
 
+    <section class="panel panel-tight">
+      <div class="panel-header">
+        <h2>Admission Identity</h2>
+        <span class="panel-pill">Portal Access</span>
+      </div>
+      <ul class="activity-list">
+        <li><strong>Portal Username:</strong> {{ application.reg_number|default:user.username }}</li>
+        <li><strong>Student Number:</strong> {{ application.student_number|default:"Pending" }}</li>
+        <li><strong>Program:</strong> {{ application.program|default:"-" }}</li>
+      </ul>
+    </section>
+
     <section class="overview-grid" aria-label="Student overview summary">
       <article class="overview-card overview-card-schedule">
         <p class="overview-label">Today Schedule</p>

@@ -51,8 +51,8 @@ class StudentLoginView(LoginView):
             return self.form_invalid(form)
         return super().form_valid(form)
     def get_success_url(self):
-        username = getattr(self.request.user, "username", "")
-        if username.upper().startswith("REG"):
+        profile = getattr(self.request.user, "userprofile", None)
+        if profile and profile.student_status == "applicant":
             return '/dashboard/applicant/'
         return '/dashboard/student/'
 
@@ -150,7 +150,7 @@ def _generate_reg_number():
             return reg
 
 
-def _generate_password(length=8):
+def _generate_password(length=10):
     chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for _ in range(length))
 

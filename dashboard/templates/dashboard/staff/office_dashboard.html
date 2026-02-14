@@ -37,20 +37,90 @@
     </section>
   </section>
 
-  <section class="panel">
-    <div class="panel-header">
-      <h2>Dashboards</h2>
-      <span class="panel-pill">Modules</span>
-    </div>
-    <ul class="activity-list">
-      {% for m in office_modules %}
-        <li>
-          <a class="nav-title-link" href="{% url 'staff_office_module' office_code=office_code module_slug=m.slug %}">{{ m.title }}</a>
-          <div class="brand-sub" style="margin:2px 0 0;">{{ m.description }}</div>
-        </li>
-      {% empty %}
-        <li>Modules for this office are not configured yet.</li>
-      {% endfor %}
-    </ul>
-  </section>
+  {% if office_code == "ADM" and office_nav_sections %}
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Sub Dashboards</h2>
+        <span class="panel-pill">ADM</span>
+      </div>
+      <div class="table-wrap">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th>Sub Dashboard</th>
+              <th>Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for section in office_nav_sections %}
+              {% for item in section.items %}
+                <tr>
+                  <td>{% if section.icon %}{{ section.icon }} {% endif %}{{ section.label }}</td>
+                  <td>
+                    {% if item.kind == "overview" %}
+                      <a class="nav-title-link" href="{% url 'staff_office_dashboard' office_code=office_code %}">{{ item.title }}</a>
+                    {% elif item.kind == "academic_workspace" %}
+                      <a class="nav-title-link" href="{% url 'staff_academic_workspace' office_code=office_code %}">{{ item.title }}</a>
+                    {% elif item.kind == "password_change" %}
+                      <a class="nav-title-link" href="{% url 'password_change' %}">{{ item.title }}</a>
+                    {% elif item.slug %}
+                      <a class="nav-title-link" href="{% url 'staff_office_module' office_code=office_code module_slug=item.slug %}">{{ item.title }}</a>
+                    {% else %}
+                      {{ item.title }}
+                    {% endif %}
+                  </td>
+                  <td>{{ item.description|default:"-" }}</td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {% if adm_subdashboard_functionalities %}
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Subdashboard Functionalities</h2>
+          <span class="panel-pill">Summary</span>
+        </div>
+        <div class="table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Dashboard</th>
+                <th>Functionality</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in adm_subdashboard_functionalities %}
+                <tr>
+                  <td>{{ row.title }}</td>
+                  <td>{{ row.description }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    {% endif %}
+  {% else %}
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Dashboards</h2>
+        <span class="panel-pill">Modules</span>
+      </div>
+      <ul class="activity-list">
+        {% for m in office_modules %}
+          <li>
+            <a class="nav-title-link" href="{% url 'staff_office_module' office_code=office_code module_slug=m.slug %}">{{ m.title }}</a>
+            <div class="brand-sub" style="margin:2px 0 0;">{{ m.description }}</div>
+          </li>
+        {% empty %}
+          <li>Modules for this office are not configured yet.</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
 {% endblock %}

@@ -1,0 +1,110 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>{{ module.title }}</h1>
+      <p>{{ module.description }}</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
+    </div>
+  </section>
+
+  {% if flash or flash_error %}
+    <section class="panel panel-tight">
+      <div class="panel-header">
+        <h2>Updates</h2>
+        <span class="panel-pill">ADM</span>
+      </div>
+      {% if flash %}
+        <p class="panel-pill">{{ flash }}</p>
+      {% endif %}
+      {% if flash_error %}
+        <p class="panel-pill panel-pill-alert">{{ flash_error }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <p class="summary-label">Submitted</p>
+      <h3>{{ submitted_count }}</h3>
+      <p class="summary-meta">Waiting intake review</p>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Under Review</p>
+      <h3>{{ under_review_count }}</h3>
+      <p class="summary-meta">In decision workflow</p>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Approved</p>
+      <h3>{{ approved_count }}</h3>
+      <p class="summary-meta">Accepted candidates</p>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Rejected</p>
+      <h3>{{ rejected_count }}</h3>
+      <p class="summary-meta">Closed applications</p>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>New Application Intake Queue</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Reg No.</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Program</th>
+            <th>Status</th>
+            <th>Docs Verified</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in queue_applications %}
+            <tr>
+              <td>{{ app.reg_number }}</td>
+              <td>{{ app.full_name }}</td>
+              <td>{{ app.email }}</td>
+              <td>{{ app.program }}</td>
+              <td>
+                <span class="status-badge status-pending">Submitted</span>
+              </td>
+              <td>
+                <div class="docs-meter" role="presentation">
+                  <div class="docs-meter-fill" style="width:{{ app.docs_percent }}%;"></div>
+                </div>
+                <span class="summary-meta">{{ app.docs_complete }}/3 complete</span>
+              </td>
+              <td>{{ app.submitted_at|date:"Y-m-d" }}</td>
+              <td>
+                <form class="action-form" method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="application_id" value="{{ app.id }}">
+                  {% if app.docs_complete == 3 %}
+                    <button class="action-btn action-success" name="action" value="start_review">Move To Review</button>
+                  {% else %}
+                    <button class="action-btn action-approve" type="button" disabled>Awaiting Docs</button>
+                  {% endif %}
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8">No newly submitted applications found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

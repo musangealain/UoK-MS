@@ -20,7 +20,8 @@
             <table class="dashboard-table">
               <thead>
                 <tr>
-                  <th>Username</th>
+                  <th>Portal Username</th>
+                  <th>Student No.</th>
                   <th>Issued Password</th>
                   <th>Full Name</th>
                   <th>Email</th>
@@ -34,7 +35,8 @@
               <tbody>
                 {% for u in students %}
                   <tr>
-                    <td>{{ u.username }}</td>
+                    <td>{{ u.application_record.reg_number|default:u.username }}</td>
+                    <td>{{ u.application_record.student_number|default:"-" }}</td>
                     <td>{{ u.application_record.issued_password|default:"-" }}</td>
                     <td>{{ u.application_record.full_name|default:"-" }}</td>
                     <td>{{ u.email|default:"-" }}</td>
@@ -55,7 +57,7 @@
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="9">No students found.</td>
+                    <td colspan="10">No students found.</td>
                   </tr>
                 {% endfor %}
               </tbody>

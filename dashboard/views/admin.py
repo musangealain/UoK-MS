@@ -165,16 +165,18 @@ def _get_students_with_records():
     students = list(
         User.objects.select_related('userprofile')
         .filter(userprofile__role='student', userprofile__student_status='enrolled')
-        .exclude(username__startswith='REG')
         .order_by('username')
     )
-    student_numbers = [u.username for u in students]
-    application_map = {
-        a.student_number: a
-        for a in Application.objects.filter(student_number__in=student_numbers)
-    }
+    user_ids = [u.id for u in students]
+    student_usernames = [u.username for u in students]
+    applications = list(
+        Application.objects.filter(applicant_id__in=user_ids)
+        | Application.objects.filter(student_number__in=student_usernames)
+    )
+    by_applicant_id = {a.applicant_id: a for a in applications if a.applicant_id}
+    by_student_number = {a.student_number: a for a in applications if a.student_number}
     for u in students:
-        u.application_record = application_map.get(u.username)
+        u.application_record = by_applicant_id.get(u.id) or by_student_number.get(u.username)
     return students
 
 
@@ -793,25 +795,19 @@ def application_decision(request, application_id):
                         application.student_number = _unique_student_number()
                     if not application.issued_password:
                         application.issued_password = _generate_password()
-                    application.save(update_fields=['status', 'student_number', 'issued_password'])
+                    application.reg_password = application.issued_password
+                    application.save(update_fields=['status', 'student_number', 'issued_password', 'reg_password'])
 
-                    applicant_user = User.objects.filter(username=application.reg_number).first()
-                    if applicant_user and applicant_user.is_active:
-                        applicant_user.is_active = False
-                        applicant_user.set_unusable_password()
-                        applicant_user.save()
-                        UserProfile.objects.filter(user=applicant_user).update(student_status='applicant')
-
-                    if not User.objects.filter(username=application.student_number).exists():
-                        new_user = User.objects.create_user(
-                            username=application.student_number,
-                            email=application.email,
-                            password=application.issued_password,
-                        )
-                        profile, _ = UserProfile.objects.get_or_create(user=new_user)
+                    applicant_user = application.applicant or User.objects.filter(username=application.reg_number).first()
+                    if applicant_user:
+                        applicant_user.email = application.email
+                        applicant_user.is_active = True
+                        applicant_user.set_password(application.issued_password)
+                        applicant_user.save(update_fields=['email', 'is_active', 'password'])
+                        profile, _ = UserProfile.objects.get_or_create(user=applicant_user)
                         profile.role = 'student'
                         profile.student_status = 'enrolled'
-                        profile.save()
+                        profile.save(update_fields=['role', 'student_status'])
                 else:
                     application.status = 'rejected'
                     application.save(update_fields=['status'])

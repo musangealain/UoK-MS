@@ -1,0 +1,97 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>{{ module.title }}</h1>
+      <p>{{ module.description }}</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
+    </div>
+  </section>
+
+  {% if flash or flash_error %}
+    <section class="panel panel-tight">
+      <div class="panel-header">
+        <h2>Updates</h2>
+        <span class="panel-pill">ADM</span>
+      </div>
+      {% if flash %}
+        <p class="panel-pill">{{ flash }}</p>
+      {% endif %}
+      {% if flash_error %}
+        <p class="panel-pill panel-pill-alert">{{ flash_error }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if offer_preview %}
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Offer Letter Preview</h2>
+        <form method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+          {% csrf_token %}
+          <button class="ghost-btn" name="action" value="clear_offer_preview" type="submit">Clear Preview</button>
+        </form>
+      </div>
+      <pre class="offer-preview">{{ offer_preview }}</pre>
+    </section>
+  {% endif %}
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Approved Applications</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Reg No.</th>
+            <th>Name</th>
+            <th>Program</th>
+            <th>Student No.</th>
+            <th>Portal Access</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in approved_applications %}
+            <tr>
+              <td>{{ app.reg_number }}</td>
+              <td>{{ app.full_name }}</td>
+              <td>{{ app.program }}</td>
+              <td>{{ app.student_number|default:"Pending" }}</td>
+              <td>
+                {% if app.issued_password %}
+                  <div class="summary-meta">Username: {{ app.reg_number }}</div>
+                  <div class="summary-meta">Password: {{ app.issued_password }}</div>
+                {% else %}
+                  <span class="status-badge status-pending">Not Issued</span>
+                {% endif %}
+              </td>
+              <td>
+                <form class="table-actions" method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="application_id" value="{{ app.id }}">
+                  <button class="action-btn action-success" name="action" value="generate_offer_preview">Generate Preview</button>
+                  {% if app.issued_password %}
+                    <button class="action-btn action-deny" name="action" value="reset_portal_access">Reset Access</button>
+                  {% else %}
+                    <button class="action-btn action-approve" name="action" value="issue_portal_access">Issue Portal Access</button>
+                  {% endif %}
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No approved applications available for offer letters.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

@@ -33,7 +33,7 @@
         </div>
       </header>
 
-      <aside class="sidebar">
+      <aside class="sidebar {% if office_code == 'ADM' %}sidebar-adm{% endif %}">
         <nav class="nav">
           {% if office_code == "HRM" %}
             <div class="nav-group">
@@ -98,6 +98,26 @@
               <a class="nav-link" href="#">Benefits Administration</a>
               <a class="nav-link" href="#">Deductions &amp; Tax</a>
             </div>
+          {% elif office_code == "ADM" and office_nav_sections %}
+            {% for section in office_nav_sections %}
+              <div class="nav-group">
+                <p class="nav-label">
+                  {% if section.icon %}<span class="nav-icon">{{ section.icon }}</span>{% endif %}
+                  <span>{{ section.label }}</span>
+                </p>
+                {% for item in section.items %}
+                  {% if item.kind == "overview" %}
+                    <a class="nav-link {% if current_page == 'staff.overview' %}active{% endif %}" href="{% url 'staff_office_dashboard' office_code=office_code %}">{{ item.title }}</a>
+                  {% elif item.kind == "academic_workspace" %}
+                    <a class="nav-link {% if current_page == 'staff.academic_workspace' %}active{% endif %}" href="{% url 'staff_academic_workspace' office_code=office_code %}">{{ item.title }}</a>
+                  {% elif item.kind == "password_change" %}
+                    <a class="nav-link" href="{% url 'password_change' %}">{{ item.title }}</a>
+                  {% elif item.slug %}
+                    <a class="nav-link {% if current_page == 'staff.module.'|add:item.slug %}active{% endif %}" href="{% url 'staff_office_module' office_code=office_code module_slug=item.slug %}">{{ item.title }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endfor %}
           {% else %}
             <div class="nav-group">
               <p class="nav-label">Office</p>
@@ -115,10 +135,12 @@
             {% endif %}
           {% endif %}
 
-          <div class="nav-group">
-            <p class="nav-label">Account</p>
-            <a class="nav-link" href="{% url 'password_change' %}">Change Password</a>
-          </div>
+          {% if office_code != "ADM" %}
+            <div class="nav-group">
+              <p class="nav-label">Account</p>
+              <a class="nav-link" href="{% url 'password_change' %}">Change Password</a>
+            </div>
+          {% endif %}
         </nav>
       </aside>
 

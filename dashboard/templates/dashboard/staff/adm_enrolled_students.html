@@ -1,11 +1,11 @@
 {% extends "dashboard/staff/base.html" %}
-{% block title %}Enrolled Students{% endblock %}
+{% block title %}{{ module.title }}{% endblock %}
 
 {% block main %}
   <section class="page-header">
     <div>
-      <h1>Enrolled Students</h1>
-      <p>Monitor active student records and enrollment details.</p>
+      <h1>{{ module.title }}</h1>
+      <p>{{ module.description }}</p>
     </div>
     <div class="quick-actions">
       <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
@@ -36,6 +36,7 @@
       <table class="dashboard-table">
         <thead>
           <tr>
+            <th>Portal Username</th>
             <th>Student No.</th>
             <th>Issued Password</th>
             <th>Full Name</th>
@@ -50,7 +51,8 @@
         <tbody>
           {% for u in students %}
             <tr>
-              <td>{{ u.username }}</td>
+              <td>{{ u.application_record.reg_number|default:u.username }}</td>
+              <td>{{ u.application_record.student_number|default:"-" }}</td>
               <td>{{ u.application_record.issued_password|default:"-" }}</td>
               <td>{{ u.application_record.full_name|default:"-" }}</td>
               <td>{{ u.email|default:"-" }}</td>
@@ -72,7 +74,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="9">No enrolled students found.</td>
+              <td colspan="10">No enrolled students found.</td>
             </tr>
           {% endfor %}
         </tbody>
