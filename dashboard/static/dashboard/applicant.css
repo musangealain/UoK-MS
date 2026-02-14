@@ -115,6 +115,11 @@ html,body{
   color:#2b7a4b;
 }
 
+.status-waitlisted{
+  background:#eef3ff;
+  color:#2b5fa7;
+}
+
 .status-rejected{
   background:#fdeaea;
   color:#d94b4b;

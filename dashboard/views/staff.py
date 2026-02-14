@@ -493,6 +493,170 @@ def _adm_tag_portal_access(applications):
     return applications
 
 
+def _adm_tag_docs_progress(applications):
+    for app in applications:
+        docs_complete = int(app.doc_id_uploaded) + int(app.doc_transcript_uploaded) + int(
+            app.doc_recommendation_uploaded
+        )
+        app.docs_complete = docs_complete
+        app.docs_percent = int((docs_complete / 3) * 100)
+    return applications
+
+
+def _adm_next_waitlist_rank_locked():
+    current_max = Application.objects.select_for_update().filter(status="waitlisted").aggregate(
+        Max("waitlist_rank")
+    )["waitlist_rank__max"] or 0
+    return int(current_max) + 1
+
+
+def _adm_waitlist_rows_locked():
+    return list(
+        Application.objects.select_for_update()
+        .filter(status="waitlisted")
+        .order_by("waitlist_rank", "waitlisted_at", "created_at", "id")
+    )
+
+
+def _adm_resequence_waitlist_locked(waitlisted_rows):
+    updated = []
+    for index, row in enumerate(waitlisted_rows, start=1):
+        if row.waitlist_rank != index:
+            row.waitlist_rank = index
+            updated.append(row)
+    if updated:
+        Application.objects.bulk_update(updated, ["waitlist_rank"])
+
+
+def _adm_enqueue_waitlist(application_id: int, *, note: str = ""):
+    with transaction.atomic():
+        application = Application.objects.select_for_update().filter(pk=application_id).first()
+        if not application:
+            raise ValueError("Admission case not found.")
+        if application.status not in {"under_review", "rejected"}:
+            raise ValueError("Only under-review or rejected cases can be moved to waitlist.")
+        if not application.submitted_at:
+            raise ValueError("Application must be submitted before waitlisting.")
+        if application.status == "under_review":
+            docs_complete = bool(
+                application.doc_id_uploaded
+                and application.doc_transcript_uploaded
+                and application.doc_recommendation_uploaded
+            )
+            if not docs_complete:
+                raise ValueError("All required documents must be verified before waitlisting.")
+
+        application.status = "waitlisted"
+        application.waitlist_note = (note or "").strip()[:255]
+        application.waitlisted_at = timezone.now()
+        application.waitlist_rank = _adm_next_waitlist_rank_locked()
+        application.save(
+            update_fields=["status", "waitlist_note", "waitlisted_at", "waitlist_rank"]
+        )
+    return application
+
+
+def _adm_reopen_application_for_review(application_id: int):
+    with transaction.atomic():
+        application = (
+            Application.objects.select_related("applicant", "applicant__userprofile")
+            .select_for_update()
+            .filter(pk=application_id)
+            .first()
+        )
+        if not application:
+            raise ValueError("Admission case not found.")
+        if application.status not in {"approved", "rejected"}:
+            raise ValueError("Only approved or rejected cases can be reopened for review.")
+        if application.status == "approved" and _adm_has_portal_access(application):
+            raise ValueError(
+                "Portal access is already active for this applicant. Reset lifecycle from Offer Letters."
+            )
+
+        application.status = "under_review"
+        application.waitlist_rank = None
+        application.waitlist_note = ""
+        application.waitlisted_at = None
+        application.save(
+            update_fields=["status", "waitlist_rank", "waitlist_note", "waitlisted_at"]
+        )
+    return application
+
+
+def _adm_update_waitlist(application_id: int, *, rank: int, note: str = ""):
+    try:
+        requested_rank = int(rank)
+    except (TypeError, ValueError):
+        raise ValueError("Waitlist rank must be a number.")
+    if requested_rank < 1:
+        raise ValueError("Waitlist rank must be 1 or greater.")
+
+    with transaction.atomic():
+        waitlisted_rows = _adm_waitlist_rows_locked()
+        target = next((row for row in waitlisted_rows if row.id == application_id), None)
+        if not target:
+            raise ValueError("Waitlisted application not found.")
+
+        waitlisted_rows.remove(target)
+        target_index = min(requested_rank - 1, len(waitlisted_rows))
+        waitlisted_rows.insert(target_index, target)
+
+        updated = []
+        sanitized_note = (note or "").strip()[:255]
+        for index, row in enumerate(waitlisted_rows, start=1):
+            rank_changed = row.waitlist_rank != index
+            note_changed = row.id == target.id and row.waitlist_note != sanitized_note
+            if rank_changed or note_changed:
+                row.waitlist_rank = index
+                if row.id == target.id:
+                    row.waitlist_note = sanitized_note
+                updated.append(row)
+        if updated:
+            Application.objects.bulk_update(updated, ["waitlist_rank", "waitlist_note"])
+
+    return target
+
+
+def _adm_promote_waitlisted(application_id: int):
+    with transaction.atomic():
+        application = Application.objects.select_for_update().filter(pk=application_id).first()
+        if not application:
+            raise ValueError("Admission case not found.")
+        if application.status != "waitlisted":
+            raise ValueError("Only waitlisted applications can be promoted to review.")
+
+        application.status = "under_review"
+        application.waitlist_rank = None
+        application.waitlist_note = ""
+        application.waitlisted_at = None
+        application.save(
+            update_fields=["status", "waitlist_rank", "waitlist_note", "waitlisted_at"]
+        )
+
+        _adm_resequence_waitlist_locked(_adm_waitlist_rows_locked())
+    return application
+
+
+def _adm_reject_waitlisted(application_id: int):
+    with transaction.atomic():
+        application = Application.objects.select_for_update().filter(pk=application_id).first()
+        if not application:
+            raise ValueError("Admission case not found.")
+        if application.status != "waitlisted":
+            raise ValueError("Only waitlisted applications can be finalized as rejected.")
+
+        application.status = "rejected"
+        application.waitlist_rank = None
+        application.waitlist_note = ""
+        application.waitlisted_at = None
+        application.save(
+            update_fields=["status", "waitlist_rank", "waitlist_note", "waitlisted_at"]
+        )
+
+        _adm_resequence_waitlist_locked(_adm_waitlist_rows_locked())
+    return application
+
+
 def _send_portal_access_email(
     application: Application,
     *,
@@ -605,7 +769,7 @@ def _get_lecturers():
 
 
 def _adm_application_decision(application_id: int, decision: str):
-    if decision not in {"approve", "reject"}:
+    if decision not in {"approve", "reject", "waitlist"}:
         raise ValueError("Invalid decision.")
 
     success = False
@@ -628,14 +792,52 @@ def _adm_application_decision(application_id: int, decision: str):
                     if not docs_complete:
                         raise ValueError("All required documents must be verified before approval.")
                     application.status = "approved"
+                    application.waitlist_rank = None
+                    application.waitlist_note = ""
+                    application.waitlisted_at = None
                     if not application.student_number:
                         application.student_number = _unique_student_number()
-                    application.save(update_fields=["status", "student_number"])
+                    application.save(
+                        update_fields=[
+                            "status",
+                            "student_number",
+                            "waitlist_rank",
+                            "waitlist_note",
+                            "waitlisted_at",
+                        ]
+                    )
+                elif decision == "waitlist":
+                    if application.status != "under_review":
+                        raise ValueError("Only under-review applications can be waitlisted.")
+                    docs_complete = bool(
+                        application.doc_id_uploaded
+                        and application.doc_transcript_uploaded
+                        and application.doc_recommendation_uploaded
+                    )
+                    if not docs_complete:
+                        raise ValueError("All required documents must be verified before waitlisting.")
+                    application.status = "waitlisted"
+                    application.waitlist_note = ""
+                    application.waitlisted_at = timezone.now()
+                    application.waitlist_rank = _adm_next_waitlist_rank_locked()
+                    application.save(
+                        update_fields=["status", "waitlist_note", "waitlisted_at", "waitlist_rank"]
+                    )
                 else:
                     if application.status not in {"submitted", "under_review"}:
                         raise ValueError("Only active review cases can be rejected.")
                     application.status = "rejected"
-                    application.save(update_fields=["status"])
+                    application.waitlist_rank = None
+                    application.waitlist_note = ""
+                    application.waitlisted_at = None
+                    application.save(
+                        update_fields=[
+                            "status",
+                            "waitlist_rank",
+                            "waitlist_note",
+                            "waitlisted_at",
+                        ]
+                    )
             success = True
             break
         except OperationalError:
@@ -1126,13 +1328,10 @@ def staff_office_module(request, office_code, module_slug):
             return redirect("staff_office_module", office_code=office_code, module_slug=module_slug)
 
         applications = Application.objects.order_by("-created_at")
-        queue_applications = applications.filter(status="submitted", submitted_at__isnull=False)[:120]
-        for app in queue_applications:
-            docs_complete = int(app.doc_id_uploaded) + int(app.doc_transcript_uploaded) + int(
-                app.doc_recommendation_uploaded
-            )
-            app.docs_complete = docs_complete
-            app.docs_percent = int((docs_complete / 3) * 100)
+        queue_applications = list(
+            applications.filter(status="submitted", submitted_at__isnull=False)[:120]
+        )
+        _adm_tag_docs_progress(queue_applications)
         return render(
             request,
             "dashboard/staff/adm_new_applications.html",
@@ -1184,15 +1383,14 @@ def staff_office_module(request, office_code, module_slug):
                 request.session["adm_flash_error"] = str(exc)
             return redirect("staff_office_module", office_code=office_code, module_slug=module_slug)
 
-        applications = Application.objects.filter(
-            status__in=["submitted", "under_review"],
-        ).exclude(status="submitted", submitted_at__isnull=True).order_by("-created_at")[:160]
-        for app in applications:
-            docs_complete = int(app.doc_id_uploaded) + int(app.doc_transcript_uploaded) + int(
-                app.doc_recommendation_uploaded
+        applications = list(
+            Application.objects.filter(
+                status__in=["submitted", "under_review"],
             )
-            app.docs_complete = docs_complete
-            app.docs_percent = int((docs_complete / 3) * 100)
+            .exclude(status="submitted", submitted_at__isnull=True)
+            .order_by("-created_at")[:160]
+        )
+        _adm_tag_docs_progress(applications)
 
         return render(
             request,
@@ -1293,26 +1491,23 @@ def staff_office_module(request, office_code, module_slug):
                         request.session["adm_flash"] = (
                             "Admission case approved. Issue portal credentials from Offer Letters."
                         )
+                    elif decision == "waitlist":
+                        request.session["adm_flash"] = (
+                            "Admission case moved to waitlist. Manage rank from Waitlist Management."
+                        )
                     else:
                         request.session["adm_flash"] = "Admission case rejected."
             except (ValueError, OperationalError) as exc:
                 request.session["adm_flash_error"] = str(exc)
             return redirect("staff_office_module", office_code=office_code, module_slug=module_slug)
 
-        applications = Application.objects.select_related(
-            "applicant",
-            "applicant__userprofile",
-        ).order_by("-created_at")
-        pending_applications = applications.filter(status="under_review")[:100]
-        for app in pending_applications:
-            docs_complete = int(app.doc_id_uploaded) + int(app.doc_transcript_uploaded) + int(
-                app.doc_recommendation_uploaded
-            )
-            app.docs_complete = docs_complete
-            app.docs_percent = int((docs_complete / 3) * 100)
-        approved_applications = list(applications.filter(status="approved")[:100])
-        _adm_tag_portal_access(approved_applications)
-        rejected_applications = applications.filter(status="rejected")[:100]
+        applications = Application.objects.order_by("-created_at")
+        pending_applications = list(applications.filter(status="under_review")[:140])
+        _adm_tag_docs_progress(pending_applications)
+        review_count = applications.filter(status="under_review").count()
+        waitlisted_count = applications.filter(status="waitlisted").count()
+        approved_count = applications.filter(status="approved").count()
+        rejected_count = applications.filter(status="rejected").count()
         return render(
             request,
             "dashboard/staff/adm_admission_decisions.html",
@@ -1325,8 +1520,115 @@ def staff_office_module(request, office_code, module_slug):
                 "office_nav_sections": office_nav_sections,
                 "module": module,
                 "pending_applications": pending_applications,
+                "review_count": review_count,
+                "waitlisted_count": waitlisted_count,
+                "approved_count": approved_count,
+                "rejected_count": rejected_count,
+                "flash": request.session.pop("adm_flash", None),
+                "flash_error": request.session.pop("adm_flash_error", None),
+                "staff_id": staff_profile.staff_id,
+                "staff_name": staff_profile.full_name or request.user.first_name or request.user.username,
+            },
+        )
+
+    if office_code == "ADM" and module_slug == "application-status":
+        if request.method == "POST":
+            action = (request.POST.get("action") or "").strip()
+            try:
+                application_id = int(request.POST.get("application_id") or 0)
+            except ValueError:
+                application_id = 0
+            try:
+                if action == "reopen_review":
+                    _adm_reopen_application_for_review(application_id)
+                    request.session["adm_flash"] = "Case moved back to review queue."
+                elif action == "add_waitlist":
+                    note = request.POST.get("waitlist_note") or ""
+                    moved = _adm_enqueue_waitlist(application_id, note=note)
+                    request.session["adm_flash"] = (
+                        f"Case moved to waitlist at priority #{moved.waitlist_rank}."
+                    )
+                else:
+                    raise ValueError("Invalid application-status action.")
+            except (ValueError, OperationalError) as exc:
+                request.session["adm_flash_error"] = str(exc)
+            return redirect("staff_office_module", office_code=office_code, module_slug=module_slug)
+
+        applications = Application.objects.select_related(
+            "applicant",
+            "applicant__userprofile",
+        ).order_by("-created_at")
+        approved_applications = list(applications.filter(status="approved")[:160])
+        _adm_tag_portal_access(approved_applications)
+        rejected_applications = list(applications.filter(status="rejected")[:160])
+        waitlisted_count = applications.filter(status="waitlisted").count()
+        return render(
+            request,
+            "dashboard/staff/adm_application_status.html",
+            {
+                "current_page": f"staff.module.{module_slug}",
+                "office_code": office_code,
+                "office_label": office_map[office_code],
+                "office_purpose": OFFICE_PURPOSE.get(office_code, ""),
+                "office_modules": modules,
+                "office_nav_sections": office_nav_sections,
+                "module": module,
                 "approved_applications": approved_applications,
                 "rejected_applications": rejected_applications,
+                "waitlisted_count": waitlisted_count,
+                "flash": request.session.pop("adm_flash", None),
+                "flash_error": request.session.pop("adm_flash_error", None),
+                "staff_id": staff_profile.staff_id,
+                "staff_name": staff_profile.full_name or request.user.first_name or request.user.username,
+            },
+        )
+
+    if office_code == "ADM" and module_slug == "waitlist-management":
+        if request.method == "POST":
+            action = (request.POST.get("action") or "").strip()
+            try:
+                application_id = int(request.POST.get("application_id") or 0)
+            except ValueError:
+                application_id = 0
+            try:
+                if action == "update_waitlist":
+                    rank = request.POST.get("waitlist_rank")
+                    note = request.POST.get("waitlist_note") or ""
+                    _adm_update_waitlist(application_id, rank=rank, note=note)
+                    request.session["adm_flash"] = "Waitlist priority updated."
+                elif action == "promote_review":
+                    _adm_promote_waitlisted(application_id)
+                    request.session["adm_flash"] = "Waitlisted case promoted to review queue."
+                elif action == "finalize_reject":
+                    _adm_reject_waitlisted(application_id)
+                    request.session["adm_flash"] = "Waitlisted case finalized as rejected."
+                else:
+                    raise ValueError("Invalid waitlist action.")
+            except (ValueError, OperationalError) as exc:
+                request.session["adm_flash_error"] = str(exc)
+            return redirect("staff_office_module", office_code=office_code, module_slug=module_slug)
+
+        waitlisted_applications = list(
+            Application.objects.filter(status="waitlisted").order_by(
+                "waitlist_rank",
+                "waitlisted_at",
+                "created_at",
+                "id",
+            )[:220]
+        )
+        _adm_tag_docs_progress(waitlisted_applications)
+        return render(
+            request,
+            "dashboard/staff/adm_waitlist_management.html",
+            {
+                "current_page": f"staff.module.{module_slug}",
+                "office_code": office_code,
+                "office_label": office_map[office_code],
+                "office_purpose": OFFICE_PURPOSE.get(office_code, ""),
+                "office_modules": modules,
+                "office_nav_sections": office_nav_sections,
+                "module": module,
+                "waitlisted_applications": waitlisted_applications,
                 "flash": request.session.pop("adm_flash", None),
                 "flash_error": request.session.pop("adm_flash_error", None),
                 "staff_id": staff_profile.staff_id,

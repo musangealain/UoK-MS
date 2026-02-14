@@ -1009,6 +1009,11 @@ select.input option{
   color:#9a6a00;
 }
 
+.status-waitlisted{
+  background:rgba(43, 95, 167, 0.15);
+  color:#2b5fa7;
+}
+
 .status-rejected{
   background:rgba(217, 75, 75, 0.15);
   color:#b23a3a;

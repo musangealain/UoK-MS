@@ -43,6 +43,7 @@ class Application(models.Model):
     STATUS_CHOICES = [
         ('submitted', 'Submitted'),
         ('under_review', 'Under Review'),
+        ('waitlisted', 'Waitlisted'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     ]
@@ -66,6 +67,9 @@ class Application(models.Model):
     doc_id_uploaded = models.BooleanField(default=False)
     doc_transcript_uploaded = models.BooleanField(default=False)
     doc_recommendation_uploaded = models.BooleanField(default=False)
+    waitlist_rank = models.PositiveIntegerField(null=True, blank=True)
+    waitlist_note = models.CharField(max_length=255, blank=True, default="")
+    waitlisted_at = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

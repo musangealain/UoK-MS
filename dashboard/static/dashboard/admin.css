@@ -806,6 +806,21 @@ html,body{
   color: #2b7a4b;
 }
 
+.status-under_review {
+  background: rgba(43, 95, 167, 0.15);
+  color: #2b5fa7;
+}
+
+.status-submitted {
+  background: rgba(247, 181, 72, 0.2);
+  color: #8c5a00;
+}
+
+.status-waitlisted {
+  background: rgba(43, 95, 167, 0.15);
+  color: #2b5fa7;
+}
+
 .status-rejected {
   background: rgba(217, 75, 75, 0.15);
   color: #d94b4b;

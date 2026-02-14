@@ -38,6 +38,8 @@
                   Your application is under review by the admissions team.
                 {% elif application.status == 'approved' %}
                   Congratulations. Your admission is approved. Portal access is issued from the Admissions Offer Letters workflow.
+                {% elif application.status == 'waitlisted' %}
+                  Your application is currently on the waitlist. Admissions will notify you if your status changes.
                 {% elif application.status == 'rejected' %}
                   Your application was not approved.
                 {% endif %}

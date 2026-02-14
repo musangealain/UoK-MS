@@ -1,0 +1,89 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>{{ module.title }}</h1>
+      <p>{{ module.description }}</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
+      <a class="ghost-btn" href="{% url 'staff_office_module' office_code=office_code module_slug='application-status' %}">Open Application Status</a>
+    </div>
+  </section>
+
+  {% if flash or flash_error %}
+    <section class="panel panel-tight">
+      <div class="panel-header">
+        <h2>Updates</h2>
+        <span class="panel-pill">ADM</span>
+      </div>
+      {% if flash %}
+        <p class="panel-pill">{{ flash }}</p>
+      {% endif %}
+      {% if flash_error %}
+        <p class="panel-pill panel-pill-alert">{{ flash_error }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <p class="summary-label">Waitlisted Cases</p>
+      <h3>{{ waitlisted_applications|length }}</h3>
+      <p class="summary-meta">Prioritized enrollment reserve</p>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Waitlist Queue</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Reg No.</th>
+            <th>Name</th>
+            <th>Program</th>
+            <th>Docs</th>
+            <th>Added</th>
+            <th>Note</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in waitlisted_applications %}
+            <tr>
+              <td>#{{ app.waitlist_rank|default:"-" }}</td>
+              <td>{{ app.reg_number }}</td>
+              <td>{{ app.full_name }}</td>
+              <td>{{ app.program }}</td>
+              <td>{{ app.docs_complete }}/3</td>
+              <td>{{ app.waitlisted_at|date:"Y-m-d" }}</td>
+              <td>{{ app.waitlist_note|default:"-" }}</td>
+              <td>
+                <form class="table-actions" method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="application_id" value="{{ app.id }}">
+                  <input type="number" name="waitlist_rank" min="1" value="{{ app.waitlist_rank|default:1 }}" style="width:80px;">
+                  <input type="text" name="waitlist_note" maxlength="255" value="{{ app.waitlist_note }}" placeholder="Priority note">
+                  <button class="action-btn action-success" name="action" value="update_waitlist">Save Rank</button>
+                  <button class="action-btn action-approve" name="action" value="promote_review">Promote To Review</button>
+                  <button class="action-btn action-deny" name="action" value="finalize_reject">Finalize Reject</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8">No waitlisted applications.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

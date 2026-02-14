@@ -1,0 +1,146 @@
+{% extends "dashboard/staff/base.html" %}
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block main %}
+  <section class="page-header">
+    <div>
+      <h1>{{ module.title }}</h1>
+      <p>{{ module.description }}</p>
+    </div>
+    <div class="quick-actions">
+      <a class="ghost-btn" href="{% url 'staff_office_dashboard' office_code=office_code %}">Back to Office Overview</a>
+      <a class="ghost-btn" href="{% url 'staff_office_module' office_code=office_code module_slug='waitlist-management' %}">Open Waitlist Management</a>
+    </div>
+  </section>
+
+  {% if flash or flash_error %}
+    <section class="panel panel-tight">
+      <div class="panel-header">
+        <h2>Updates</h2>
+        <span class="panel-pill">ADM</span>
+      </div>
+      {% if flash %}
+        <p class="panel-pill">{{ flash }}</p>
+      {% endif %}
+      {% if flash_error %}
+        <p class="panel-pill panel-pill-alert">{{ flash_error }}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <p class="summary-label">Approved</p>
+      <h3>{{ approved_applications|length }}</h3>
+      <p class="summary-meta">Admission approved cases</p>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Rejected</p>
+      <h3>{{ rejected_applications|length }}</h3>
+      <p class="summary-meta">Closed cases and appeals</p>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Waitlisted</p>
+      <h3>{{ waitlisted_count }}</h3>
+      <p class="summary-meta">Prioritized separately</p>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Approved Cases</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Reg No.</th>
+            <th>Name</th>
+            <th>Program</th>
+            <th>Student No.</th>
+            <th>Portal Access</th>
+            <th>Status Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in approved_applications %}
+            <tr>
+              <td>{{ app.reg_number }}</td>
+              <td>{{ app.full_name }}</td>
+              <td>{{ app.program }}</td>
+              <td>{{ app.student_number|default:"Pending" }}</td>
+              <td>
+                {% if app.portal_access_issued %}
+                  <span class="status-badge status-approved">Issued</span>
+                {% else %}
+                  <span class="status-badge status-pending">Not Issued</span>
+                {% endif %}
+              </td>
+              <td>
+                <form class="table-actions" method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="application_id" value="{{ app.id }}">
+                  {% if app.portal_access_issued %}
+                    <button class="action-btn action-success" type="button" disabled>Portal Active</button>
+                  {% else %}
+                    <button class="action-btn action-success" name="action" value="reopen_review">Reopen Review</button>
+                  {% endif %}
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No approved cases.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Rejected Cases</h2>
+      <span class="panel-pill">{{ office_code }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Reg No.</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Program</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in rejected_applications %}
+            <tr>
+              <td>{{ app.reg_number }}</td>
+              <td>{{ app.full_name }}</td>
+              <td>{{ app.email }}</td>
+              <td>{{ app.program }}</td>
+              <td><span class="status-badge status-rejected">Rejected</span></td>
+              <td>
+                <form class="table-actions" method="post" action="{% url 'staff_office_module' office_code=office_code module_slug=module.slug %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="application_id" value="{{ app.id }}">
+                  <input type="text" name="waitlist_note" maxlength="255" placeholder="Optional waitlist note">
+                  <button class="action-btn action-success" name="action" value="add_waitlist">Add To Waitlist</button>
+                  <button class="action-btn action-approve" name="action" value="reopen_review">Reopen Review</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No rejected cases.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
